@@ -24,6 +24,8 @@ class DetallesBloc extends ChangeNotifier {
   String _codigo = '';
   String _filtroMarca = '';
   String _filtroTipo = '';
+  bool modificar = false;
+  int index = -1;
 
   TipoProducto? _tipoSelect = TipoProducto(
       tprId: -1, tprCodigo: '', tprNombre: '', eprId: -1, activo: false);
@@ -98,6 +100,117 @@ class DetallesBloc extends ChangeNotifier {
   TextEditingController get ctrlMarcaProducto => _ctrlMarcaProducto;
   TextEditingController get ctrlFiltroMarcaProducto => _ctrlMarcaProducto;
 
+  void calcularTotal() {
+    _total = _cantidad * _precio;
+    _ctrlTotal.text = _total.toStringAsFixed(2);
+    notifyListeners();
+  }
+
+  void calcularPrecio() {
+    _precio = _total / _cantidad;
+    _ctrlPrecio.text = _precio.toStringAsFixed(2);
+    notifyListeners();
+  }
+
+  void borrarDetalle(BuildContext context, Dorden detalle) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Confirmar'),
+            content: SingleChildScrollView(
+              child: Column(
+                children: const [
+                  Text('¿Está seguro que desea eliminar el detalle?'),
+                ],
+              ),
+            ),
+            actions: <Widget>[
+              TextButton(
+                child: const Text('Aceptar'),
+                onPressed: () {
+                  _detalles.remove(detalle);
+                  notifyListeners();
+                  Navigator.of(context).pop();
+                },
+              ),
+              TextButton(
+                child: const Text('Cancelar'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        });
+  }
+
+  void agregarDetalle(BuildContext context) {
+    if (_producto.proId != -1) {
+      if (_cantidad > 0) {
+        if (_precio > 0) {
+          if (modificar) {
+            _detalles.removeAt(index);
+          }
+
+          _detalles.add(
+            Dorden(
+              producto: _producto.proId,
+              cantidad: _cantidad,
+              precio: _precio,
+              descuento: 0.00,
+              vdescuento: 0.00,
+              total: _total,
+              observacion: '',
+              productoFinal: _producto,
+            ),
+          );
+          _mostrarFormulario = false;
+          Fluttertoast.showToast(
+            msg: "Detalle agregado correctamente",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.CENTER,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.green.shade300,
+            textColor: Colors.white,
+            fontSize: 16.0,
+          );
+          notifyListeners();
+        } else {
+          Fluttertoast.showToast(
+            msg: "El precio debe ser mayor que cero",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.CENTER,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.red,
+            textColor: Colors.white,
+            fontSize: 16.0,
+          );
+        }
+      } else {
+        Fluttertoast.showToast(
+          msg: "Debe ingresar una cantidad mayor que cero",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+      }
+    } else {
+      Fluttertoast.showToast(
+        msg: "Debe seleccionar un producto",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+    }
+  }
+
   void abrirAyudaProducto(BuildContext context, int tipo) {
     _escribiendo = false;
     _productos = [];
@@ -124,6 +237,7 @@ class DetallesBloc extends ChangeNotifier {
   }
 
   void abrirNuevoDetalle() {
+    modificar = false;
     _producto = Producto(
       proId: -1,
       proCodigo: '',
@@ -143,6 +257,20 @@ class DetallesBloc extends ChangeNotifier {
     _ctrlCantidad.text = '0';
     _ctrlTotal.text = '0';
     _ctrlPrecio.text = '0';
+    notifyListeners();
+  }
+
+  void abrirModificarDetalle(Dorden detalle, int i) {
+    index = i;
+    modificar = true;
+    _producto = detalle.productoFinal!;
+    _cantidad = detalle.cantidad;
+    _precio = detalle.precio;
+    _total = detalle.total;
+    _mostrarFormulario = true;
+    _ctrlCantidad.text = _cantidad.toStringAsFixed(2);
+    _ctrlTotal.text = _total.toStringAsFixed(2);
+    _ctrlPrecio.text = _precio.toStringAsFixed(2);
     notifyListeners();
   }
 

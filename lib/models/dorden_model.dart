@@ -4,20 +4,22 @@
 
 import 'dart:convert';
 
+import 'package:app_ordenes/models/producto_model.dart';
+
 Dorden dordenFromJson(String str) => Dorden.fromJson(json.decode(str));
 
 String dordenToJson(Dorden data) => json.encode(data.toJson());
 
 class Dorden {
-  Dorden({
-    required this.producto,
-    required this.cantidad,
-    required this.precio,
-    required this.descuento,
-    required this.vdescuento,
-    required this.total,
-    required this.observacion,
-  });
+  Dorden(
+      {required this.producto,
+      required this.cantidad,
+      required this.precio,
+      required this.descuento,
+      required this.vdescuento,
+      required this.total,
+      required this.observacion,
+      this.productoFinal});
 
   int producto;
   double cantidad;
@@ -26,6 +28,7 @@ class Dorden {
   double vdescuento;
   double total;
   String observacion;
+  Producto? productoFinal;
 
   factory Dorden.fromJson(Map<String, dynamic> json) => Dorden(
         producto: json["producto"],

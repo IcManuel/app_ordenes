@@ -70,6 +70,7 @@ class DetalleFormulario extends StatelessWidget {
             double.tryParse(e) != null
                 ? detallesBloc.cantidad = double.parse(e)
                 : detallesBloc.cantidad = 0;
+            detallesBloc.calcularTotal();
           },
         ),
         const SizedBox(
@@ -87,6 +88,7 @@ class DetalleFormulario extends StatelessWidget {
             double.tryParse(e) != null
                 ? detallesBloc.precio = double.parse(e)
                 : detallesBloc.precio = 0;
+            detallesBloc.calcularTotal();
           },
         ),
         const SizedBox(
@@ -104,6 +106,7 @@ class DetalleFormulario extends StatelessWidget {
             double.tryParse(e) != null
                 ? detallesBloc.total = double.parse(e)
                 : detallesBloc.total = 0;
+            detallesBloc.calcularPrecio();
           },
         ),
         const SizedBox(
@@ -111,7 +114,9 @@ class DetalleFormulario extends StatelessWidget {
         ),
         BotonPrincipal(
           label: 'Guardar',
-          onPressed: () {},
+          onPressed: () {
+            detallesBloc.agregarDetalle(context);
+          },
           size: size,
         ),
         BotonSecundario(

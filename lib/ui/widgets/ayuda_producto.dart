@@ -82,6 +82,7 @@ class AyudaProducto extends StatelessWidget {
                                   return InkWell(
                                     onTap: () {
                                       detallesBloc.producto = pro;
+                                      detallesBloc.precio = pro.proPrecio!;
                                       Navigator.pop(context);
                                     },
                                     child: Container(
