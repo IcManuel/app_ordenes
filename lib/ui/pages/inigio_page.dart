@@ -1,4 +1,5 @@
 import 'package:app_ordenes/domains/blocs/perfil_bloc.dart';
+import 'package:app_ordenes/domains/blocs/visual_bloc.dart';
 import 'package:app_ordenes/ui/widgets/menu_item.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -9,6 +10,7 @@ class InicioPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final perfilBloc = Provider.of<PerfilBloc>(context);
+    final visualBloc = Provider.of<VisualBloc>(context);
     return Scaffold(
       appBar: AppBar(
         title: Row(
@@ -40,6 +42,7 @@ class InicioPage extends StatelessWidget {
             MenuItem(
               onPressed: () {
                 Navigator.pushNamed(context, 'orden');
+                visualBloc.cargarVisuales(perfilBloc.usuFinal.eprId);
               },
               title: 'Nueva Orden',
               subtitle: 'Cree una nueva orden',

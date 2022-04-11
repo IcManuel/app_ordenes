@@ -1,7 +1,9 @@
+import 'package:app_ordenes/domains/blocs/detalles_bloc.dart';
 import 'package:app_ordenes/domains/blocs/nuevo_bloc.dart';
 import 'package:app_ordenes/domains/blocs/orden_bloc.dart';
 import 'package:app_ordenes/domains/blocs/perfil_bloc.dart';
 import 'package:app_ordenes/domains/blocs/vehiculo_bloc.dart';
+import 'package:app_ordenes/domains/blocs/visual_bloc.dart';
 import 'package:app_ordenes/domains/utils/preferencias.dart';
 import 'package:app_ordenes/routes.dart';
 import 'package:app_ordenes/ui/utils/colores.dart';
@@ -32,6 +34,12 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (_) => NuevoBloc(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => VisualBloc(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => DetallesBloc(),
         ),
       ],
       child: MaterialApp(

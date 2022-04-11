@@ -23,7 +23,7 @@ class ObsVisualResponse {
       ObsVisualResponse(
         ok: json["ok"],
         msg: json["msg"],
-        observaciones: (json["observaciones"]
+        observaciones: (json["observaciones"] != null
             ? List<ObsVisual>.from(
                 json["observaciones"].map((x) => ObsVisual.fromJson(x)))
             : null),

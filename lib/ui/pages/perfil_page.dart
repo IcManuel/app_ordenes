@@ -1,4 +1,5 @@
 import 'package:app_ordenes/domains/blocs/perfil_bloc.dart';
+import 'package:app_ordenes/ui/widgets/input_check.dart';
 import 'package:app_ordenes/ui/widgets/input_text.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -80,6 +81,7 @@ class PerfilPage extends StatelessWidget {
               ),
               InputCheck(
                 size: size,
+                label: 'Cambiar clave',
                 value: perfilBloc.cambioClave,
                 onBool: (bool? e) {
                   perfilBloc.cambioClave = e;
@@ -133,56 +135,6 @@ class PerfilPage extends StatelessWidget {
             ],
           ),
         ),
-      ),
-    );
-  }
-}
-
-class InputCheck extends StatelessWidget {
-  const InputCheck({
-    Key? key,
-    required this.size,
-    this.value,
-    required this.onBool,
-  }) : super(key: key);
-
-  final Size size;
-  final bool? value;
-  final Function(bool?) onBool;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(
-        left: 10,
-        right: 10,
-      ),
-      child: Row(
-        children: [
-          SizedBox(
-            width: size.width * .3,
-            child: Text(
-              'Cambiar Clave',
-              style: TextStyle(
-                fontSize: size.height * 0.025,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-          SizedBox(
-            width: size.width * 0.02,
-          ),
-          SizedBox(
-            width: size.width * .1,
-            child: SizedBox(
-              height: size.height * .025,
-              child: Checkbox(
-                value: value,
-                onChanged: onBool,
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }

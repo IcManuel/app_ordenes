@@ -93,7 +93,7 @@ class GeneralPage extends StatelessWidget {
         TextField(
           controller: ordenbloc.ctrlDireccion,
           textCapitalization: TextCapitalization.characters,
-          maxLines: 3,
+          maxLines: 2,
           onChanged: (valor) {
             ordenbloc.direccion = valor.toUpperCase();
           },
@@ -109,7 +109,7 @@ class GeneralPage extends StatelessWidget {
         TextField(
           controller: ordenbloc.ctrlObs,
           textCapitalization: TextCapitalization.characters,
-          maxLines: 5,
+          maxLines: 4,
           onChanged: (valor) {
             ordenbloc.observaciones = valor.toUpperCase();
           },
