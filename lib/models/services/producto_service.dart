@@ -3,7 +3,10 @@ import 'dart:convert';
 import 'package:app_ordenes/domains/utils/url_util.dart';
 import 'package:app_ordenes/models/producto_model.dart';
 import 'package:app_ordenes/models/requests/producto_request.dart';
+import 'package:app_ordenes/models/requests/vehiculo_request.dart';
 import 'package:app_ordenes/models/responses/producto_response.dart';
+import 'package:app_ordenes/models/responses/vehiculo_response.dart';
+import 'package:app_ordenes/models/vehiculo_model.dart';
 import 'package:http/http.dart' as http;
 
 class ProductoService {
@@ -52,7 +55,6 @@ class ProductoService {
   }
 
   static Future<List<Producto>> obtenerProductosLista(ProductoRequest p) async {
-    print('Va a consumir el webservice');
     try {
       var respuesta = await http
           .post(

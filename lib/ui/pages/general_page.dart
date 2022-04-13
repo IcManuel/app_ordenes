@@ -1,3 +1,4 @@
+import 'package:app_ordenes/domains/blocs/ayudas_bloc.dart';
 import 'package:app_ordenes/domains/blocs/orden_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -7,8 +8,8 @@ class GeneralPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
     final ordenbloc = Provider.of<OrdenBloc>(context);
+    final ayudaBloc = Provider.of<AyudaBloc>(context);
     return ListView(
       padding: const EdgeInsets.symmetric(horizontal: 12),
       children: [
@@ -36,7 +37,8 @@ class GeneralPage extends StatelessWidget {
                 size: 30,
               ),
               onPressed: () {
-                ordenbloc.buscarCliente(context, size);
+                ayudaBloc.abrirAyudaCliente(
+                    context, 1, ordenbloc.identificacion);
               },
             ),
           ],
@@ -44,17 +46,31 @@ class GeneralPage extends StatelessWidget {
         const SizedBox(
           height: 10,
         ),
-        TextField(
-          controller: ordenbloc.ctrlNombres,
-          textCapitalization: TextCapitalization.characters,
-          onChanged: (valor) {
-            ordenbloc.nombres = valor.toUpperCase();
-          },
-          decoration: const InputDecoration(
-            hintText: 'Nombres',
-            labelText: 'Nombres',
-            border: OutlineInputBorder(),
-          ),
+        Row(
+          children: [
+            Expanded(
+              child: TextField(
+                onChanged: (valor) {
+                  ordenbloc.nombres = valor;
+                },
+                controller: ordenbloc.ctrlNombres,
+                decoration: const InputDecoration(
+                  labelText: 'Nombres',
+                  hintText: 'Nombres',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+            ),
+            IconButton(
+              icon: const Icon(
+                Icons.search,
+                size: 30,
+              ),
+              onPressed: () {
+                ayudaBloc.abrirAyudaCliente(context, 2, ordenbloc.nombres);
+              },
+            ),
+          ],
         ),
         const SizedBox(
           height: 10,

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:app_ordenes/domains/utils/url_util.dart';
 import 'package:app_ordenes/models/requests/vehiculo_request.dart';
 import 'package:app_ordenes/models/responses/vehiculo_response.dart';
+import 'package:app_ordenes/models/vehiculo_model.dart';
 import 'package:http/http.dart' as http;
 
 class VehiculoService {
@@ -12,6 +13,39 @@ class VehiculoService {
       'Accept': 'application/json',
     };
     return userHeader;
+  }
+
+  static Future<List<Vehiculo>> obtenerVehiculosPorPlaca(
+      VehiculoRequest p) async {
+    try {
+      var respuesta = await http
+          .post(
+              Uri.parse(
+                "${url}vehiculo/filtro",
+              ),
+              body: json.encode(
+                p.toJson(),
+              ),
+              headers: cabecera())
+          .timeout(
+            const Duration(
+              seconds: 100,
+            ),
+          );
+      if (respuesta.statusCode == 200) {
+        var jsonData = json.decode(respuesta.body);
+        print(jsonData);
+        VehiculoResponse res = VehiculoResponse.fromJson(jsonData);
+        return res.vehiculos!;
+      } else if (respuesta.statusCode == 502) {
+        return [];
+      } else {
+        return [];
+      }
+    } catch (error) {
+      print(error);
+      return [];
+    }
   }
 
   static Future<VehiculoResponse> buscarVehiculo(VehiculoRequest cli) async {

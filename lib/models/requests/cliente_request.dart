@@ -13,10 +13,14 @@ class ClienteRequest {
   ClienteRequest({
     required this.identificacion,
     required this.empresa,
+    this.cadena,
+    this.tipoFiltro,
   });
 
   String identificacion;
   int empresa;
+  String? cadena;
+  int? tipoFiltro;
 
   factory ClienteRequest.fromJson(Map<String, dynamic> json) => ClienteRequest(
         identificacion: json["identificacion"],
@@ -26,5 +30,7 @@ class ClienteRequest {
   Map<String, dynamic> toJson() => {
         "identificacion": identificacion,
         "empresa": empresa,
+        "cadena": cadena,
+        "tipoFiltro": tipoFiltro,
       };
 }

@@ -1,4 +1,6 @@
+import 'package:app_ordenes/domains/blocs/ayudas_bloc.dart';
 import 'package:app_ordenes/domains/blocs/detalles_bloc.dart';
+import 'package:app_ordenes/domains/blocs/fotos_bloc.dart';
 import 'package:app_ordenes/domains/blocs/nuevo_bloc.dart';
 import 'package:app_ordenes/domains/blocs/orden_bloc.dart';
 import 'package:app_ordenes/domains/blocs/perfil_bloc.dart';
@@ -36,10 +38,16 @@ class MyApp extends StatelessWidget {
           create: (_) => NuevoBloc(),
         ),
         ChangeNotifierProvider(
+          create: (_) => FotosBloc(),
+        ),
+        ChangeNotifierProvider(
           create: (_) => VisualBloc(),
         ),
         ChangeNotifierProvider(
           create: (_) => DetallesBloc(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => AyudaBloc(),
         ),
       ],
       child: MaterialApp(

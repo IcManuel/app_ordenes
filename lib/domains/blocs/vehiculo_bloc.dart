@@ -121,6 +121,36 @@ class VehiculoBloc extends ChangeNotifier {
     notifyListeners();
   }
 
+  void limpiarDatosFinal() {
+    idVehiculo = -1;
+    idMarca = -1;
+    idModelo = -1;
+    _modeloSelect = Modelo(modId: -1, marId: -1, marNombre: "", modNombre: "");
+    _marcaSelect = Marca(
+        marId: -1, eprId: -1, marCodigo: "", marNombre: "", marActivo: true);
+    _placa = '';
+    _kilometraje = null;
+    _anio = 0;
+    _color = '';
+    _vehiculosCliente = [];
+    _vehiculosClienteFiltrados = [];
+    _ctrlFiltroVehiculo.text = '';
+    _modelo = '';
+    _ctrlAnio.text = '';
+    _ctrlColor.text = '';
+    _ctrlFiltroMarca.text = '';
+    _ctrlFiltroModelo.text = '';
+    _ctrlKilometraje.text = '';
+    _ctrlFiltroVehiculo.text = '';
+    _filtroMarca = '';
+    _filtroModelo = '';
+    _marcasFiltradas = [];
+    _modelosFiltrados = [];
+    _modelos = [];
+    _marcas = [];
+    notifyListeners();
+  }
+
   TextEditingController get ctrlModelo {
     _ctrlModelo.text = _modelo;
     _ctrlModelo.selection = TextSelection.fromPosition(
@@ -155,10 +185,6 @@ class VehiculoBloc extends ChangeNotifier {
   }
 
   TextEditingController get ctrlKilometraje {
-    _ctrlKilometraje.text =
-        (_kilometraje != null ? _kilometraje.toString() : '');
-    _ctrlKilometraje.selection = TextSelection.fromPosition(
-        TextPosition(offset: _ctrlKilometraje.text.length));
     return _ctrlKilometraje;
   }
 
@@ -456,6 +482,31 @@ class VehiculoBloc extends ChangeNotifier {
     _marcaSelect = Marca(
       marId: vehiculo.marId,
       eprId: pref.empresa,
+      marCodigo: '',
+      marNombre: vehiculo.marNombre,
+      marActivo: true,
+    );
+    Navigator.pop(context);
+    notifyListeners();
+  }
+
+  void seleccionar(BuildContext context, Vehiculo vehiculo) {
+    idModelo = vehiculo.modId;
+    idMarca = -1;
+    _placa = vehiculo.vehPlaca;
+    idVehiculo = vehiculo.vehId;
+    _color = vehiculo.vehColor!;
+    _anio = vehiculo.vehAnio!;
+    _modelo = vehiculo.modelo;
+    _modeloSelect = Modelo(
+      modId: vehiculo.modId,
+      marId: vehiculo.marId,
+      marNombre: vehiculo.marNombre,
+      modNombre: vehiculo.modNombre,
+    );
+    _marcaSelect = Marca(
+      marId: vehiculo.marId,
+      eprId: Preferencias().empresa,
       marCodigo: '',
       marNombre: vehiculo.marNombre,
       marActivo: true,

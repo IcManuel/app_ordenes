@@ -1,9 +1,25 @@
 // ignore_for_file: unnecessary_this
 
+import 'package:app_ordenes/domains/blocs/detalles_bloc.dart';
+import 'package:app_ordenes/domains/blocs/fotos_bloc.dart';
 import 'package:app_ordenes/domains/blocs/vehiculo_bloc.dart';
+import 'package:app_ordenes/domains/blocs/visual_bloc.dart';
+import 'package:app_ordenes/models/foto_model.dart';
+import 'package:app_ordenes/models/requests/pdf_request.dart';
+import 'package:app_ordenes/models/responses/marca_response.dart';
+import 'package:app_ordenes/models/services/imagen_service.dart';
+import 'package:app_ordenes/models/services/orden_service.dart';
+import 'dart:io' as io;
+import 'package:path/path.dart';
+import 'dart:io';
 import 'package:app_ordenes/models/cliente_model.dart';
+import 'package:app_ordenes/models/imagen_model.dart';
+import 'package:intl/intl.dart';
+import 'package:app_ordenes/models/obs_visual_model.dart';
+import 'package:app_ordenes/models/requests/corden_ingreso_request.dart';
 import 'package:app_ordenes/models/responses/vehiculo_response.dart';
 import 'package:app_ordenes/models/services/vehiculo_service.dart';
+import 'package:app_ordenes/models/vehiculo_model.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:app_ordenes/domains/utils/preferencias.dart';
 import 'package:app_ordenes/domains/utils/url_util.dart';
@@ -14,18 +30,24 @@ import 'package:app_ordenes/ui/widgets/dialogo_cargando_widget.dart';
 import 'package:app_ordenes/ui/widgets/dialogo_general_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:path_provider/path_provider.dart';
 
 class OrdenBloc extends ChangeNotifier {
   String _identificacion = '';
+  String msj = '';
+  int _tipo = 1;
   String _nombres = '';
   String _apellidos = '';
   String _direccion = '';
   String _observaciones = '';
+  String _observacionesUsu = '';
   String _telefono = '';
   String _correo = '';
   int _idCliente = -1;
   List<Cliente> _clientesFiltrados = [];
   bool _cargandoClientes = true;
+  String _pdfArchivo = '';
+  String _pdfNombre = '';
 
   TextEditingController _ctrlIdentificacion = TextEditingController();
   TextEditingController _ctrlNombres = TextEditingController();
@@ -34,6 +56,7 @@ class OrdenBloc extends ChangeNotifier {
   TextEditingController _ctrlCorreo = TextEditingController();
   TextEditingController _ctrlTelefono = TextEditingController();
   TextEditingController _ctrlObs = TextEditingController();
+  TextEditingController _ctrlObsUsu = TextEditingController();
 
   String get identificacion => _identificacion;
   String get nombres => _nombres;
@@ -41,11 +64,46 @@ class OrdenBloc extends ChangeNotifier {
   String get direccion => _direccion;
   String get telefono => _telefono;
   String get observaciones => _observaciones;
+  String get observacionesUsu => _observacionesUsu;
 
   String get correo => _correo;
+  int get tipo => _tipo;
   int get idCliente => _idCliente;
   String get apellidos => _apellidos;
   List<Cliente> get clientesFiltrados => _clientesFiltrados;
+
+  set tipo(int t) {
+    _tipo = t;
+    notifyListeners();
+  }
+
+  void seleccionar(BuildContext context, Cliente pro) async {
+    _idCliente = pro.cliId;
+    _identificacion = pro.cliIdentificacion;
+    _nombres = pro.cliNombres!;
+    _telefono = pro.cliCelular!;
+    _correo = pro.cliCorreo!;
+    _direccion = pro.cliDireccion!;
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) {
+        return const DialogoCargando(
+          texto: 'Buscando vehiculos...',
+        );
+      },
+    );
+    VehiculoResponse resVeh =
+        await VehiculoService.obtenerVehiculosPorCliente(pro.cliId);
+    Navigator.pop(context);
+    Navigator.pop(context);
+    if (resVeh.ok) {
+      final vehiculoBloc = Provider.of<VehiculoBloc>(context, listen: false);
+      vehiculoBloc.vehiculosCliente = resVeh.vehiculos ?? [];
+    }
+    notifyListeners();
+  }
 
   TextEditingController get ctrlIdentificacion {
     this._ctrlIdentificacion.text = this._identificacion;
@@ -59,6 +117,13 @@ class OrdenBloc extends ChangeNotifier {
     this._ctrlObs.selection = TextSelection.fromPosition(
         TextPosition(offset: this._ctrlObs.text.length));
     return this._ctrlObs;
+  }
+
+  TextEditingController get ctrlObsUsu {
+    _ctrlObsUsu.text = this._observacionesUsu;
+    this._ctrlObsUsu.selection = TextSelection.fromPosition(
+        TextPosition(offset: this._ctrlObsUsu.text.length));
+    return this._ctrlObsUsu;
   }
 
   TextEditingController get ctrlNombres {
@@ -133,6 +198,11 @@ class OrdenBloc extends ChangeNotifier {
 
   set observaciones(String c) {
     _observaciones = c;
+    notifyListeners();
+  }
+
+  set observacionesUsu(String c) {
+    _observacionesUsu = c;
     notifyListeners();
   }
 
@@ -306,5 +376,297 @@ class OrdenBloc extends ChangeNotifier {
           textColor: Colors.white,
           fontSize: 16.0);
     }
+  }
+
+  void limpiarFinal(VehiculoBloc vehiculoBloc, DetallesBloc detallesBloc,
+      VisualBloc visual, FotosBloc fotosBloc) {
+    _idCliente = -1;
+    _identificacion = '';
+    _nombres = '';
+    _telefono = '';
+    _correo = '';
+    _direccion = '';
+    _observaciones = '';
+    _observacionesUsu = '';
+
+    _clientesFiltrados = [];
+    _ctrlApellidos.text = '';
+    _ctrlCorreo.text = '';
+    _ctrlDireccion.text = '';
+    _ctrlIdentificacion.text = '';
+    _ctrlNombres.text = '';
+    _ctrlObs.text = '';
+    _ctrlObsUsu.text = '';
+    _ctrlTelefono.text = '';
+
+    vehiculoBloc.limpiarDatosFinal();
+    fotosBloc.limpiarDatos();
+    visual.limpiarDatos();
+    detallesBloc.limpiarDatos();
+    notifyListeners();
+  }
+
+  void guardarFinal(BuildContext context, VehiculoBloc vehiculoBloc,
+      DetallesBloc detallesBloc, VisualBloc visualBloc, Size size) async {
+    Preferencias pref = Preferencias();
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) {
+        return const DialogoCargando(
+          texto: 'Revisando conexión',
+        );
+      },
+    );
+    final conect = await verificarConexion();
+    Navigator.pop(context);
+    if (conect) {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (_) {
+          return const DialogoCargando(
+            texto: 'Enviado orden......',
+          );
+        },
+      );
+      Cliente cli = Cliente(
+        cliId: _idCliente,
+        cliIdentificacion: _identificacion,
+        cliApellidos: '',
+        cliCelular: _telefono,
+        cliCorreo: _correo,
+        cliDireccion: _direccion,
+        cliNombres: _nombres,
+        eprId: pref.empresa,
+      );
+      Vehiculo veh = Vehiculo(
+        vehId: vehiculoBloc.idVehiculo,
+        modelo: '',
+        modId: vehiculoBloc.modeloSelect.modId,
+        vehPlaca: vehiculoBloc.placa,
+        marId: -1,
+        marNombre: '',
+        modNombre: '',
+        eprId: pref.empresa,
+        vehAnio: vehiculoBloc.anio,
+        vehColor: vehiculoBloc.color,
+        vehKilometraje: vehiculoBloc.kilometraje,
+      );
+
+      List<ObsVisual> visuales = [];
+      for (int i = 0; i < visualBloc.lista.length; i++) {
+        if (visualBloc.lista[i].check) {
+          visuales.add(visualBloc.lista[i]);
+        }
+      }
+
+      List<ImagenModel> imagenes = [];
+
+      final fotosBloc = Provider.of<FotosBloc>(context, listen: false);
+
+      io.Directory documentsDirectory =
+          await getApplicationDocumentsDirectory();
+      String path = join(documentsDirectory.path, "imagenes");
+      if (await Directory(path).exists() == false) {
+        Directory(path).create().then((Directory directory) {});
+      }
+
+      for (FotoModel f in fotosBloc.fotos) {
+        String pathFnal = join(path, f.imagen.name);
+        final File imagenCache = File(f.imagen.path);
+        imagenCache.copy(pathFnal);
+        String imgPath = await ImagenService.uploadImage(f.imagen.path);
+        imagenes.add(ImagenModel(tipo: 1, imagen: imgPath));
+      }
+
+      for (FotoModel f in fotosBloc.fotosEntrega) {
+        String pathFnal = join(path, f.imagen.name);
+        final File imagenCache = File(f.imagen.path);
+        imagenCache.copy(pathFnal);
+        String imgPath = await ImagenService.uploadImage(f.imagen.path);
+        imagenes.add(ImagenModel(tipo: 2, imagen: imgPath));
+      }
+
+      CordenRequest cor = CordenRequest(
+        eprId: pref.empresa,
+        usuario: pref.usuario!.usuId,
+        obscliente: _observaciones,
+        obsvisual: visualBloc.obsVisual,
+        fecha: DateFormat('dd-MM-yyyy kk:mm:ss').format(DateTime.now()),
+        observacion: _observacionesUsu,
+        total: detallesBloc.totalFinal,
+        estado: tipo == 1 ? 2 : 4,
+        descuento: 0,
+        kilometraje: vehiculoBloc.kilometraje,
+        clienteModel: cli,
+        vehiculoModel: veh,
+        detalles: detallesBloc.detalles,
+        visuales: visuales,
+        imagenes: imagenes,
+      );
+      MarcaResponse res = await OrdenService.insertarOrden(cor);
+      Navigator.pop(context);
+      if (res.ok == true) {
+        if (tipo == 1) {
+          showDialog(
+            context: context,
+            barrierDismissible: true,
+            builder: (_) {
+              return const DialogoCargando(
+                texto: 'Generando PDF......',
+              );
+            },
+          );
+
+          await OrdenService.obtenerPdf(
+            context,
+            PdfRequest(
+              id: res.uid!,
+              empresa: pref.empresa,
+              crear: true,
+            ),
+          );
+          Navigator.pop(context);
+          limpiarFinal(vehiculoBloc, detallesBloc, visualBloc, fotosBloc);
+          Navigator.pushNamed(context, 'pdf_viewer');
+        } else {
+          Fluttertoast.showToast(
+            msg: "Preguardada correctamente",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.TOP,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.green.shade300,
+            textColor: Colors.white,
+            fontSize: 16.0,
+          );
+          limpiarFinal(vehiculoBloc, detallesBloc, visualBloc, fotosBloc);
+        }
+      } else {
+        showDialog(
+            context: context,
+            builder: (_) {
+              return DialogoGeneral(
+                size: size,
+                lottie: 'assets/lotties/error_lottie.json',
+                mostrarBoton1: true,
+                mostrarBoton2: false,
+                titulo: 'ALERTA',
+                texto: res.msg,
+                accion1: () {
+                  Navigator.pop(context);
+                },
+                textoBtn1: 'Ok',
+                textoBtn2: 'Cancelar',
+                accion2: () {},
+              );
+            });
+      }
+    } else {
+      showDialog(
+          context: context,
+          builder: (_) {
+            return DialogoGeneral(
+              size: size,
+              lottie: 'assets/lotties/alerta_lottie.json',
+              mostrarBoton1: true,
+              mostrarBoton2: false,
+              titulo: 'ALERTA',
+              texto: 'No hay conexión a internet',
+              accion1: () {
+                Navigator.pop(context);
+              },
+              textoBtn1: 'Ok',
+              textoBtn2: 'Cancelar',
+              accion2: () {},
+            );
+          });
+    }
+  }
+
+  void limpiarPantalla() {}
+  void guardarProforma(BuildContext context, Size size) async {
+    final vehiculoBloc = Provider.of<VehiculoBloc>(context, listen: false);
+    final detallesBloc = Provider.of<DetallesBloc>(context, listen: false);
+    final visualBloc = Provider.of<VisualBloc>(context, listen: false);
+    if (validarDatos(context, vehiculoBloc, detallesBloc)) {
+      guardarFinal(context, vehiculoBloc, detallesBloc, visualBloc, size);
+    } else {
+      Fluttertoast.showToast(
+          msg: msj,
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0);
+    }
+  }
+
+  bool validarDatos(BuildContext context, VehiculoBloc vehiculoBloc,
+      DetallesBloc detallesBloc) {
+    bool res = true;
+
+    if (_identificacion.trim().isNotEmpty) {
+      if (_nombres.trim().isNotEmpty) {
+        if (_telefono.trim().isNotEmpty) {
+          if (vehiculoBloc.placa.trim().isNotEmpty) {
+            if (vehiculoBloc.modeloSelect.modId != -1) {
+              if (vehiculoBloc.color.trim().isNotEmpty) {
+                if (vehiculoBloc.anio > 0) {
+                  if (vehiculoBloc.kilometraje > 0) {
+                    if (tipo == 1) {
+                      if (detallesBloc.detalles.isNotEmpty) {
+                      } else {
+                        msj = 'Debe ingresar detalles';
+                        res = false;
+                      }
+                    }
+                  } else {
+                    msj = 'No se ha ingresado el kilometraje';
+                    res = false;
+                  }
+                } else {
+                  msj = 'No se ha ingresado un año del vehículo';
+                  res = false;
+                }
+              } else {
+                msj = 'No se ha ingresado el color';
+                res = false;
+              }
+            } else {
+              msj = 'No se ha seleccionado un modelo';
+              res = false;
+            }
+          } else {
+            msj = 'No se ha ingresado la placa del vehículo';
+            res = false;
+          }
+        } else {
+          msj = 'No se ha ingresado un teléfono';
+          res = false;
+        }
+      } else {
+        msj = 'No se ha ingresado los nombres';
+        res = false;
+      }
+    } else {
+      msj = 'No se ha ingresado una identificación';
+      res = false;
+    }
+    return res;
+  }
+
+  String get pdfArchivo => this._pdfArchivo;
+  set pdfArchivo(String dato) {
+    this._pdfArchivo = dato;
+    notifyListeners();
+  }
+
+  String get pdfNombre => this._pdfNombre;
+  set pdfNombre(String dato) {
+    this._pdfNombre = dato;
+    notifyListeners();
   }
 }

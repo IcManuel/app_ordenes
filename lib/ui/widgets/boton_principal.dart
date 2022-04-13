@@ -5,18 +5,21 @@ class BotonPrincipal extends StatelessWidget {
   final VoidCallback onPressed;
   final String label;
   final Size size;
+  final bool? calcTamano;
   const BotonPrincipal({
     Key? key,
     required this.onPressed,
     required this.label,
     required this.size,
+    this.calcTamano = true,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.symmetric(
-          horizontal: size.width * 0.03, vertical: size.height * .01),
+          horizontal: calcTamano == true ? size.width * 0.03 : double.infinity,
+          vertical: size.height * .01),
       child: ElevatedButton(
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(

@@ -34,4 +34,8 @@ class ObsVisual {
         "obs_nombre": obsNombre,
         "check": check,
       };
+
+  Map<String, dynamic> toJsonWs() => {
+        "obsvisual": obsId,
+      };
 }

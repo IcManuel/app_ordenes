@@ -9,7 +9,6 @@ class AyudaVehiculo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final vehiculobloc = Provider.of<VehiculoBloc>(context);
-    final size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Vehículos ingresados'),

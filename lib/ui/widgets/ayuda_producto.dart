@@ -83,6 +83,8 @@ class AyudaProducto extends StatelessWidget {
                                     onTap: () {
                                       detallesBloc.producto = pro;
                                       detallesBloc.precio = pro.proPrecio!;
+                                      detallesBloc.ctrlPrecio.text =
+                                          pro.proPrecio!.toStringAsFixed(2);
                                       Navigator.pop(context);
                                     },
                                     child: Container(

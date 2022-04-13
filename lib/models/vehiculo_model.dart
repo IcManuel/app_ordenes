@@ -20,6 +20,7 @@ class Vehiculo {
     required this.marId,
     required this.marNombre,
     required this.modNombre,
+    this.eprId,
   });
 
   int vehId;
@@ -32,6 +33,7 @@ class Vehiculo {
   int? vehAnio;
   String? vehColor;
   double? vehKilometraje;
+  int? eprId;
 
   factory Vehiculo.fromJson(Map<String, dynamic> json) => Vehiculo(
         vehId: json["veh_id"],
@@ -54,5 +56,15 @@ class Vehiculo {
         "veh_color": vehColor,
         "mod_id": modId,
         "veh_kilometraje": vehKilometraje,
+      };
+
+  Map<String, dynamic> toJsonWs() => {
+        "id": vehId,
+        "placa": vehPlaca,
+        "anio": vehAnio,
+        "color": vehColor,
+        "modelo": modId,
+        "kilometraje": vehKilometraje,
+        "empresa": eprId,
       };
 }

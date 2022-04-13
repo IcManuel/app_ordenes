@@ -13,15 +13,15 @@ String productoRequestToJson(ProductoRequest data) =>
 class ProductoRequest {
   ProductoRequest({
     required this.empresa,
-    required this.tipo,
-    required this.marca,
+    this.tipo,
+    this.marca,
     required this.cadena,
     required this.tipoFiltro,
   });
 
   int empresa;
-  int tipo;
-  int marca;
+  int? tipo;
+  int? marca;
   String cadena;
   int tipoFiltro;
 

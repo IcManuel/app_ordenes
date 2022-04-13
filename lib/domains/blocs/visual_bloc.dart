@@ -51,6 +51,13 @@ class VisualBloc extends ChangeNotifier {
     }
   }
 
+  void limpiarDatos() {
+    _ctrlObs.text = '';
+    _obsVisual = '';
+    _lista = [];
+    notifyListeners();
+  }
+
   set cargando(bool b) {
     _cargando = b;
     notifyListeners();

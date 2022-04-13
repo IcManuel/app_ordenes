@@ -18,12 +18,14 @@ class ClienteResponse {
     this.encontrado = false,
     this.msg,
     this.cliente,
+    this.clientes,
   });
 
   bool ok;
-  bool encontrado;
+  bool? encontrado;
   String? msg;
   Cliente? cliente;
+  List<Cliente>? clientes;
 
   factory ClienteResponse.fromJson(Map<String, dynamic> json) =>
       ClienteResponse(
@@ -32,6 +34,10 @@ class ClienteResponse {
         encontrado: json["encontrado"],
         cliente:
             json["cliente"] != null ? Cliente.fromJson(json["cliente"]) : null,
+        clientes: (json["clientes"] != null
+            ? List<Cliente>.from(
+                json["clientes"].map((x) => Cliente.fromJson(x)))
+            : null),
       );
 
   Map<String, dynamic> toJson() => {

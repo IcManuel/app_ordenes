@@ -1,3 +1,4 @@
+import 'package:app_ordenes/domains/blocs/ayudas_bloc.dart';
 import 'package:app_ordenes/domains/blocs/vehiculo_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -9,6 +10,7 @@ class VehiculoPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final vehiculobloc = Provider.of<VehiculoBloc>(context);
+    final ayudaBloc = Provider.of<AyudaBloc>(context);
     return ListView(
       padding: const EdgeInsets.symmetric(horizontal: 12),
       children: [
@@ -69,7 +71,7 @@ class VehiculoPage extends StatelessWidget {
                 size: 30,
               ),
               onPressed: () {
-                vehiculobloc.buscarVehiculo(context, size);
+                ayudaBloc.abrirAyudaVehiculo(context, vehiculobloc.placa);
               },
             ),
           ],
@@ -130,7 +132,9 @@ class VehiculoPage extends StatelessWidget {
           controller: vehiculobloc.ctrlKilometraje,
           keyboardType: TextInputType.number,
           onChanged: (valor) {
-            vehiculobloc.kilometraje = double.parse(valor.toUpperCase());
+            if (double.tryParse(valor) != null) {
+              vehiculobloc.kilometraje = double.parse(valor.toUpperCase());
+            }
           },
           decoration: const InputDecoration(
             hintText: 'Kilometraje',

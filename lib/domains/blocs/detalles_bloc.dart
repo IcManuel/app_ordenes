@@ -19,6 +19,7 @@ class DetallesBloc extends ChangeNotifier {
   bool _cargandoTipos = false;
   bool _inventario = false;
   bool _cargandoMarcas = false;
+  double _totalFinal = 0.00;
 
   String _nombre = '';
   String _codigo = '';
@@ -70,6 +71,7 @@ class DetallesBloc extends ChangeNotifier {
   bool get cargandoTipos => _cargandoTipos;
   bool get cargandoMarcas => _cargandoMarcas;
   bool get inventario => _inventario;
+  double get totalFinal => _totalFinal;
   Producto get producto => _producto;
   bool get mostrarFormulario => _mostrarFormulario;
   double get cantidad => _cantidad;
@@ -83,6 +85,7 @@ class DetallesBloc extends ChangeNotifier {
   bool get consultando => _consultando;
 
   final TextEditingController _ctrlCantidad = TextEditingController();
+  final TextEditingController _ctrlTotalFinal = TextEditingController();
   final TextEditingController _ctrlPrecio = TextEditingController();
   final TextEditingController _ctrlTotal = TextEditingController();
 
@@ -100,6 +103,18 @@ class DetallesBloc extends ChangeNotifier {
   TextEditingController get ctrlMarcaProducto => _ctrlMarcaProducto;
   TextEditingController get ctrlFiltroMarcaProducto => _ctrlMarcaProducto;
 
+  TextEditingController get ctrlTotalFinal {
+    _ctrlTotalFinal.text = _totalFinal.toStringAsFixed(2);
+    _ctrlTotalFinal.selection = TextSelection.fromPosition(
+        TextPosition(offset: _ctrlTotalFinal.text.length));
+    return _ctrlTotalFinal;
+  }
+
+  set totalFinal(double t) {
+    _totalFinal = t;
+    notifyListeners();
+  }
+
   void calcularTotal() {
     _total = _cantidad * _precio;
     _ctrlTotal.text = _total.toStringAsFixed(2);
@@ -109,6 +124,12 @@ class DetallesBloc extends ChangeNotifier {
   void calcularPrecio() {
     _precio = _total / _cantidad;
     _ctrlPrecio.text = _precio.toStringAsFixed(2);
+    notifyListeners();
+  }
+
+  void limpiarDatos() {
+    _detalles = [];
+    totalFinal = 0.00;
     notifyListeners();
   }
 
@@ -130,7 +151,9 @@ class DetallesBloc extends ChangeNotifier {
                 child: const Text('Aceptar'),
                 onPressed: () {
                   _detalles.remove(detalle);
+
                   notifyListeners();
+                  calcularTotalFinal();
                   Navigator.of(context).pop();
                 },
               ),
@@ -143,6 +166,14 @@ class DetallesBloc extends ChangeNotifier {
             ],
           );
         });
+  }
+
+  void calcularTotalFinal() {
+    _totalFinal = 0.00;
+    for (var i = 0; i < _detalles.length; i++) {
+      print(_detalles[i].total);
+      _totalFinal += _detalles[i].total;
+    }
   }
 
   void agregarDetalle(BuildContext context) {
@@ -166,6 +197,7 @@ class DetallesBloc extends ChangeNotifier {
             ),
           );
           _mostrarFormulario = false;
+          calcularTotalFinal();
           Fluttertoast.showToast(
             msg: "Detalle agregado correctamente",
             toastLength: Toast.LENGTH_SHORT,

@@ -17,6 +17,7 @@ class Cliente {
     this.cliCelular,
     this.cliCorreo,
     this.cliApellidos,
+    this.eprId,
   });
 
   int cliId;
@@ -26,6 +27,7 @@ class Cliente {
   String? cliCelular;
   String? cliCorreo;
   String? cliApellidos;
+  int? eprId;
 
   factory Cliente.fromJson(Map<String, dynamic> json) => Cliente(
         cliId: json["cli_id"],
@@ -45,5 +47,16 @@ class Cliente {
         "cli_celular": cliCelular,
         "cli_correo": cliCorreo,
         "cli_apellidos": cliApellidos,
+      };
+
+  Map<String, dynamic> toJsonWs() => {
+        "id": cliId,
+        "identificacion": cliIdentificacion,
+        "nombres": cliNombres,
+        "direccion": cliDireccion,
+        "celular": cliCelular,
+        "correo": cliCorreo,
+        "apellidos": cliApellidos,
+        "empresa": eprId
       };
 }

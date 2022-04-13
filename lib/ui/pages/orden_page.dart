@@ -1,5 +1,6 @@
 import 'package:app_ordenes/ui/pages/detalles_page.dart';
 import 'package:app_ordenes/ui/pages/general_page.dart';
+import 'package:app_ordenes/ui/pages/resumen_page.dart';
 import 'package:app_ordenes/ui/pages/vehiculo_page.dart';
 import 'package:app_ordenes/ui/pages/visual_page.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +11,7 @@ class OrdenPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 4,
+      length: 5,
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Orden'),
@@ -32,6 +33,10 @@ class OrdenPage extends StatelessWidget {
                 icon: Icon(Icons.note_add),
                 text: 'Detalles',
               ),
+              Tab(
+                icon: Icon(Icons.list),
+                text: 'Resumen',
+              ),
             ],
           ),
         ),
@@ -41,6 +46,7 @@ class OrdenPage extends StatelessWidget {
             VehiculoPage(),
             VisualPage(),
             DetallesPage(),
+            ResumenPage(),
           ],
         ),
       ),

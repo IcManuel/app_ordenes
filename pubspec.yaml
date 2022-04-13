@@ -49,6 +49,7 @@ dev_dependencies:
   lottie: ^1.1.0
   connectivity: ^3.0.6
   fluttertoast: ^8.0.9
+  native_pdf_view: ^4.2.0
   
 
   # The "flutter_lints" package below contains a set of recommended lints to
