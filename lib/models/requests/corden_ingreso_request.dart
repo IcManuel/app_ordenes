@@ -32,6 +32,7 @@ class CordenRequest {
     this.detalles,
     this.visuales,
     this.imagenes,
+    this.idOrden,
   });
 
   int eprId;
@@ -49,6 +50,7 @@ class CordenRequest {
   List<Dorden>? detalles;
   List<ObsVisual>? visuales;
   List<ImagenModel>? imagenes;
+  int? idOrden;
 
   factory CordenRequest.fromJson(Map<String, dynamic> json) => CordenRequest(
         eprId: json["epr_id"],
@@ -69,6 +71,7 @@ class CordenRequest {
         "obscliente": obscliente,
         "obsvisual": obsvisual,
         "fecha": fecha,
+        "idOrden": idOrden,
         "observacion": observacion,
         "total": total,
         "estado": estado,

@@ -1,6 +1,7 @@
 import 'package:app_ordenes/domains/blocs/ayudas_bloc.dart';
 import 'package:app_ordenes/domains/blocs/detalles_bloc.dart';
 import 'package:app_ordenes/domains/blocs/fotos_bloc.dart';
+import 'package:app_ordenes/domains/blocs/lista_ordenes_bloc.dart';
 import 'package:app_ordenes/domains/blocs/nuevo_bloc.dart';
 import 'package:app_ordenes/domains/blocs/orden_bloc.dart';
 import 'package:app_ordenes/domains/blocs/perfil_bloc.dart';
@@ -49,9 +50,12 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (_) => AyudaBloc(),
         ),
+        ChangeNotifierProvider(
+          create: (_) => ListaOrdenBloc(),
+        ),
       ],
       child: MaterialApp(
-        title: 'App obras',
+        title: 'App ordenes',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           primarySwatch: colorPrincipal,

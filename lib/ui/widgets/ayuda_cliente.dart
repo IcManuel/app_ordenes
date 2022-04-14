@@ -29,6 +29,7 @@ class AyudaCliente extends StatelessWidget {
             ),
             TextField(
               controller: ayudaBloc.ctrlFiltro,
+              keyboardType: TextInputType.number,
               textCapitalization: TextCapitalization.characters,
               onChanged: (valor) {
                 ayudaBloc.filtro = valor;

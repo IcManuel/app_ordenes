@@ -15,7 +15,6 @@ void seleccionMultipleGallery(context, int tipo) async {
     );
     final bloc = Provider.of<FotosBloc>(context, listen: false);
     bloc.anadirFotos(pickedFileList!, tipo);
-    print(pickedFileList);
   } catch (e) {
     print(e);
   }

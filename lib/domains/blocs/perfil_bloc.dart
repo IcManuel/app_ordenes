@@ -382,6 +382,46 @@ class PerfilBloc extends ChangeNotifier {
     }
   }
 
+  Future<void> loginBack(
+      BuildContext context, String usuario, String contrasena) async {
+    final conect = await verificarConexion();
+    if (conect) {
+      Preferencias pref = Preferencias();
+      UsuarioReponse res = await UsuarioService.loginUsuario(
+          LoginRequest(alias: usuario, contrasena: contrasena));
+      if (res.ok == true) {
+        pref.token = res.usuario!.usuAlias;
+        pref.empresa = res.usuario!.eprId;
+        pref.usuario = res.usuario!;
+        _usuFinal = res.usuario!;
+        notifyListeners();
+        if (res.usuario!.usuActivo == true) {
+          if (res.usuario!.eprActivo == true) {
+            Navigator.pushReplacementNamed(context, 'inicio');
+          } else {
+            pref.token = '';
+            pref.usuario = null;
+            Navigator.pushReplacementNamed(context, 'login');
+          }
+        } else {
+          pref.token = '';
+          pref.usuario = null;
+          Navigator.pushReplacementNamed(context, 'login');
+        }
+      } else {
+        if (res.statusCode == 400) {
+          pref.token = '';
+          pref.usuario = null;
+          Navigator.pushReplacementNamed(context, 'login');
+        } else {
+          Navigator.pushReplacementNamed(context, 'inicio');
+        }
+      }
+    } else {
+      Navigator.pushReplacementNamed(context, 'inicio');
+    }
+  }
+
   void cerrarSesion(BuildContext context) async {
     Preferencias pref = Preferencias();
     pref.token = "";

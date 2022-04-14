@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:app_ordenes/domains/blocs/perfil_bloc.dart';
 import 'package:app_ordenes/domains/utils/preferencias.dart';
 import 'package:flutter/material.dart';
@@ -22,13 +20,12 @@ class _SplashPageState extends State<SplashPage> {
   }
 
   navegar() async {
-    pref.actDatos = "01-01-2020 12:12:12";
     pref.versionApp = "1.0.0";
-    print(pref.empresa);
     if (pref.token.isNotEmpty) {
       final perfilBloc = Provider.of<PerfilBloc>(context, listen: false);
       perfilBloc.usuFinal = pref.usuario!;
-      Navigator.pushReplacementNamed(context, 'inicio');
+      await perfilBloc.loginBack(
+          context, pref.usuario!.usuAlias, pref.usuario!.usuContrasena);
     } else {
       Navigator.pushReplacementNamed(context, 'login');
     }

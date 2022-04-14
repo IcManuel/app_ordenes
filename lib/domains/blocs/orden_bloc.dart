@@ -5,6 +5,7 @@ import 'package:app_ordenes/domains/blocs/fotos_bloc.dart';
 import 'package:app_ordenes/domains/blocs/vehiculo_bloc.dart';
 import 'package:app_ordenes/domains/blocs/visual_bloc.dart';
 import 'package:app_ordenes/models/foto_model.dart';
+import 'package:app_ordenes/models/orden_model.dart';
 import 'package:app_ordenes/models/requests/pdf_request.dart';
 import 'package:app_ordenes/models/responses/marca_response.dart';
 import 'package:app_ordenes/models/services/imagen_service.dart';
@@ -36,6 +37,7 @@ class OrdenBloc extends ChangeNotifier {
   String _identificacion = '';
   String msj = '';
   int _tipo = 1;
+  int? _numeroOrden;
   String _nombres = '';
   String _apellidos = '';
   String _direccion = '';
@@ -48,6 +50,8 @@ class OrdenBloc extends ChangeNotifier {
   bool _cargandoClientes = true;
   String _pdfArchivo = '';
   String _pdfNombre = '';
+  bool _modificar = false;
+  int idOrden = -1;
 
   TextEditingController _ctrlIdentificacion = TextEditingController();
   TextEditingController _ctrlNombres = TextEditingController();
@@ -62,18 +66,44 @@ class OrdenBloc extends ChangeNotifier {
   String get nombres => _nombres;
   bool get cargandoClientes => _cargandoClientes;
   String get direccion => _direccion;
+  int get numeroOrden => _numeroOrden!;
   String get telefono => _telefono;
   String get observaciones => _observaciones;
   String get observacionesUsu => _observacionesUsu;
+  bool get modificar => _modificar;
 
   String get correo => _correo;
   int get tipo => _tipo;
   int get idCliente => _idCliente;
   String get apellidos => _apellidos;
   List<Cliente> get clientesFiltrados => _clientesFiltrados;
+  set numeroOrden(int n) {
+    _numeroOrden = n;
+    notifyListeners();
+  }
+
+  set modificar(bool m) {
+    _modificar = m;
+    notifyListeners();
+  }
 
   set tipo(int t) {
     _tipo = t;
+    notifyListeners();
+  }
+
+  void setearDatosSelect(Orden orden) {
+    _identificacion = orden.cliente.cliIdentificacion;
+    _idCliente = orden.cliente.cliId;
+    idOrden = orden.corId;
+    _modificar = true;
+    _numeroOrden = orden.corNumero;
+    _nombres = orden.cliente.cliNombres!;
+    _telefono = orden.cliente.cliCelular!;
+    _correo = orden.cliente.cliCorreo!;
+    _direccion = orden.cliente.cliDireccion!;
+    _observaciones = orden.corObsCliente;
+    _observacionesUsu = orden.corObservacion;
     notifyListeners();
   }
 
@@ -505,44 +535,32 @@ class OrdenBloc extends ChangeNotifier {
         detalles: detallesBloc.detalles,
         visuales: visuales,
         imagenes: imagenes,
+        idOrden: modificar == true ? idOrden : -1,
       );
       MarcaResponse res = await OrdenService.insertarOrden(cor);
       Navigator.pop(context);
       if (res.ok == true) {
-        if (tipo == 1) {
-          showDialog(
-            context: context,
-            barrierDismissible: true,
-            builder: (_) {
-              return const DialogoCargando(
-                texto: 'Generando PDF......',
-              );
-            },
-          );
+        showDialog(
+          context: context,
+          barrierDismissible: true,
+          builder: (_) {
+            return const DialogoCargando(
+              texto: 'Generando PDF......',
+            );
+          },
+        );
 
-          await OrdenService.obtenerPdf(
-            context,
-            PdfRequest(
-              id: res.uid!,
-              empresa: pref.empresa,
-              crear: true,
-            ),
-          );
-          Navigator.pop(context);
-          limpiarFinal(vehiculoBloc, detallesBloc, visualBloc, fotosBloc);
-          Navigator.pushNamed(context, 'pdf_viewer');
-        } else {
-          Fluttertoast.showToast(
-            msg: "Preguardada correctamente",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.TOP,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.green.shade300,
-            textColor: Colors.white,
-            fontSize: 16.0,
-          );
-          limpiarFinal(vehiculoBloc, detallesBloc, visualBloc, fotosBloc);
-        }
+        await OrdenService.obtenerPdf(
+          context,
+          PdfRequest(
+            id: res.uid!,
+            empresa: pref.empresa,
+            crear: true,
+          ),
+        );
+        Navigator.pop(context);
+        limpiarFinal(vehiculoBloc, detallesBloc, visualBloc, fotosBloc);
+        Navigator.pushNamed(context, 'pdf_viewer');
       } else {
         showDialog(
             context: context,
@@ -614,7 +632,8 @@ class OrdenBloc extends ChangeNotifier {
           if (vehiculoBloc.placa.trim().isNotEmpty) {
             if (vehiculoBloc.modeloSelect.modId != -1) {
               if (vehiculoBloc.color.trim().isNotEmpty) {
-                if (vehiculoBloc.anio > 0) {
+                // ignore: unnecessary_null_comparison
+                if (vehiculoBloc.anio != null && vehiculoBloc.anio > 0) {
                   if (vehiculoBloc.kilometraje > 0) {
                     if (tipo == 1) {
                       if (detallesBloc.detalles.isNotEmpty) {

@@ -1,4 +1,5 @@
 import 'package:app_ordenes/domains/blocs/ayudas_bloc.dart';
+import 'package:app_ordenes/domains/blocs/orden_bloc.dart';
 import 'package:app_ordenes/domains/blocs/vehiculo_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -10,6 +11,7 @@ class VehiculoPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final vehiculobloc = Provider.of<VehiculoBloc>(context);
+    final ordenbloc = Provider.of<OrdenBloc>(context, listen: false);
     final ayudaBloc = Provider.of<AyudaBloc>(context);
     return ListView(
       padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -36,7 +38,7 @@ class VehiculoPage extends StatelessWidget {
                       child: Padding(
                         padding: EdgeInsets.all(size.height * 0.02),
                         child: Text(
-                          'VEHÍCULOS REGSITRADOS',
+                          'VEHÍCULOS REGISTRADOS',
                           style: TextStyle(
                               fontSize: size.height * 0.02,
                               color: Colors.white),
@@ -57,7 +59,9 @@ class VehiculoPage extends StatelessWidget {
                 onChanged: (valor) {
                   vehiculobloc.cambioPlaca(valor);
                 },
+                enabled: !ordenbloc.modificar,
                 controller: vehiculobloc.ctrlPlaca,
+                textCapitalization: TextCapitalization.characters,
                 decoration: const InputDecoration(
                   labelText: 'Placa',
                   hintText: 'Placa',
@@ -71,7 +75,9 @@ class VehiculoPage extends StatelessWidget {
                 size: 30,
               ),
               onPressed: () {
-                ayudaBloc.abrirAyudaVehiculo(context, vehiculobloc.placa);
+                if (ordenbloc.modificar == false) {
+                  ayudaBloc.abrirAyudaVehiculo(context, vehiculobloc.placa);
+                }
               },
             ),
           ],
@@ -92,7 +98,9 @@ class VehiculoPage extends StatelessWidget {
             ),
           ),
           onTap: () {
-            vehiculobloc.abrirAuydaModelo(context, size, true);
+            if (ordenbloc.modificar == false) {
+              vehiculobloc.abrirAuydaModelo(context, size, true);
+            }
           },
         ),
         const SizedBox(
@@ -100,6 +108,7 @@ class VehiculoPage extends StatelessWidget {
         ),
         TextField(
           controller: vehiculobloc.ctrlColor,
+          enabled: !ordenbloc.modificar,
           textCapitalization: TextCapitalization.characters,
           onChanged: (valor) {
             vehiculobloc.color = valor.toUpperCase();
@@ -115,9 +124,14 @@ class VehiculoPage extends StatelessWidget {
         ),
         TextField(
           controller: vehiculobloc.ctrlAnio,
+          enabled: !ordenbloc.modificar,
           textCapitalization: TextCapitalization.characters,
           onChanged: (valor) {
-            vehiculobloc.anio = int.parse(valor);
+            if (int.tryParse(valor) != null) {
+              vehiculobloc.anio = int.parse(valor);
+            } else {
+              vehiculobloc.anio = 0;
+            }
           },
           decoration: const InputDecoration(
             hintText: 'Año',
@@ -134,6 +148,8 @@ class VehiculoPage extends StatelessWidget {
           onChanged: (valor) {
             if (double.tryParse(valor) != null) {
               vehiculobloc.kilometraje = double.parse(valor.toUpperCase());
+            } else {
+              vehiculobloc.kilometraje = 0.00;
             }
           },
           decoration: const InputDecoration(

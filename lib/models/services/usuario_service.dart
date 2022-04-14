@@ -54,6 +54,7 @@ class UsuarioService {
   }
 
   static Future<UsuarioReponse> loginUsuario(LoginRequest datos) async {
+    print(datos.toJson());
     try {
       var respuesta = await http
           .post(
@@ -70,18 +71,22 @@ class UsuarioService {
             ),
           );
       // ignore: avoid_print
+      print(respuesta.statusCode);
       if (respuesta.statusCode == 200 || respuesta.statusCode == 400) {
         var jsonData = json.decode(respuesta.body);
         UsuarioReponse res = UsuarioReponse.fromJson(jsonData);
+        res.statusCode = respuesta.statusCode;
         return res;
       } else if (respuesta.statusCode == 502) {
         return UsuarioReponse(
             ok: false,
+            statusCode: respuesta.statusCode,
             msg: "No se pudo lograr una comunicación con el servidor");
       } else {
         return UsuarioReponse(ok: false, msg: "Error al ejecutar ");
       }
     } catch (error) {
+      print(error);
       return UsuarioReponse(
         ok: false,
         usuario: null,

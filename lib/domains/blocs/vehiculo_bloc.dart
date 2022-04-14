@@ -2,6 +2,7 @@ import 'package:app_ordenes/domains/utils/preferencias.dart';
 import 'package:app_ordenes/domains/utils/url_util.dart';
 import 'package:app_ordenes/models/marca_model.dart';
 import 'package:app_ordenes/models/modelo_model.dart';
+import 'package:app_ordenes/models/orden_model.dart';
 import 'package:app_ordenes/models/requests/modelo_request.dart';
 import 'package:app_ordenes/models/requests/vehiculo_request.dart';
 import 'package:app_ordenes/models/responses/marca_response.dart';
@@ -68,7 +69,7 @@ class VehiculoBloc extends ChangeNotifier {
   Marca get marcaSelect => _marcaSelect;
   String get modelo => _modelo;
   String get color => _color;
-  double get kilometraje => _kilometraje!;
+  double get kilometraje => _kilometraje == null ? 0 : _kilometraje!;
   int get anio => _anio!;
 
   set modelos(List<Modelo> m) {
@@ -118,6 +119,34 @@ class VehiculoBloc extends ChangeNotifier {
 
   set marcaSelect(Marca m) {
     _marcaSelect = m;
+    notifyListeners();
+  }
+
+  void setearDatos(Orden orden) {
+    idVehiculo = orden.vehiculo.vehId;
+    idMarca = orden.vehiculo.marId;
+    idModelo = orden.vehiculo.modId;
+    _modeloSelect = Modelo(
+        modId: orden.vehiculo.modId,
+        marId: orden.vehiculo.marId,
+        marNombre: orden.vehiculo.marNombre,
+        modNombre: orden.vehiculo.modNombre);
+    _modelo = orden.vehiculo.marNombre + " " + orden.vehiculo.modNombre;
+    _placa = orden.vehiculo.vehPlaca;
+    _kilometraje = orden.corKilometraje;
+    ctrlKilometraje.text = _kilometraje.toString();
+    _anio = orden.vehiculo.vehAnio;
+    ctrlAnio.text = orden.vehiculo.vehAnio.toString();
+    _color = orden.vehiculo.vehColor!;
+    _vehiculosCliente = [];
+    _vehiculosClienteFiltrados = [];
+    _ctrlFiltroVehiculo.text = '';
+    _filtroMarca = '';
+    _filtroModelo = '';
+    _marcasFiltradas = [];
+    _modelosFiltrados = [];
+    _modelos = [];
+    _marcas = [];
     notifyListeners();
   }
 
@@ -196,9 +225,7 @@ class VehiculoBloc extends ChangeNotifier {
   }
 
   TextEditingController get ctrlAnio {
-    _ctrlAnio.text = (_anio != null ? _anio.toString() : '');
-    _ctrlAnio.selection =
-        TextSelection.fromPosition(TextPosition(offset: _ctrlAnio.text.length));
+    //_ctrlAnio.text = (_anio != 0 && _anio != null ? _anio.toString() : '');
     return _ctrlAnio;
   }
 
@@ -472,6 +499,7 @@ class VehiculoBloc extends ChangeNotifier {
     _color = vehiculo.vehColor!;
     _anio = vehiculo.vehAnio!;
     _modelo = vehiculo.modelo;
+    _ctrlAnio.text = _anio != null ? _anio.toString() : '';
     _placa = vehiculo.vehPlaca;
     _modeloSelect = Modelo(
       modId: vehiculo.modId,

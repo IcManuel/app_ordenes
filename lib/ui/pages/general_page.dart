@@ -23,6 +23,7 @@ class GeneralPage extends StatelessWidget {
                 onChanged: (valor) {
                   ordenbloc.cambioIdentificacion(context, valor);
                 },
+                enabled: !ordenbloc.modificar,
                 controller: ordenbloc.ctrlIdentificacion,
                 decoration: const InputDecoration(
                   labelText: 'Identificación',
@@ -37,8 +38,10 @@ class GeneralPage extends StatelessWidget {
                 size: 30,
               ),
               onPressed: () {
-                ayudaBloc.abrirAyudaCliente(
-                    context, 1, ordenbloc.identificacion);
+                if (ordenbloc.modificar == false) {
+                  ayudaBloc.abrirAyudaCliente(
+                      context, 1, ordenbloc.identificacion);
+                }
               },
             ),
           ],
@@ -53,6 +56,7 @@ class GeneralPage extends StatelessWidget {
                 onChanged: (valor) {
                   ordenbloc.nombres = valor;
                 },
+                enabled: !ordenbloc.modificar,
                 controller: ordenbloc.ctrlNombres,
                 decoration: const InputDecoration(
                   labelText: 'Nombres',
@@ -67,7 +71,9 @@ class GeneralPage extends StatelessWidget {
                 size: 30,
               ),
               onPressed: () {
-                ayudaBloc.abrirAyudaCliente(context, 2, ordenbloc.nombres);
+                if (ordenbloc.modificar == false) {
+                  ayudaBloc.abrirAyudaCliente(context, 2, ordenbloc.nombres);
+                }
               },
             ),
           ],
@@ -77,6 +83,7 @@ class GeneralPage extends StatelessWidget {
         ),
         TextField(
           controller: ordenbloc.ctrlTelefono,
+          enabled: !ordenbloc.modificar,
           textCapitalization: TextCapitalization.characters,
           onChanged: (valor) {
             ordenbloc.telefono = valor.toUpperCase();
@@ -92,6 +99,7 @@ class GeneralPage extends StatelessWidget {
         ),
         TextField(
           controller: ordenbloc.ctrlCorreo,
+          enabled: !ordenbloc.modificar,
           textCapitalization: TextCapitalization.characters,
           keyboardType: TextInputType.emailAddress,
           onChanged: (valor) {
@@ -108,6 +116,7 @@ class GeneralPage extends StatelessWidget {
         ),
         TextField(
           controller: ordenbloc.ctrlDireccion,
+          enabled: !ordenbloc.modificar,
           textCapitalization: TextCapitalization.characters,
           maxLines: 2,
           onChanged: (valor) {

@@ -110,6 +110,18 @@ class DetallesBloc extends ChangeNotifier {
     return _ctrlTotalFinal;
   }
 
+  void seleccionarProducto(Producto pro, BuildContext context) {
+    _producto = pro;
+    _cantidad = 1;
+    _total = pro.proPrecio!;
+    _precio = pro.proPrecio!;
+    _ctrlPrecio.text = pro.proPrecio!.toStringAsFixed(2);
+    _ctrlCantidad.text = '1';
+    _ctrlTotal.text = pro.proPrecio!.toStringAsFixed(2);
+    notifyListeners();
+    Navigator.pop(context);
+  }
+
   set totalFinal(double t) {
     _totalFinal = t;
     notifyListeners();

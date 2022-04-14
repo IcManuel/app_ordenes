@@ -38,6 +38,9 @@ class Dorden {
         vdescuento: json["vdescuento"].toDouble(),
         total: json["total"].toDouble(),
         observacion: json["observacion"],
+        productoFinal: json["productoFinal"] != null
+            ? Producto.fromJson(json["productoFinal"])
+            : null,
       );
 
   Map<String, dynamic> toJson() => {

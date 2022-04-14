@@ -1,3 +1,5 @@
+import 'package:app_ordenes/domains/blocs/lista_ordenes_bloc.dart';
+import 'package:app_ordenes/domains/blocs/orden_bloc.dart';
 import 'package:app_ordenes/domains/blocs/perfil_bloc.dart';
 import 'package:app_ordenes/domains/blocs/visual_bloc.dart';
 import 'package:app_ordenes/ui/widgets/menu_item.dart';
@@ -10,7 +12,10 @@ class InicioPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final perfilBloc = Provider.of<PerfilBloc>(context);
+    final size = MediaQuery.of(context).size;
     final visualBloc = Provider.of<VisualBloc>(context);
+    final ordenBloc = Provider.of<OrdenBloc>(context);
+    final listaOrdenBloc = Provider.of<ListaOrdenBloc>(context);
     return Scaffold(
       appBar: AppBar(
         title: Row(
@@ -42,6 +47,8 @@ class InicioPage extends StatelessWidget {
             MenuItem(
               onPressed: () {
                 Navigator.pushNamed(context, 'orden');
+                ordenBloc.modificar = false;
+                ordenBloc.idOrden = -1;
                 visualBloc.cargarVisuales(perfilBloc.usuFinal.eprId);
               },
               title: 'Nueva Orden',
@@ -52,7 +59,10 @@ class InicioPage extends StatelessWidget {
               height: 10,
             ),
             MenuItem(
-              onPressed: () {},
+              onPressed: () {
+                listaOrdenBloc.filtrar(context, size, true);
+                Navigator.pushNamed(context, 'lista_ordenes');
+              },
               title: 'Listado de órdenes',
               subtitle: 'Ver/modificar órdenes creadas',
               icon: Icons.chevron_right,

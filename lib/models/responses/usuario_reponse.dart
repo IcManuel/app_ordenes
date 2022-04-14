@@ -16,11 +16,13 @@ class UsuarioReponse {
     required this.ok,
     this.usuario,
     this.msg,
+    this.statusCode,
   });
 
   bool ok;
   Usuario? usuario;
   String? msg;
+  int? statusCode;
 
   factory UsuarioReponse.fromJson(Map<String, dynamic> json) => UsuarioReponse(
         ok: json["ok"],

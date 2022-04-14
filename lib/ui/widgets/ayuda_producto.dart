@@ -81,11 +81,8 @@ class AyudaProducto extends StatelessWidget {
                                   Producto pro = detallesBloc.productos[index];
                                   return InkWell(
                                     onTap: () {
-                                      detallesBloc.producto = pro;
-                                      detallesBloc.precio = pro.proPrecio!;
-                                      detallesBloc.ctrlPrecio.text =
-                                          pro.proPrecio!.toStringAsFixed(2);
-                                      Navigator.pop(context);
+                                      detallesBloc.seleccionarProducto(
+                                          pro, context);
                                     },
                                     child: Container(
                                       decoration: const BoxDecoration(

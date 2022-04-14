@@ -46,4 +46,38 @@ class ObsVisualService {
       );
     }
   }
+
+  static Future<ObsVisualResponse> buscarVisualesOrden(id) async {
+    try {
+      var respuesta = await http
+          .get(
+              Uri.parse(
+                "${url}observacion/seleccionarorden/$id",
+              ),
+              headers: cabecera())
+          .timeout(
+            const Duration(
+              seconds: 20,
+            ),
+          );
+      if (respuesta.statusCode == 200) {
+        var jsonData = json.decode(respuesta.body);
+        ObsVisualResponse res = ObsVisualResponse.fromJson(jsonData);
+        return res;
+      } else if (respuesta.statusCode == 502) {
+        return ObsVisualResponse(
+            ok: false,
+            msg: "No se pudo lograr una comunicación con el servidor");
+      } else {
+        return ObsVisualResponse(
+            ok: false, msg: "Error al obtener información");
+      }
+    } catch (error) {
+      print(error);
+      return ObsVisualResponse(
+        ok: false,
+        msg: "Error al comunicarse con el servidor",
+      );
+    }
+  }
 }

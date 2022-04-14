@@ -1,4 +1,5 @@
 import 'package:app_ordenes/ui/pages/inigio_page.dart';
+import 'package:app_ordenes/ui/pages/lista_ordenes.dart';
 import 'package:app_ordenes/ui/pages/login_page.dart';
 import 'package:app_ordenes/ui/pages/orden_page.dart';
 import 'package:app_ordenes/ui/pages/pdf_viewer.dart';
@@ -36,5 +37,6 @@ Map<String, WidgetBuilder> rutas() {
     "fotos_entrega": (_) => const FotosEntrega(),
     "pdf_viewer": (_) => const PdfImpresion(),
     "ayuda_busqueda_vehiculo": (_) => const AyudaBusquedaVehiculo(),
+    "lista_ordenes": (_) => const ListaOrdenesPage(),
   };
 }

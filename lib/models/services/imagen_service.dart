@@ -18,7 +18,7 @@ class ImagenService {
     return userHeader;
   }
 
-  static Future<bool> downloadImage(String img) async {
+  static Future<String> downloadImage(String img) async {
     var respuesta = await http
         .get(
           Uri.parse(
@@ -28,11 +28,11 @@ class ImagenService {
         )
         .timeout(
           const Duration(
-            seconds: 3,
+            seconds: 5,
           ),
         );
     io.Directory documentsDirectory = await getApplicationDocumentsDirectory();
-    String path = join(documentsDirectory.path, "imagenes");
+    String path = join(documentsDirectory.path, "cache");
     if (await Directory(path).exists() == false) {
       Directory(path).create().then((Directory directory) {});
     }
@@ -44,7 +44,7 @@ class ImagenService {
       mode: FileMode.write,
     );
 
-    return true;
+    return file2.path;
   }
 
   static Future<String> uploadImage(String path) async {
