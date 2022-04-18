@@ -11,7 +11,7 @@ class AyudaVehiculo extends StatelessWidget {
     final vehiculobloc = Provider.of<VehiculoBloc>(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Vehículos ingresados'),
+        title: Text(vehiculobloc.palabraClave + ' ingresados'),
       ),
       body: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
@@ -64,13 +64,7 @@ class AyudaVehiculo extends StatelessWidget {
                   return ListTile(
                     title: Text(mod.vehPlaca),
                     subtitle: Text(
-                      mod.marNombre +
-                          " " +
-                          mod.modNombre +
-                          " " +
-                          mod.vehColor! +
-                          " " +
-                          mod.vehAnio.toString(),
+                      mod.marNombre + " " + mod.modNombre,
                     ),
                     onTap: () {
                       vehiculobloc.seleccionarVehiculo(context, mod);

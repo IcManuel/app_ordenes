@@ -1,13 +1,16 @@
 import 'package:app_ordenes/domains/utils/preferencias.dart';
 import 'package:app_ordenes/domains/utils/url_util.dart';
+import 'package:app_ordenes/models/caracteristica_model.dart';
 import 'package:app_ordenes/models/marca_model.dart';
 import 'package:app_ordenes/models/modelo_model.dart';
 import 'package:app_ordenes/models/orden_model.dart';
 import 'package:app_ordenes/models/requests/modelo_request.dart';
 import 'package:app_ordenes/models/requests/vehiculo_request.dart';
+import 'package:app_ordenes/models/responses/caracteristica_response.dart';
 import 'package:app_ordenes/models/responses/marca_response.dart';
 import 'package:app_ordenes/models/responses/modelo_response.dart';
 import 'package:app_ordenes/models/responses/vehiculo_response.dart';
+import 'package:app_ordenes/models/services/caracteristica_service.dart';
 import 'package:app_ordenes/models/services/modelo_service.dart';
 import 'package:app_ordenes/models/services/vehiculo_service.dart';
 import 'package:app_ordenes/models/vehiculo_model.dart';
@@ -18,13 +21,13 @@ import 'package:fluttertoast/fluttertoast.dart';
 
 class VehiculoBloc extends ChangeNotifier {
   String _placa = '';
+  bool _cargando = false;
   int idVehiculo = -1;
   int idModelo = -1;
+  String _palabraClave = '';
+  String _identificador = '';
   int idMarca = -1;
   String _modelo = "";
-  String _color = "";
-  double? _kilometraje;
-  int? _anio;
   String? _filtroModelo = "";
   String? _filtroMarca = "";
 
@@ -32,6 +35,7 @@ class VehiculoBloc extends ChangeNotifier {
   List<Modelo> _modelosFiltrados = [];
   List<Marca> _marcas = [];
   List<Marca> _marcasFiltradas = [];
+  List<Caracteristica> _lista = [];
 
   List<Vehiculo> _vehiculosCliente = [];
   List<Vehiculo> _vehiculosClienteFiltrados = [];
@@ -50,13 +54,14 @@ class VehiculoBloc extends ChangeNotifier {
   TextEditingController _ctrlFiltroMarca = TextEditingController();
   TextEditingController _ctrlMarcaSelect = TextEditingController();
   TextEditingController _ctrlModelo = TextEditingController();
-  TextEditingController _ctrlColor = TextEditingController();
-  TextEditingController _ctrlAnio = TextEditingController();
-  TextEditingController _ctrlKilometraje = TextEditingController();
 
   String get placa => _placa;
+  bool get cargando => _cargando;
   String get filtroModelo => _filtroModelo!;
   String get filtroMarca => _filtroMarca!;
+  List<Caracteristica> get lista => _lista;
+  String get palabraClave => _palabraClave;
+  String get identificador => _identificador;
   List<Modelo> get modelos => _modelos;
   List<Modelo> get modelosFiltrados => _modelosFiltrados;
   List<Marca> get marcas => _marcas;
@@ -68,12 +73,29 @@ class VehiculoBloc extends ChangeNotifier {
   Modelo get modeloSelect => _modeloSelect;
   Marca get marcaSelect => _marcaSelect;
   String get modelo => _modelo;
-  String get color => _color;
-  double get kilometraje => _kilometraje == null ? 0 : _kilometraje!;
-  int get anio => _anio!;
+
+  set palabraClave(String s) {
+    _palabraClave = s;
+    notifyListeners();
+  }
+
+  set identificador(String s) {
+    _identificador = s;
+    notifyListeners();
+  }
 
   set modelos(List<Modelo> m) {
     _modelos = m;
+    notifyListeners();
+  }
+
+  set lista(List<Caracteristica> m) {
+    _lista = m;
+    notifyListeners();
+  }
+
+  set cargando(bool c) {
+    _cargando = c;
     notifyListeners();
   }
 
@@ -122,6 +144,74 @@ class VehiculoBloc extends ChangeNotifier {
     notifyListeners();
   }
 
+  void cargarCaracteristicas(int empresa) async {
+    _cargando = true;
+    final conect = await verificarConexion();
+    if (conect) {
+      CaracteristicaResponse res =
+          await CaracteristicaService.buscarCaracteristicas(empresa);
+      if (res.ok == true) {
+        _cargando = false;
+        _lista = res.caracteristicas!;
+        notifyListeners();
+      } else {
+        _cargando = false;
+        Fluttertoast.showToast(
+            msg: "No se pudieron cargar caracteristicas, error => " + res.msg!,
+            toastLength: Toast.LENGTH_LONG,
+            gravity: ToastGravity.CENTER,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.red,
+            textColor: Colors.white,
+            fontSize: 16.0);
+      }
+    } else {
+      _cargando = false;
+      Fluttertoast.showToast(
+          msg: "No hay conexión para cargar caracteristicas...",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0);
+    }
+  }
+
+  void cargarCaracteristicasVehiculo(int veh) async {
+    _cargando = true;
+    final conect = await verificarConexion();
+    if (conect) {
+      CaracteristicaResponse res =
+          await CaracteristicaService.buscarCaracteristicasVehiculo(veh);
+      if (res.ok == true) {
+        _cargando = false;
+        _lista = res.caracteristicas!;
+        notifyListeners();
+      } else {
+        _cargando = false;
+        Fluttertoast.showToast(
+            msg: "No se pudieron cargar caracteristicas, error => " + res.msg!,
+            toastLength: Toast.LENGTH_LONG,
+            gravity: ToastGravity.CENTER,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.red,
+            textColor: Colors.white,
+            fontSize: 16.0);
+      }
+    } else {
+      _cargando = false;
+      Fluttertoast.showToast(
+          msg: "No hay conexión para cargar caracteristicas...",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0);
+    }
+  }
+
   void setearDatos(Orden orden) {
     idVehiculo = orden.vehiculo.vehId;
     idMarca = orden.vehiculo.marId;
@@ -133,11 +223,6 @@ class VehiculoBloc extends ChangeNotifier {
         modNombre: orden.vehiculo.modNombre);
     _modelo = orden.vehiculo.marNombre + " " + orden.vehiculo.modNombre;
     _placa = orden.vehiculo.vehPlaca;
-    _kilometraje = orden.corKilometraje;
-    ctrlKilometraje.text = _kilometraje.toString();
-    _anio = orden.vehiculo.vehAnio;
-    ctrlAnio.text = orden.vehiculo.vehAnio.toString();
-    _color = orden.vehiculo.vehColor!;
     _vehiculosCliente = [];
     _vehiculosClienteFiltrados = [];
     _ctrlFiltroVehiculo.text = '';
@@ -147,6 +232,7 @@ class VehiculoBloc extends ChangeNotifier {
     _modelosFiltrados = [];
     _modelos = [];
     _marcas = [];
+    cargarCaracteristicasVehiculo(idVehiculo);
     notifyListeners();
   }
 
@@ -158,18 +244,12 @@ class VehiculoBloc extends ChangeNotifier {
     _marcaSelect = Marca(
         marId: -1, eprId: -1, marCodigo: "", marNombre: "", marActivo: true);
     _placa = '';
-    _kilometraje = null;
-    _anio = 0;
-    _color = '';
     _vehiculosCliente = [];
     _vehiculosClienteFiltrados = [];
     _ctrlFiltroVehiculo.text = '';
     _modelo = '';
-    _ctrlAnio.text = '';
-    _ctrlColor.text = '';
     _ctrlFiltroMarca.text = '';
     _ctrlFiltroModelo.text = '';
-    _ctrlKilometraje.text = '';
     _ctrlFiltroVehiculo.text = '';
     _filtroMarca = '';
     _filtroModelo = '';
@@ -206,37 +286,11 @@ class VehiculoBloc extends ChangeNotifier {
     return _ctrlFiltroMarca;
   }
 
-  TextEditingController get ctrlColor {
-    _ctrlColor.text = _color;
-    _ctrlColor.selection = TextSelection.fromPosition(
-        TextPosition(offset: _ctrlColor.text.length));
-    return _ctrlColor;
-  }
-
-  TextEditingController get ctrlKilometraje {
-    return _ctrlKilometraje;
-  }
-
   TextEditingController get ctrlPlaca {
     _ctrlPlaca.text = _placa;
     _ctrlPlaca.selection = TextSelection.fromPosition(
         TextPosition(offset: _ctrlPlaca.text.length));
     return _ctrlPlaca;
-  }
-
-  TextEditingController get ctrlAnio {
-    //_ctrlAnio.text = (_anio != 0 && _anio != null ? _anio.toString() : '');
-    return _ctrlAnio;
-  }
-
-  set anio(int a) {
-    _anio = a;
-    notifyListeners();
-  }
-
-  set color(String c) {
-    _color = c;
-    notifyListeners();
   }
 
   set modelo(String c) {
@@ -254,11 +308,6 @@ class VehiculoBloc extends ChangeNotifier {
     notifyListeners();
   }
 
-  set kilometraje(double c) {
-    _kilometraje = c;
-    notifyListeners();
-  }
-
   set placa(String p) {
     _placa = p;
     notifyListeners();
@@ -266,6 +315,7 @@ class VehiculoBloc extends ChangeNotifier {
 
   void cambioPlaca(String e) {
     _placa = e;
+
     if (idVehiculo != -1) {
       _modeloSelect =
           Modelo(modId: -1, marId: -1, marNombre: "", modNombre: "");
@@ -275,15 +325,13 @@ class VehiculoBloc extends ChangeNotifier {
       idVehiculo = -1;
       idModelo = -1;
       idMarca = -1;
-      _color = '';
-      _anio = null;
-      _kilometraje = null;
+
       _modelo = '';
 
       _ctrlModelo.text = '';
-      _ctrlAnio.text = '';
-      _ctrlKilometraje.text = '';
-      _ctrlColor.text = '';
+      for (int i = 0; i < _lista.length; i++) {
+        _lista[i].valor = '';
+      }
       notifyListeners();
     }
   }
@@ -491,15 +539,11 @@ class VehiculoBloc extends ChangeNotifier {
   }
 
   void seleccionarVehiculo(BuildContext context, Vehiculo vehiculo) {
-    print(vehiculo.vehColor);
     Preferencias pref = Preferencias();
     idModelo = vehiculo.modId;
     idMarca = -1;
     idVehiculo = vehiculo.vehId;
-    _color = vehiculo.vehColor!;
-    _anio = vehiculo.vehAnio!;
     _modelo = vehiculo.modelo;
-    _ctrlAnio.text = _anio != null ? _anio.toString() : '';
     _placa = vehiculo.vehPlaca;
     _modeloSelect = Modelo(
       modId: vehiculo.modId,
@@ -514,6 +558,7 @@ class VehiculoBloc extends ChangeNotifier {
       marNombre: vehiculo.marNombre,
       marActivo: true,
     );
+    cargarCaracteristicasVehiculo(vehiculo.vehId);
     Navigator.pop(context);
     notifyListeners();
   }
@@ -523,8 +568,6 @@ class VehiculoBloc extends ChangeNotifier {
     idMarca = -1;
     _placa = vehiculo.vehPlaca;
     idVehiculo = vehiculo.vehId;
-    _color = vehiculo.vehColor!;
-    _anio = vehiculo.vehAnio!;
     _modelo = vehiculo.modelo;
     _modeloSelect = Modelo(
       modId: vehiculo.modId,
@@ -577,8 +620,6 @@ class VehiculoBloc extends ChangeNotifier {
             idModelo = res.vehiculo!.modId;
             idMarca = -1;
             idVehiculo = res.vehiculo!.vehId;
-            _color = res.vehiculo!.vehColor!;
-            _anio = res.vehiculo!.vehAnio!;
             _modelo = res.vehiculo!.modelo;
             _modeloSelect = Modelo(
               modId: res.vehiculo!.modId,
@@ -607,15 +648,9 @@ class VehiculoBloc extends ChangeNotifier {
             idVehiculo = -1;
             idModelo = -1;
             idMarca = -1;
-            _color = '';
-            _anio = null;
-            _kilometraje = null;
             _modelo = '';
 
             _ctrlModelo.text = '';
-            _ctrlAnio.text = '';
-            _ctrlKilometraje.text = '';
-            _ctrlColor.text = '';
             notifyListeners();
             Fluttertoast.showToast(
               msg: "No se ha encontrado el vehículo",

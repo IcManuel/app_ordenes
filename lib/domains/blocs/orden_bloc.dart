@@ -4,6 +4,7 @@ import 'package:app_ordenes/domains/blocs/detalles_bloc.dart';
 import 'package:app_ordenes/domains/blocs/fotos_bloc.dart';
 import 'package:app_ordenes/domains/blocs/vehiculo_bloc.dart';
 import 'package:app_ordenes/domains/blocs/visual_bloc.dart';
+import 'package:app_ordenes/models/caracteristica_model.dart';
 import 'package:app_ordenes/models/foto_model.dart';
 import 'package:app_ordenes/models/orden_model.dart';
 import 'package:app_ordenes/models/requests/pdf_request.dart';
@@ -120,7 +121,7 @@ class OrdenBloc extends ChangeNotifier {
       barrierDismissible: false,
       builder: (_) {
         return const DialogoCargando(
-          texto: 'Buscando vehiculos...',
+          texto: 'Buscando datos...',
         );
       },
     );
@@ -480,15 +481,20 @@ class OrdenBloc extends ChangeNotifier {
         marNombre: '',
         modNombre: '',
         eprId: pref.empresa,
-        vehAnio: vehiculoBloc.anio,
-        vehColor: vehiculoBloc.color,
-        vehKilometraje: vehiculoBloc.kilometraje,
       );
 
       List<ObsVisual> visuales = [];
       for (int i = 0; i < visualBloc.lista.length; i++) {
         if (visualBloc.lista[i].check) {
           visuales.add(visualBloc.lista[i]);
+        }
+      }
+
+      List<Caracteristica> carac = [];
+      for (int i = 0; i < vehiculoBloc.lista.length; i++) {
+        if (vehiculoBloc.lista[i].valor != null &&
+            vehiculoBloc.lista[i].valor!.trim().isNotEmpty) {
+          carac.add(vehiculoBloc.lista[i]);
         }
       }
 
@@ -529,9 +535,9 @@ class OrdenBloc extends ChangeNotifier {
         total: detallesBloc.totalFinal,
         estado: tipo == 1 ? 2 : 4,
         descuento: 0,
-        kilometraje: vehiculoBloc.kilometraje,
         clienteModel: cli,
         vehiculoModel: veh,
+        caracteristicas: carac,
         detalles: detallesBloc.detalles,
         visuales: visuales,
         imagenes: imagenes,
@@ -540,7 +546,7 @@ class OrdenBloc extends ChangeNotifier {
       MarcaResponse res = await OrdenService.insertarOrden(cor);
       Navigator.pop(context);
       if (res.ok == true) {
-        showDialog(
+        /** showDialog(
           context: context,
           barrierDismissible: true,
           builder: (_) {
@@ -558,9 +564,10 @@ class OrdenBloc extends ChangeNotifier {
             crear: true,
           ),
         );
+        */
         Navigator.pop(context);
         limpiarFinal(vehiculoBloc, detallesBloc, visualBloc, fotosBloc);
-        Navigator.pushNamed(context, 'pdf_viewer');
+        //Navigator.pushNamed(context, 'pdf_viewer');
       } else {
         showDialog(
             context: context,
@@ -631,28 +638,25 @@ class OrdenBloc extends ChangeNotifier {
         if (_telefono.trim().isNotEmpty) {
           if (vehiculoBloc.placa.trim().isNotEmpty) {
             if (vehiculoBloc.modeloSelect.modId != -1) {
-              if (vehiculoBloc.color.trim().isNotEmpty) {
-                // ignore: unnecessary_null_comparison
-                if (vehiculoBloc.anio != null && vehiculoBloc.anio > 0) {
-                  if (vehiculoBloc.kilometraje > 0) {
-                    if (tipo == 1) {
-                      if (detallesBloc.detalles.isNotEmpty) {
-                      } else {
-                        msj = 'Debe ingresar detalles';
-                        res = false;
-                      }
-                    }
+              bool pasa = true;
+              for (int i = 0; i < vehiculoBloc.lista.length; i++) {
+                if (vehiculoBloc.lista[i].carObligatorio == true) {
+                  if (vehiculoBloc.lista[i].valor == null ||
+                      vehiculoBloc.lista[i].valor!.trim().isEmpty) {
+                    res = false;
+                    msj = 'Debe ingresar el ' +
+                        vehiculoBloc.lista[i].carNombre.toUpperCase();
+                  }
+                }
+              }
+              if (pasa) {
+                if (tipo == 1) {
+                  if (detallesBloc.detalles.isNotEmpty) {
                   } else {
-                    msj = 'No se ha ingresado el kilometraje';
+                    msj = 'Debe ingresar detalles';
                     res = false;
                   }
-                } else {
-                  msj = 'No se ha ingresado un año del vehículo';
-                  res = false;
                 }
-              } else {
-                msj = 'No se ha ingresado el color';
-                res = false;
               }
             } else {
               msj = 'No se ha seleccionado un modelo';

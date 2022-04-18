@@ -1,6 +1,7 @@
 import 'package:app_ordenes/domains/blocs/lista_ordenes_bloc.dart';
 import 'package:app_ordenes/domains/blocs/orden_bloc.dart';
 import 'package:app_ordenes/domains/blocs/perfil_bloc.dart';
+import 'package:app_ordenes/domains/blocs/vehiculo_bloc.dart';
 import 'package:app_ordenes/domains/blocs/visual_bloc.dart';
 import 'package:app_ordenes/ui/widgets/menu_item.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +15,7 @@ class InicioPage extends StatelessWidget {
     final perfilBloc = Provider.of<PerfilBloc>(context);
     final size = MediaQuery.of(context).size;
     final visualBloc = Provider.of<VisualBloc>(context);
+    final vehiculoBloc = Provider.of<VehiculoBloc>(context);
     final ordenBloc = Provider.of<OrdenBloc>(context);
     final listaOrdenBloc = Provider.of<ListaOrdenBloc>(context);
     return Scaffold(
@@ -49,6 +51,7 @@ class InicioPage extends StatelessWidget {
                 Navigator.pushNamed(context, 'orden');
                 ordenBloc.modificar = false;
                 ordenBloc.idOrden = -1;
+                vehiculoBloc.cargarCaracteristicas(perfilBloc.usuFinal.eprId);
                 visualBloc.cargarVisuales(perfilBloc.usuFinal.eprId);
               },
               title: 'Nueva Orden',

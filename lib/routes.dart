@@ -1,4 +1,4 @@
-import 'package:app_ordenes/ui/pages/inigio_page.dart';
+import 'package:app_ordenes/ui/pages/inicio_page.dart';
 import 'package:app_ordenes/ui/pages/lista_ordenes.dart';
 import 'package:app_ordenes/ui/pages/login_page.dart';
 import 'package:app_ordenes/ui/pages/orden_page.dart';

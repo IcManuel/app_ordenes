@@ -4,6 +4,7 @@
 
 import 'dart:convert';
 
+import 'package:app_ordenes/models/caracteristica_model.dart';
 import 'package:app_ordenes/models/cliente_model.dart';
 import 'package:app_ordenes/models/dorden_model.dart';
 import 'package:app_ordenes/models/imagen_model.dart';
@@ -26,13 +27,13 @@ class CordenRequest {
     required this.total,
     required this.estado,
     required this.descuento,
-    required this.kilometraje,
     this.vehiculoModel,
     this.clienteModel,
     this.detalles,
     this.visuales,
     this.imagenes,
     this.idOrden,
+    this.caracteristicas,
   });
 
   int eprId;
@@ -44,12 +45,12 @@ class CordenRequest {
   double total;
   int estado;
   int descuento;
-  double kilometraje;
   Vehiculo? vehiculoModel;
   Cliente? clienteModel;
   List<Dorden>? detalles;
   List<ObsVisual>? visuales;
   List<ImagenModel>? imagenes;
+  List<Caracteristica>? caracteristicas;
   int? idOrden;
 
   factory CordenRequest.fromJson(Map<String, dynamic> json) => CordenRequest(
@@ -62,7 +63,6 @@ class CordenRequest {
         total: json["total"].toDouble(),
         estado: json["estado"],
         descuento: json["descuento"],
-        kilometraje: json["kilometraje"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -76,11 +76,12 @@ class CordenRequest {
         "total": total,
         "estado": estado,
         "descuento": descuento,
-        "kilometraje": kilometraje,
         "vehiculoModel": vehiculoModel!.toJsonWs(),
         "clienteModel": clienteModel!.toJsonWs(),
         "detalles": List<dynamic>.from(detalles!.map((x) => x.toJson())),
         "visuales": List<dynamic>.from(visuales!.map((x) => x.toJsonWs())),
         "imagenes": List<dynamic>.from(imagenes!.map((x) => x.toJson())),
+        "caracteristicas":
+            List<dynamic>.from(caracteristicas!.map((x) => x.toJson())),
       };
 }

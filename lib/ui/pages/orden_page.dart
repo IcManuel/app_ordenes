@@ -48,25 +48,25 @@ class OrdenPage extends StatelessWidget {
                 Navigator.of(context).pop();
               },
             ),
-            bottom: const TabBar(
+            bottom: TabBar(
               tabs: [
-                Tab(
+                const Tab(
                   icon: Icon(Icons.supervised_user_circle),
                   text: 'General',
                 ),
                 Tab(
-                  icon: Icon(Icons.car_repair),
-                  text: 'Vehiculo',
+                  icon: const Icon(Icons.car_repair),
+                  text: vehiculoBloc.palabraClave.toLowerCase(),
                 ),
-                Tab(
+                const Tab(
                   icon: Icon(Icons.remove_red_eye),
                   text: 'Visual',
                 ),
-                Tab(
+                const Tab(
                   icon: Icon(Icons.note_add),
                   text: 'Detalles',
                 ),
-                Tab(
+                const Tab(
                   icon: Icon(Icons.list),
                   text: 'Resumen',
                 ),

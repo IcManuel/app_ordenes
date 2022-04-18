@@ -1,4 +1,4 @@
-import 'package:app_ordenes/domains/blocs/visual_bloc.dart';
+import 'package:app_ordenes/domains/blocs/vehiculo_bloc.dart';
 import 'package:app_ordenes/domains/utils/preferencias.dart';
 import 'package:app_ordenes/domains/utils/url_util.dart';
 import 'package:app_ordenes/models/requests/login_request.dart';
@@ -104,7 +104,9 @@ class PerfilBloc extends ChangeNotifier {
         );
         _usuClon = Usuario(
             usuId: _usuFinal!.usuId,
+            identificador: _usuFinal!.identificador,
             eprId: _usuFinal!.eprId,
+            palabraClave: _usuFinal!.palabraClave,
             eprActivo: _usuFinal!.eprActivo,
             usuAlias: _usuFinal!.usuAlias,
             usuContrasena:
@@ -317,6 +319,10 @@ class PerfilBloc extends ChangeNotifier {
           pref.token = res.usuario!.usuAlias;
           pref.empresa = res.usuario!.eprId;
           pref.usuario = res.usuario!;
+          final vehiculoBloc =
+              Provider.of<VehiculoBloc>(context, listen: false);
+          vehiculoBloc.palabraClave = res.usuario!.palabraClave;
+          vehiculoBloc.identificador = res.usuario!.identificador;
           _usuFinal = res.usuario!;
           notifyListeners();
           Navigator.pushReplacementNamed(context, "inicio");
@@ -394,6 +400,10 @@ class PerfilBloc extends ChangeNotifier {
         pref.empresa = res.usuario!.eprId;
         pref.usuario = res.usuario!;
         _usuFinal = res.usuario!;
+        final vehiculoBloc = Provider.of<VehiculoBloc>(context, listen: false);
+        print(res.usuario!.palabraClave);
+        vehiculoBloc.palabraClave = res.usuario!.palabraClave;
+        vehiculoBloc.identificador = res.usuario!.identificador;
         notifyListeners();
         if (res.usuario!.usuActivo == true) {
           if (res.usuario!.eprActivo == true) {
@@ -432,10 +442,12 @@ class PerfilBloc extends ChangeNotifier {
       usuNombres: "",
       usuApellidos: "",
       usuAlias: "",
+      palabraClave: "",
       usuContrasena: "",
       usuCorreo: "",
       usuActivo: true,
       eprId: -1,
+      identificador: "",
       eprActivo: false,
     );
     perfilBloc.usuFinal = pref.usuario!;

@@ -90,9 +90,7 @@ class ListaOrdenesPage extends StatelessWidget {
                                             " - " +
                                             mod.vehiculo.marNombre +
                                             " " +
-                                            mod.vehiculo.modNombre +
-                                            " " +
-                                            mod.vehiculo.vehColor!,
+                                            mod.vehiculo.modNombre,
                                       ),
                                     ),
                                     Expanded(

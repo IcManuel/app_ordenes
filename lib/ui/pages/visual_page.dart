@@ -29,41 +29,42 @@ class VisualPage extends StatelessWidget {
             height: 10,
           ),
           Expanded(
-              child: Container(
-            decoration:
-                BoxDecoration(border: Border.all(color: Colors.blueAccent)),
-            child: ListView.builder(
-              itemCount: visualBloc.lista.length,
-              itemBuilder: (BuildContext context, int index) {
-                ObsVisual mod = visualBloc.lista[index];
-                return Row(
-                  children: [
-                    SizedBox(
-                      width: size.width * .20,
-                      child: Checkbox(
-                        value: visualBloc.lista[index].check,
-                        onChanged: (e) {
-                          visualBloc.cambioCheck(index, e);
-                        },
-                      ),
-                    ),
-                    SizedBox(
-                      child: InkWell(
-                        child: Text(
-                          mod.obsNombre,
+            child: Container(
+              decoration:
+                  BoxDecoration(border: Border.all(color: Colors.blueAccent)),
+              child: ListView.builder(
+                itemCount: visualBloc.lista.length,
+                itemBuilder: (BuildContext context, int index) {
+                  ObsVisual mod = visualBloc.lista[index];
+                  return Row(
+                    children: [
+                      SizedBox(
+                        width: size.width * .20,
+                        child: Checkbox(
+                          value: visualBloc.lista[index].check,
+                          onChanged: (e) {
+                            visualBloc.cambioCheck(index, e);
+                          },
                         ),
-                        onTap: () {
-                          visualBloc.cambioCheck(
-                              index, !visualBloc.lista[index].check);
-                        },
                       ),
-                      width: size.width * .50,
-                    ),
-                  ],
-                );
-              },
+                      SizedBox(
+                        child: InkWell(
+                          child: Text(
+                            mod.obsNombre,
+                          ),
+                          onTap: () {
+                            visualBloc.cambioCheck(
+                                index, !visualBloc.lista[index].check);
+                          },
+                        ),
+                        width: size.width * .50,
+                      ),
+                    ],
+                  );
+                },
+              ),
             ),
-          )),
+          ),
           const SizedBox(
             height: 10,
           ),

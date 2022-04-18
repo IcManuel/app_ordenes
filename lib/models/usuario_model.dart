@@ -20,6 +20,8 @@ class Usuario {
     required this.usuCorreo,
     required this.usuNombres,
     required this.usuApellidos,
+    required this.palabraClave,
+    required this.identificador,
   });
 
   int usuId;
@@ -32,6 +34,8 @@ class Usuario {
   String usuCorreo;
   String usuNombres;
   String usuApellidos;
+  String palabraClave;
+  String identificador;
 
   factory Usuario.fromJson(Map<String, dynamic> json) => Usuario(
         usuId: json["usu_id"],
@@ -44,6 +48,8 @@ class Usuario {
         usuCorreo: json["usu_correo"],
         usuNombres: json["usu_nombres"],
         usuApellidos: json["usu_apellidos"],
+        palabraClave: json["epr_palabra_clave"],
+        identificador: json["epr_identificador"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -56,7 +62,9 @@ class Usuario {
         "usu_correo": usuCorreo,
         "usu_nombres": usuNombres,
         "usu_apellidos": usuApellidos,
-        "epr_activo": eprActivo
+        "epr_activo": eprActivo,
+        "epr_palabra_clave": palabraClave,
+        "epr_identificador": identificador,
       };
   Map<String, dynamic> toJsonWs() => {
         "id": usuId,

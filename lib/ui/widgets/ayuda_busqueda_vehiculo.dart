@@ -15,7 +15,7 @@ class AyudaBusquedaVehiculo extends StatelessWidget {
     final vehiculoBloc = Provider.of<VehiculoBloc>(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Buscar vehículo'),
+        title: Text('Buscar ' + vehiculoBloc.palabraClave),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -66,7 +66,8 @@ class AyudaBusquedaVehiculo extends StatelessWidget {
                                   Vehiculo pro = ayudaBloc.vehiculos[index];
                                   return InkWell(
                                     onTap: () {
-                                      vehiculoBloc.seleccionar(context, pro);
+                                      vehiculoBloc.seleccionarVehiculo(
+                                          context, pro);
                                     },
                                     child: Container(
                                       decoration: const BoxDecoration(
@@ -94,11 +95,7 @@ class AyudaBusquedaVehiculo extends StatelessWidget {
                                             Text(
                                               pro.marNombre +
                                                   " " +
-                                                  pro.modNombre +
-                                                  " " +
-                                                  pro.vehColor! +
-                                                  " " +
-                                                  pro.vehAnio.toString(),
+                                                  pro.modNombre,
                                               style: const TextStyle(
                                                 fontSize: 14,
                                               ),

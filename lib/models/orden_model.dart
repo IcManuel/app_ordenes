@@ -22,7 +22,6 @@ class Orden {
     required this.corNumero,
     required this.corTotal,
     required this.corEstado,
-    required this.corKilometraje,
     required this.cliente,
     required this.vehiculo,
   });
@@ -36,7 +35,6 @@ class Orden {
   int corNumero;
   double corTotal;
   int corEstado;
-  double corKilometraje;
   Cliente cliente;
   Vehiculo vehiculo;
 
@@ -50,7 +48,6 @@ class Orden {
         corNumero: json["cor_numero"],
         corTotal: json["cor_total"].toDouble(),
         corEstado: json["cor_estado"],
-        corKilometraje: json["cor_kilometraje"].toDouble(),
         cliente: Cliente.fromJson(json["cliente"]),
         vehiculo: Vehiculo.fromJson(json["vehiculo"]),
       );
@@ -64,8 +61,6 @@ class Orden {
         "cor_observacion": corObservacion,
         "cor_numero": corNumero,
         "cor_total": corTotal,
-        "cor_estado": corEstado,
-        "cor_kilometraje": corKilometraje,
         "cliente": cliente.toJson(),
         "vehiculo": vehiculo.toJson(),
       };
