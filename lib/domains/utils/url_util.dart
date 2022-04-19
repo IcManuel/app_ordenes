@@ -1,6 +1,6 @@
 import 'package:connectivity/connectivity.dart';
 
-const String url = "https://quick-panda-91.loca.lt/api/";
+const String url = "https://ordenes.icreativa.com.ec/api/";
 //final String url = "https://6a82-190-63-235-202.ngrok.io/api/";
 const String direccionImagen = url + 'foto/';
 verificarConexion() async {

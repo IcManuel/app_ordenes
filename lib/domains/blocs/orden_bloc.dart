@@ -2,6 +2,7 @@
 
 import 'package:app_ordenes/domains/blocs/detalles_bloc.dart';
 import 'package:app_ordenes/domains/blocs/fotos_bloc.dart';
+import 'package:app_ordenes/domains/blocs/lista_ordenes_bloc.dart';
 import 'package:app_ordenes/domains/blocs/vehiculo_bloc.dart';
 import 'package:app_ordenes/domains/blocs/visual_bloc.dart';
 import 'package:app_ordenes/models/caracteristica_model.dart';
@@ -546,7 +547,7 @@ class OrdenBloc extends ChangeNotifier {
       MarcaResponse res = await OrdenService.insertarOrden(cor);
       Navigator.pop(context);
       if (res.ok == true) {
-        /** showDialog(
+        showDialog(
           context: context,
           barrierDismissible: true,
           builder: (_) {
@@ -564,10 +565,26 @@ class OrdenBloc extends ChangeNotifier {
             crear: true,
           ),
         );
-        */
         Navigator.pop(context);
-        limpiarFinal(vehiculoBloc, detallesBloc, visualBloc, fotosBloc);
-        //Navigator.pushNamed(context, 'pdf_viewer');
+        // ignore: unnecessary_null_comparison
+        if (_pdfArchivo.trim() != '') {
+          limpiarFinal(vehiculoBloc, detallesBloc, visualBloc, fotosBloc);
+          Navigator.pushNamed(context, 'pdf_viewer');
+        } else {
+          Fluttertoast.showToast(
+              msg: 'Error al generar pdf',
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.BOTTOM,
+              timeInSecForIosWeb: 1,
+              backgroundColor: Colors.red,
+              textColor: Colors.white,
+              fontSize: 16.0);
+          final listaOrdenBloc =
+              Provider.of<ListaOrdenBloc>(context, listen: false);
+          listaOrdenBloc.filtrar(context, size, true);
+          Navigator.pop(context);
+          limpiarFinal(vehiculoBloc, detallesBloc, visualBloc, fotosBloc);
+        }
       } else {
         showDialog(
             context: context,

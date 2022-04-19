@@ -21,6 +21,38 @@ class GeneralPage extends StatelessWidget {
             Expanded(
               child: TextField(
                 onChanged: (valor) {
+                  ordenbloc.nombres = valor;
+                },
+                enabled: !ordenbloc.modificar,
+                controller: ordenbloc.ctrlNombres,
+                decoration: const InputDecoration(
+                  labelText: 'Nombres',
+                  hintText: 'Nombres',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+            ),
+            IconButton(
+              icon: const Icon(
+                Icons.search,
+                size: 30,
+              ),
+              onPressed: () {
+                if (ordenbloc.modificar == false) {
+                  ayudaBloc.abrirAyudaCliente(context, 2, ordenbloc.nombres);
+                }
+              },
+            ),
+          ],
+        ),
+        const SizedBox(
+          height: 10,
+        ),
+        Row(
+          children: [
+            Expanded(
+              child: TextField(
+                onChanged: (valor) {
                   ordenbloc.cambioIdentificacion(context, valor);
                 },
                 enabled: !ordenbloc.modificar,
@@ -41,38 +73,6 @@ class GeneralPage extends StatelessWidget {
                 if (ordenbloc.modificar == false) {
                   ayudaBloc.abrirAyudaCliente(
                       context, 1, ordenbloc.identificacion);
-                }
-              },
-            ),
-          ],
-        ),
-        const SizedBox(
-          height: 10,
-        ),
-        Row(
-          children: [
-            Expanded(
-              child: TextField(
-                onChanged: (valor) {
-                  ordenbloc.nombres = valor;
-                },
-                enabled: !ordenbloc.modificar,
-                controller: ordenbloc.ctrlNombres,
-                decoration: const InputDecoration(
-                  labelText: 'Nombres',
-                  hintText: 'Nombres',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-            ),
-            IconButton(
-              icon: const Icon(
-                Icons.search,
-                size: 30,
-              ),
-              onPressed: () {
-                if (ordenbloc.modificar == false) {
-                  ayudaBloc.abrirAyudaCliente(context, 2, ordenbloc.nombres);
                 }
               },
             ),

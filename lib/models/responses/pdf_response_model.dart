@@ -1,11 +1,11 @@
 class PdfResponse {
   PdfResponse({
-    required this.nombre,
-    required this.base64,
+    this.nombre,
+    this.base64,
   });
 
-  String nombre;
-  String base64;
+  String? nombre;
+  String? base64;
 
   factory PdfResponse.fromJson(Map<String, dynamic> json) => PdfResponse(
         nombre: json["nombre"],
@@ -13,7 +13,7 @@ class PdfResponse {
       );
 
   Map<String, dynamic> toJson() => {
-        "nombre": nombre,
-        "base64": base64,
+        "nombre": nombre!,
+        "base64": base64!,
       };
 }

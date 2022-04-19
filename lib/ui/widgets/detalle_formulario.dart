@@ -21,25 +21,6 @@ class DetalleFormulario extends StatelessWidget {
         ),
         GestureDetector(
           child: TextField(
-            controller:
-                TextEditingController(text: detallesBloc.producto.proCodigo),
-            readOnly: true,
-            enabled: false,
-            decoration: const InputDecoration(
-              hintText: 'Cód. Producto',
-              labelText: 'Cód. Producto',
-              border: OutlineInputBorder(),
-            ),
-          ),
-          onTap: () {
-            detallesBloc.abrirAyudaProducto(context, 1);
-          },
-        ),
-        const SizedBox(
-          height: 10,
-        ),
-        GestureDetector(
-          child: TextField(
             controller: TextEditingController(
                 text: detallesBloc.producto.proNombre.trim()),
             readOnly: true,
@@ -53,6 +34,25 @@ class DetalleFormulario extends StatelessWidget {
           ),
           onTap: () {
             detallesBloc.abrirAyudaProducto(context, 2);
+          },
+        ),
+        const SizedBox(
+          height: 10,
+        ),
+        GestureDetector(
+          child: TextField(
+            controller:
+                TextEditingController(text: detallesBloc.producto.proCodigo),
+            readOnly: true,
+            enabled: false,
+            decoration: const InputDecoration(
+              hintText: 'Cód. Producto',
+              labelText: 'Cód. Producto',
+              border: OutlineInputBorder(),
+            ),
+          ),
+          onTap: () {
+            detallesBloc.abrirAyudaProducto(context, 1);
           },
         ),
         const SizedBox(

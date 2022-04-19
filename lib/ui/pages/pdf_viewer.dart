@@ -41,15 +41,6 @@ class PdfImpresion extends StatelessWidget {
               BotonPrincipal(
                 label: 'Descargar PDF',
                 onPressed: () async {
-                  /**final Directory? extDir = await getExternalStorageDirectory();
-                  String dirPath = '${extDir!.path}Download';
-                  dirPath = dirPath.replaceAll(
-                      "Android/data/ec.vite.app_ordenes/files", "");
-                  File pdf = File(blocProforma.pdfArchivo);
-                  pdf.copy('$dirPath/${blocProforma.pdfNombre}');
-                  Navigator.pop(context);
-                  Navigator.pop(context);
-                  **/
                   await OpenFile.open(blocProforma.pdfArchivo);
                 },
                 size: size,
