@@ -1,3 +1,4 @@
+import 'package:app_ordenes/domains/blocs/detalles_bloc.dart';
 import 'package:app_ordenes/domains/blocs/lista_ordenes_bloc.dart';
 import 'package:app_ordenes/domains/blocs/orden_bloc.dart';
 import 'package:app_ordenes/domains/blocs/perfil_bloc.dart';
@@ -17,6 +18,7 @@ class InicioPage extends StatelessWidget {
     final visualBloc = Provider.of<VisualBloc>(context);
     final vehiculoBloc = Provider.of<VehiculoBloc>(context);
     final ordenBloc = Provider.of<OrdenBloc>(context);
+    final detallesBloc = Provider.of<DetallesBloc>(context);
     final listaOrdenBloc = Provider.of<ListaOrdenBloc>(context);
     return Scaffold(
       appBar: AppBar(
@@ -50,6 +52,7 @@ class InicioPage extends StatelessWidget {
               onPressed: () {
                 Navigator.pushNamed(context, 'orden');
                 ordenBloc.modificar = false;
+                detallesBloc.indexTab = 0;
                 ordenBloc.idOrden = -1;
                 vehiculoBloc.cargarCaracteristicas(perfilBloc.usuFinal.eprId);
                 visualBloc.cargarVisuales(perfilBloc.usuFinal.eprId);

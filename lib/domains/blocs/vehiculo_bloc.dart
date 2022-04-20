@@ -314,25 +314,30 @@ class VehiculoBloc extends ChangeNotifier {
   }
 
   void cambioPlaca(String e) {
-    _placa = e;
+    if (e != _placa) {
+      _placa = e;
+      if (idVehiculo != -1) {
+        _modeloSelect =
+            Modelo(modId: -1, marId: -1, marNombre: "", modNombre: "");
+        _marcaSelect = Marca(
+            marId: -1,
+            eprId: -1,
+            marCodigo: "",
+            marNombre: "",
+            marActivo: true);
 
-    if (idVehiculo != -1) {
-      _modeloSelect =
-          Modelo(modId: -1, marId: -1, marNombre: "", modNombre: "");
-      _marcaSelect = Marca(
-          marId: -1, eprId: -1, marCodigo: "", marNombre: "", marActivo: true);
+        idVehiculo = -1;
+        idModelo = -1;
+        idMarca = -1;
 
-      idVehiculo = -1;
-      idModelo = -1;
-      idMarca = -1;
+        _modelo = '';
 
-      _modelo = '';
-
-      _ctrlModelo.text = '';
-      for (int i = 0; i < _lista.length; i++) {
-        _lista[i].valor = '';
+        _ctrlModelo.text = '';
+        for (int i = 0; i < _lista.length; i++) {
+          _lista[i].valor = '';
+        }
+        notifyListeners();
       }
-      notifyListeners();
     }
   }
 

@@ -106,6 +106,15 @@ class OrdenBloc extends ChangeNotifier {
     _direccion = orden.cliente.cliDireccion!;
     _observaciones = orden.corObsCliente;
     _observacionesUsu = orden.corObservacion;
+
+    ctrlCorreo.text = _correo;
+    _ctrlTelefono.text = _telefono;
+    _ctrlNombres.text = _nombres;
+    _ctrlIdentificacion.text = _identificacion;
+    _ctrlDireccion.text = _direccion;
+    _ctrlObs.text = _observaciones;
+    _ctrlObsUsu.text = _observacionesUsu;
+
     notifyListeners();
   }
 
@@ -116,6 +125,11 @@ class OrdenBloc extends ChangeNotifier {
     _telefono = pro.cliCelular!;
     _correo = pro.cliCorreo!;
     _direccion = pro.cliDireccion!;
+    _ctrlCorreo.text = _correo;
+    _ctrlTelefono.text = _telefono;
+    _ctrlNombres.text = _nombres;
+    _ctrlIdentificacion.text = _identificacion;
+    _ctrlDireccion.text = _direccion;
 
     showDialog(
       context: context,
@@ -138,58 +152,34 @@ class OrdenBloc extends ChangeNotifier {
   }
 
   TextEditingController get ctrlIdentificacion {
-    this._ctrlIdentificacion.text = this._identificacion;
-    this._ctrlIdentificacion.selection = TextSelection.fromPosition(
-        TextPosition(offset: this._ctrlIdentificacion.text.length));
     return this._ctrlIdentificacion;
   }
 
   TextEditingController get ctrlObs {
-    _ctrlObs.text = this._observaciones;
-    this._ctrlObs.selection = TextSelection.fromPosition(
-        TextPosition(offset: this._ctrlObs.text.length));
     return this._ctrlObs;
   }
 
   TextEditingController get ctrlObsUsu {
-    _ctrlObsUsu.text = this._observacionesUsu;
-    this._ctrlObsUsu.selection = TextSelection.fromPosition(
-        TextPosition(offset: this._ctrlObsUsu.text.length));
     return this._ctrlObsUsu;
   }
 
   TextEditingController get ctrlNombres {
-    this._ctrlNombres.text = this._nombres;
-    this._ctrlNombres.selection = TextSelection.fromPosition(
-        TextPosition(offset: this._ctrlNombres.text.length));
     return this._ctrlNombres;
   }
 
   TextEditingController get ctrlApellidos {
-    this._ctrlApellidos.text = this._apellidos;
-    this._ctrlApellidos.selection = TextSelection.fromPosition(
-        TextPosition(offset: this._ctrlApellidos.text.length));
     return this._ctrlApellidos;
   }
 
   TextEditingController get ctrlDireccion {
-    this._ctrlDireccion.text = this._direccion;
-    this._ctrlDireccion.selection = TextSelection.fromPosition(
-        TextPosition(offset: this._ctrlDireccion.text.length));
     return this._ctrlDireccion;
   }
 
   TextEditingController get ctrlCorreo {
-    this._ctrlCorreo.text = this._correo;
-    this._ctrlCorreo.selection = TextSelection.fromPosition(
-        TextPosition(offset: this._ctrlCorreo.text.length));
     return this._ctrlCorreo;
   }
 
   TextEditingController get ctrlTelefono {
-    this._ctrlTelefono.text = this._telefono;
-    this._ctrlTelefono.selection = TextSelection.fromPosition(
-        TextPosition(offset: this._ctrlTelefono.text.length));
     return this._ctrlTelefono;
   }
 
@@ -205,6 +195,11 @@ class OrdenBloc extends ChangeNotifier {
 
   set idCliente(int n) {
     _idCliente = n;
+    notifyListeners();
+  }
+
+  void cambioNombres(String v) {
+    _nombres = v;
     notifyListeners();
   }
 
@@ -253,23 +248,25 @@ class OrdenBloc extends ChangeNotifier {
   }
 
   void cambioIdentificacion(BuildContext context, String e) {
-    _identificacion = e;
-    if (_idCliente != -1) {
-      final vehiculoBloc = Provider.of<VehiculoBloc>(context, listen: false);
-      vehiculoBloc.vehiculosCliente = [];
-      _idCliente = -1;
-      _nombres = '';
-      _apellidos = '';
-      _direccion = '';
-      _telefono = '';
-      _correo = '';
+    if (_identificacion != e) {
+      _identificacion = e;
+      if (_idCliente != -1) {
+        final vehiculoBloc = Provider.of<VehiculoBloc>(context, listen: false);
+        vehiculoBloc.vehiculosCliente = [];
+        _idCliente = -1;
+        _nombres = '';
+        _apellidos = '';
+        _direccion = '';
+        _telefono = '';
+        _correo = '';
 
-      _ctrlNombres.text = '';
-      _ctrlApellidos.text = '';
-      _ctrlDireccion.text = '';
-      _ctrlTelefono.text = '';
-      _ctrlCorreo.text = '';
-      notifyListeners();
+        _ctrlNombres.text = '';
+        _ctrlApellidos.text = '';
+        _ctrlDireccion.text = '';
+        _ctrlTelefono.text = '';
+        _ctrlCorreo.text = '';
+        notifyListeners();
+      }
     }
   }
 
@@ -316,6 +313,7 @@ class OrdenBloc extends ChangeNotifier {
             _ctrlDireccion.text = res.cliente!.cliDireccion!;
             _ctrlTelefono.text = res.cliente!.cliCelular!;
             _ctrlCorreo.text = res.cliente!.cliCorreo!;
+            _ctrlIdentificacion.text = _identificacion;
             showDialog(
               context: context,
               barrierDismissible: false,

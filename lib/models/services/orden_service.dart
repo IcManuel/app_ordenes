@@ -38,17 +38,20 @@ class OrdenService {
       var jsonData = json.decode(response.body);
 
       PdfResponse respuesta = PdfResponse.fromJson(jsonData);
-
-      String? urlPdf = await FileConverter.createFileFromString(
-          respuesta.base64!, respuesta.nombre!);
       final blocProforma = Provider.of<OrdenBloc>(context, listen: false);
-      if (respuesta.base64 != null) {
-        if (urlPdf != null) {
-          blocProforma.pdfArchivo = urlPdf;
-          blocProforma.pdfNombre = respuesta.nombre!;
+      if (respuesta.ok == null || respuesta.ok == true) {
+        String? urlPdf = await FileConverter.createFileFromString(
+            respuesta.base64!, respuesta.nombre!);
+        if (respuesta.base64 != null) {
+          if (urlPdf != null) {
+            blocProforma.pdfArchivo = urlPdf;
+            blocProforma.pdfNombre = respuesta.nombre!;
+          } else {
+            blocProforma.pdfArchivo = 'no hay';
+            print('urlPdf es nulo');
+          }
         } else {
           blocProforma.pdfArchivo = 'no hay';
-          print('urlPdf es nulo');
         }
       } else {
         blocProforma.pdfArchivo = 'no hay';

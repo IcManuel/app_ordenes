@@ -1,3 +1,7 @@
+import 'package:app_ordenes/domains/blocs/fotos_bloc.dart';
+import 'package:app_ordenes/domains/blocs/orden_bloc.dart';
+import 'package:app_ordenes/domains/blocs/vehiculo_bloc.dart';
+import 'package:app_ordenes/domains/blocs/visual_bloc.dart';
 import 'package:app_ordenes/domains/utils/preferencias.dart';
 import 'package:app_ordenes/domains/utils/url_util.dart';
 import 'package:app_ordenes/models/dorden_model.dart';
@@ -12,9 +16,11 @@ import 'package:app_ordenes/ui/widgets/dialogo_cargando_widget.dart';
 import 'package:app_ordenes/ui/widgets/dialogo_general_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:provider/provider.dart';
 
 class DetallesBloc extends ChangeNotifier {
   bool _escribiendo = false;
+  int _indexTab = 0;
   bool _consultando = false;
   bool _cargandoTipos = false;
   bool _inventario = false;
@@ -77,6 +83,7 @@ class DetallesBloc extends ChangeNotifier {
   double get cantidad => _cantidad;
   double get precio => _precio;
   double get total => _total;
+  int get indexTab => _indexTab;
   String get filtro => _filtro;
   String get filtroTipo => _filtroTipo;
   String get filtroMarca => _filtroMarca;
@@ -122,6 +129,11 @@ class DetallesBloc extends ChangeNotifier {
     Navigator.pop(context);
   }
 
+  set indexTab(int i) {
+    _indexTab = i;
+    notifyListeners();
+  }
+
   set totalFinal(double t) {
     _totalFinal = t;
     notifyListeners();
@@ -143,6 +155,48 @@ class DetallesBloc extends ChangeNotifier {
     _detalles = [];
     totalFinal = 0.00;
     notifyListeners();
+  }
+
+  void confimarSalir(
+      BuildContext context,
+      VehiculoBloc vehiculoBloc,
+      DetallesBloc detallesBloc,
+      VisualBloc visual,
+      FotosBloc fotosBloc,
+      OrdenBloc ordenBloc) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Confirmar'),
+            content: SingleChildScrollView(
+              child: Column(
+                children: const [
+                  Text('¿Está seguro que desea salir?'),
+                ],
+              ),
+            ),
+            actions: <Widget>[
+              TextButton(
+                child: const Text('Aceptar'),
+                onPressed: () {
+                  if (ordenBloc.modificar == true) {
+                    ordenBloc.limpiarFinal(
+                        vehiculoBloc, detallesBloc, visual, fotosBloc);
+                  }
+                  Navigator.of(context).pop();
+                  Navigator.of(context).pop();
+                },
+              ),
+              TextButton(
+                child: const Text('Cancelar'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        });
   }
 
   void borrarDetalle(BuildContext context, Dorden detalle) {

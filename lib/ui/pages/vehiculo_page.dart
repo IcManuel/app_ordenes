@@ -1,7 +1,6 @@
 import 'package:app_ordenes/domains/blocs/ayudas_bloc.dart';
 import 'package:app_ordenes/domains/blocs/orden_bloc.dart';
 import 'package:app_ordenes/domains/blocs/vehiculo_bloc.dart';
-import 'package:app_ordenes/domains/utils/preferencias.dart';
 import 'package:app_ordenes/models/caracteristica_model.dart';
 import 'package:app_ordenes/ui/utils/colores.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +18,9 @@ class VehiculoPage extends StatelessWidget {
     return Column(
       children: [
         SizedBox(
-          height: size.height * 0.22,
+          height: vehiculobloc.vehiculosCliente.isNotEmpty
+              ? size.height * 0.30
+              : size.height * 0.22,
           child: ListView(
             padding: const EdgeInsets.symmetric(horizontal: 12),
             children: [
@@ -150,7 +151,7 @@ class VehiculoPage extends StatelessWidget {
                             SizedBox(
                               width: size.width * .90,
                               height: size.height * 0.10,
-                              child: TextFormField(
+                              child: TextField(
                                 controller: TextEditingController(
                                   text: mod.valor,
                                 ),

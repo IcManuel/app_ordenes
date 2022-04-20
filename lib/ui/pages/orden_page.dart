@@ -23,10 +23,20 @@ class OrdenPage extends StatelessWidget {
     final detallesBloc = Provider.of<DetallesBloc>(context, listen: false);
     return WillPopScope(
       onWillPop: () async {
-        if (ordenBloc.modificar == true) {
-          ordenBloc.limpiarFinal(vehiculoBloc, detallesBloc, visual, fotosBloc);
+        if (detallesBloc.indexTab == 3) {
+          if (detallesBloc.mostrarFormulario) {
+            detallesBloc.mostrarFormulario = false;
+            return false;
+          } else {
+            detallesBloc.confimarSalir(context, vehiculoBloc, detallesBloc,
+                visual, fotosBloc, ordenBloc);
+            return false;
+          }
+        } else {
+          detallesBloc.confimarSalir(context, vehiculoBloc, detallesBloc,
+              visual, fotosBloc, ordenBloc);
+          return false;
         }
-        return true;
       },
       child: DefaultTabController(
         length: 5,
@@ -41,14 +51,23 @@ class OrdenPage extends StatelessWidget {
                 Icons.arrow_back,
               ),
               onPressed: () {
-                if (ordenBloc.modificar == true) {
-                  ordenBloc.limpiarFinal(
-                      vehiculoBloc, detallesBloc, visual, fotosBloc);
+                if (detallesBloc.indexTab == 3) {
+                  if (detallesBloc.mostrarFormulario) {
+                    detallesBloc.mostrarFormulario = false;
+                  } else {
+                    detallesBloc.confimarSalir(context, vehiculoBloc,
+                        detallesBloc, visual, fotosBloc, ordenBloc);
+                  }
+                } else {
+                  detallesBloc.confimarSalir(context, vehiculoBloc,
+                      detallesBloc, visual, fotosBloc, ordenBloc);
                 }
-                Navigator.of(context).pop();
               },
             ),
             bottom: TabBar(
+              onTap: (ifx) {
+                detallesBloc.indexTab = ifx;
+              },
               tabs: [
                 const Tab(
                   icon: Icon(Icons.supervised_user_circle),

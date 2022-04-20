@@ -54,6 +54,7 @@ class VisualBloc extends ChangeNotifier {
 
   void cargarVisualesOrden(Orden or) async {
     _obsVisual = or.corObsVisual;
+    _ctrlObs.text = _obsVisual;
     _cargando = true;
     final conect = await verificarConexion();
     if (conect) {
@@ -109,9 +110,6 @@ class VisualBloc extends ChangeNotifier {
   }
 
   TextEditingController get ctrlObs {
-    _ctrlObs.text = _obsVisual;
-    _ctrlObs.selection =
-        TextSelection.fromPosition(TextPosition(offset: _ctrlObs.text.length));
     return _ctrlObs;
   }
 }

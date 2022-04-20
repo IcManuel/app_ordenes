@@ -21,10 +21,11 @@ class GeneralPage extends StatelessWidget {
             Expanded(
               child: TextField(
                 onChanged: (valor) {
-                  ordenbloc.nombres = valor;
+                  ordenbloc.nombres = valor.toUpperCase();
                 },
                 enabled: !ordenbloc.modificar,
                 controller: ordenbloc.ctrlNombres,
+                textCapitalization: TextCapitalization.characters,
                 decoration: const InputDecoration(
                   labelText: 'Nombres',
                   hintText: 'Nombres',
