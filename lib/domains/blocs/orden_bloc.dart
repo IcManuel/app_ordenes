@@ -493,6 +493,7 @@ class OrdenBloc extends ChangeNotifier {
       for (int i = 0; i < vehiculoBloc.lista.length; i++) {
         if (vehiculoBloc.lista[i].valor != null &&
             vehiculoBloc.lista[i].valor!.trim().isNotEmpty) {
+          print('AÑADE ' + vehiculoBloc.lista[i].idCal.toString());
           carac.add(vehiculoBloc.lista[i]);
         }
       }
@@ -565,7 +566,7 @@ class OrdenBloc extends ChangeNotifier {
         );
         Navigator.pop(context);
         // ignore: unnecessary_null_comparison
-        if (_pdfArchivo.trim() != '') {
+        if (_pdfArchivo.trim() != '' && _pdfArchivo.trim() != 'no hay') {
           limpiarFinal(vehiculoBloc, detallesBloc, visualBloc, fotosBloc);
           Navigator.pushNamed(context, 'pdf_viewer');
         } else {
@@ -656,11 +657,20 @@ class OrdenBloc extends ChangeNotifier {
               bool pasa = true;
               for (int i = 0; i < vehiculoBloc.lista.length; i++) {
                 if (vehiculoBloc.lista[i].carObligatorio == true) {
-                  if (vehiculoBloc.lista[i].valor == null ||
-                      vehiculoBloc.lista[i].valor!.trim().isEmpty) {
-                    res = false;
-                    msj = 'Debe ingresar el ' +
-                        vehiculoBloc.lista[i].carNombre.toUpperCase();
+                  if (vehiculoBloc.lista[i].carSeleccionadble == true) {
+                    if (vehiculoBloc.lista[i].idCal == null ||
+                        vehiculoBloc.lista[i].idCal == -1) {
+                      res = false;
+                      msj = 'Debe ingresar el ' +
+                          vehiculoBloc.lista[i].carNombre.toUpperCase();
+                    }
+                  } else {
+                    if (vehiculoBloc.lista[i].valor == null ||
+                        vehiculoBloc.lista[i].valor!.trim().isEmpty) {
+                      res = false;
+                      msj = 'Debe ingresar el ' +
+                          vehiculoBloc.lista[i].carNombre.toUpperCase();
+                    }
                   }
                 }
               }

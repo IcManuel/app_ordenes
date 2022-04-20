@@ -1,6 +1,7 @@
 import 'package:app_ordenes/domains/utils/preferencias.dart';
 import 'package:app_ordenes/domains/utils/url_util.dart';
 import 'package:app_ordenes/models/caracteristica_model.dart';
+import 'package:app_ordenes/models/lista_caracteristica_model.dart';
 import 'package:app_ordenes/models/marca_model.dart';
 import 'package:app_ordenes/models/modelo_model.dart';
 import 'package:app_ordenes/models/orden_model.dart';
@@ -28,6 +29,7 @@ class VehiculoBloc extends ChangeNotifier {
   String _identificador = '';
   int idMarca = -1;
   String _modelo = "";
+  int indexLista = 0;
   String? _filtroModelo = "";
   String? _filtroMarca = "";
 
@@ -36,6 +38,8 @@ class VehiculoBloc extends ChangeNotifier {
   List<Marca> _marcas = [];
   List<Marca> _marcasFiltradas = [];
   List<Caracteristica> _lista = [];
+  List<ListaCaracteristica> _listadoC = [];
+  List<ListaCaracteristica> _listadoCFiltrados = [];
 
   List<Vehiculo> _vehiculosCliente = [];
   List<Vehiculo> _vehiculosClienteFiltrados = [];
@@ -52,10 +56,13 @@ class VehiculoBloc extends ChangeNotifier {
   TextEditingController _ctrlFiltroVehiculo = TextEditingController();
   TextEditingController _ctrlFiltroModelo = TextEditingController();
   TextEditingController _ctrlFiltroMarca = TextEditingController();
+  TextEditingController _ctrlFiltroLista = TextEditingController();
   TextEditingController _ctrlMarcaSelect = TextEditingController();
   TextEditingController _ctrlModelo = TextEditingController();
 
   String get placa => _placa;
+  List<ListaCaracteristica> get listadoC => _listadoC;
+  List<ListaCaracteristica> get listadoCFiltrados => _listadoCFiltrados;
   bool get cargando => _cargando;
   String get filtroModelo => _filtroModelo!;
   String get filtroMarca => _filtroMarca!;
@@ -73,6 +80,97 @@ class VehiculoBloc extends ChangeNotifier {
   Modelo get modeloSelect => _modeloSelect;
   Marca get marcaSelect => _marcaSelect;
   String get modelo => _modelo;
+
+  void abrirAyudaLista(int idx, BuildContext context, Size size) async {
+    indexLista = idx;
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) {
+        return const DialogoCargando(
+          texto: 'Revisando conexión',
+        );
+      },
+    );
+    _cargando = true;
+    final conect = await verificarConexion();
+    Navigator.pop(context);
+    if (conect) {
+      Navigator.pushNamed(context, 'ayuda_lista');
+      CaracteristicaResponse res =
+          await CaracteristicaService.buscarListaCaracteristicas(
+              _lista[idx].carId);
+
+      if (res.ok == true) {
+        _listadoC = res.lista!;
+        _listadoCFiltrados = res.lista!;
+        _cargando = false;
+
+        if (_listadoCFiltrados.isEmpty) {
+          Fluttertoast.showToast(
+              msg: "No hay datos...",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.CENTER,
+              timeInSecForIosWeb: 1,
+              backgroundColor: Colors.red,
+              textColor: Colors.white,
+              fontSize: 16.0);
+        }
+
+        notifyListeners();
+      } else {
+        cargando = false;
+        showDialog(
+            context: context,
+            builder: (_) {
+              return DialogoGeneral(
+                size: size,
+                lottie: 'assets/lotties/error_lottie.json',
+                mostrarBoton1: true,
+                mostrarBoton2: false,
+                titulo: 'ALERTA',
+                texto: res.msg,
+                accion1: () {
+                  Navigator.pop(context);
+                },
+                textoBtn1: 'Ok',
+                textoBtn2: 'Cancelar',
+                accion2: () {},
+              );
+            });
+      }
+    } else {
+      cargando = false;
+      showDialog(
+          context: context,
+          builder: (_) {
+            return DialogoGeneral(
+              size: size,
+              lottie: 'assets/lotties/alerta_lottie.json',
+              mostrarBoton1: true,
+              mostrarBoton2: false,
+              titulo: 'ALERTA',
+              texto: 'No hay conexión a internet',
+              accion1: () {
+                Navigator.pop(context);
+              },
+              textoBtn1: 'Ok',
+              textoBtn2: 'Cancelar',
+              accion2: () {},
+            );
+          });
+    }
+  }
+
+  set listadoC(List<ListaCaracteristica> l) {
+    _listadoC = l;
+    notifyListeners();
+  }
+
+  set listadoCFiltrados(List<ListaCaracteristica> l) {
+    _listadoCFiltrados = l;
+    notifyListeners();
+  }
 
   set palabraClave(String s) {
     _palabraClave = s;
@@ -212,6 +310,40 @@ class VehiculoBloc extends ChangeNotifier {
     }
   }
 
+  void cargarCaracteristicasDetalleVehiculo(int veh) async {
+    _cargando = true;
+    final conect = await verificarConexion();
+    if (conect) {
+      CaracteristicaResponse res =
+          await CaracteristicaService.buscarCaracteristicasDetalleVehiculo(veh);
+      if (res.ok == true) {
+        _cargando = false;
+        _lista = res.caracteristicas!;
+        notifyListeners();
+      } else {
+        _cargando = false;
+        Fluttertoast.showToast(
+            msg: "No se pudieron cargar caracteristicas, error => " + res.msg!,
+            toastLength: Toast.LENGTH_LONG,
+            gravity: ToastGravity.CENTER,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.red,
+            textColor: Colors.white,
+            fontSize: 16.0);
+      }
+    } else {
+      _cargando = false;
+      Fluttertoast.showToast(
+          msg: "No hay conexión para cargar caracteristicas...",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0);
+    }
+  }
+
   void setearDatos(Orden orden) {
     idVehiculo = orden.vehiculo.vehId;
     idMarca = orden.vehiculo.marId;
@@ -232,7 +364,7 @@ class VehiculoBloc extends ChangeNotifier {
     _modelosFiltrados = [];
     _modelos = [];
     _marcas = [];
-    cargarCaracteristicasVehiculo(idVehiculo);
+    cargarCaracteristicasDetalleVehiculo(orden.corId);
     notifyListeners();
   }
 
@@ -249,6 +381,8 @@ class VehiculoBloc extends ChangeNotifier {
     _ctrlFiltroVehiculo.text = '';
     _modelo = '';
     _ctrlFiltroMarca.text = '';
+    _ctrlFiltroLista.text = '';
+    _listadoC = [];
     _ctrlFiltroModelo.text = '';
     _ctrlFiltroVehiculo.text = '';
     _filtroMarca = '';
@@ -284,6 +418,10 @@ class VehiculoBloc extends ChangeNotifier {
 
   TextEditingController get ctrlFiltroMarca {
     return _ctrlFiltroMarca;
+  }
+
+  TextEditingController get ctrlFiltroLista {
+    return _ctrlFiltroLista;
   }
 
   TextEditingController get ctrlPlaca {
@@ -362,6 +500,24 @@ class VehiculoBloc extends ChangeNotifier {
 
   void cargarMarcas() {
     _marcasFiltradas = _marcas;
+    notifyListeners();
+  }
+
+  void seleccionarAyudaLista(ListaCaracteristica li) {
+    _lista[indexLista].valor = li.calNombre;
+    _lista[indexLista].idCal = li.calId;
+    notifyListeners();
+  }
+
+  void filtrarLista(String v) {
+    _listadoCFiltrados = _listadoC.where((f) {
+      return f.calNombre.toLowerCase().contains(v.toLowerCase());
+    }).toList();
+    notifyListeners();
+  }
+
+  void cargarLista() {
+    _listadoCFiltrados = _listadoC;
     notifyListeners();
   }
 

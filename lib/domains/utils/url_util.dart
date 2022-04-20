@@ -1,7 +1,7 @@
 import 'package:connectivity/connectivity.dart';
 
-const String url = "https://ordenes.icreativa.com.ec/api/";
-//final String url = "https://6a82-190-63-235-202.ngrok.io/api/";
+//const String url = "https://ordenes.icreativa.com.ec/api/";
+const String url = "https://light-quail-90.loca.lt/api/";
 const String direccionImagen = url + 'foto/';
 verificarConexion() async {
   var connectivityResult = await (Connectivity().checkConnectivity());

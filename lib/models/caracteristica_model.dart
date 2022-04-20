@@ -16,6 +16,8 @@ class Caracteristica {
     required this.carTipo,
     required this.carObligatorio,
     this.valor,
+    required this.carSeleccionadble,
+    this.idCal,
   });
 
   int carId;
@@ -23,12 +25,16 @@ class Caracteristica {
   int carTipo;
   bool carObligatorio;
   String? valor;
+  bool carSeleccionadble;
+  int? idCal;
 
   factory Caracteristica.fromJson(Map<String, dynamic> json) => Caracteristica(
         carId: json["car_id"],
         carNombre: json["car_nombre"],
         carTipo: json["car_tipo"],
         carObligatorio: json["car_obligatorio"],
+        carSeleccionadble: json["car_seleccionable"],
+        idCal: json["cal_id"],
         valor: json["valor"],
       );
 
@@ -38,10 +44,12 @@ class Caracteristica {
         "car_tipo": carTipo,
         "car_obligatorio": carObligatorio,
         "valor": valor,
+        "idcal": idCal
       };
 
   Map<String, dynamic> toJsonWs() => {
         "id": carId,
         "valor": valor,
+        "idcal": idCal,
       };
 }

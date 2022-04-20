@@ -151,26 +151,49 @@ class VehiculoPage extends StatelessWidget {
                             SizedBox(
                               width: size.width * .90,
                               height: size.height * 0.10,
-                              child: TextField(
-                                controller: TextEditingController(
-                                  text: mod.valor,
-                                ),
-                                enabled: !ordenbloc.modificar,
-                                keyboardType: mod.carTipo == 1
-                                    ? TextInputType.number
-                                    : TextInputType.text,
-                                textCapitalization:
-                                    TextCapitalization.characters,
-                                onChanged: (valor) {
-                                  vehiculobloc.lista[index].valor =
-                                      valor.toUpperCase();
-                                },
-                                decoration: InputDecoration(
-                                  hintText: mod.carNombre,
-                                  labelText: mod.carNombre,
-                                  border: const OutlineInputBorder(),
-                                ),
-                              ),
+                              child: mod.carSeleccionadble
+                                  ? InkWell(
+                                      child: TextField(
+                                        controller: TextEditingController(
+                                          text: mod.valor,
+                                        ),
+                                        readOnly: true,
+                                        enabled: false,
+                                        textCapitalization:
+                                            TextCapitalization.characters,
+                                        decoration: InputDecoration(
+                                          hintText: mod.carNombre,
+                                          labelText: mod.carNombre,
+                                          border: const OutlineInputBorder(),
+                                        ),
+                                      ),
+                                      onTap: () {
+                                        if (ordenbloc.modificar == false) {
+                                          vehiculobloc.abrirAyudaLista(
+                                              index, context, size);
+                                        }
+                                      },
+                                    )
+                                  : TextField(
+                                      controller: TextEditingController(
+                                        text: mod.valor,
+                                      ),
+                                      enabled: !ordenbloc.modificar,
+                                      keyboardType: mod.carTipo == 1
+                                          ? TextInputType.number
+                                          : TextInputType.text,
+                                      textCapitalization:
+                                          TextCapitalization.characters,
+                                      onChanged: (valor) {
+                                        vehiculobloc.lista[index].valor =
+                                            valor.toUpperCase();
+                                      },
+                                      decoration: InputDecoration(
+                                        hintText: mod.carNombre,
+                                        labelText: mod.carNombre,
+                                        border: const OutlineInputBorder(),
+                                      ),
+                                    ),
                             ),
                           ],
                         );

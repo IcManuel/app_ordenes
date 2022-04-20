@@ -47,6 +47,40 @@ class CaracteristicaService {
     }
   }
 
+  static Future<CaracteristicaResponse> buscarListaCaracteristicas(id) async {
+    try {
+      var respuesta = await http
+          .get(
+              Uri.parse(
+                "${url}caracteristica/lista/$id",
+              ),
+              headers: cabecera())
+          .timeout(
+            const Duration(
+              seconds: 20,
+            ),
+          );
+      if (respuesta.statusCode == 200) {
+        var jsonData = json.decode(respuesta.body);
+        CaracteristicaResponse res = CaracteristicaResponse.fromJson(jsonData);
+        return res;
+      } else if (respuesta.statusCode == 502) {
+        return CaracteristicaResponse(
+            ok: false,
+            msg: "No se pudo lograr una comunicación con el servidor");
+      } else {
+        return CaracteristicaResponse(
+            ok: false, msg: "Error al obtener información");
+      }
+    } catch (error) {
+      print(error);
+      return CaracteristicaResponse(
+        ok: false,
+        msg: "Error al comunicarse con el servidor",
+      );
+    }
+  }
+
   static Future<CaracteristicaResponse> buscarCaracteristicasVehiculo(
       vehiculo) async {
     try {
@@ -54,6 +88,41 @@ class CaracteristicaService {
           .get(
               Uri.parse(
                 "${url}caracteristica/vehiculo/$vehiculo",
+              ),
+              headers: cabecera())
+          .timeout(
+            const Duration(
+              seconds: 20,
+            ),
+          );
+      if (respuesta.statusCode == 200) {
+        var jsonData = json.decode(respuesta.body);
+        CaracteristicaResponse res = CaracteristicaResponse.fromJson(jsonData);
+        return res;
+      } else if (respuesta.statusCode == 502) {
+        return CaracteristicaResponse(
+            ok: false,
+            msg: "No se pudo lograr una comunicación con el servidor");
+      } else {
+        return CaracteristicaResponse(
+            ok: false, msg: "Error al obtener información");
+      }
+    } catch (error) {
+      print(error);
+      return CaracteristicaResponse(
+        ok: false,
+        msg: "Error al comunicarse con el servidor",
+      );
+    }
+  }
+
+  static Future<CaracteristicaResponse> buscarCaracteristicasDetalleVehiculo(
+      vehiculo) async {
+    try {
+      var respuesta = await http
+          .get(
+              Uri.parse(
+                "${url}caracteristica/detalle/$vehiculo",
               ),
               headers: cabecera())
           .timeout(
