@@ -750,17 +750,7 @@ class VehiculoBloc extends ChangeNotifier {
   void buscarVehiculo(BuildContext context, Size size) async {
     Preferencias pref = Preferencias();
     if (_placa.trim().isNotEmpty) {
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (_) {
-          return const DialogoCargando(
-            texto: 'Revisando conexión',
-          );
-        },
-      );
       final conect = await verificarConexion();
-      Navigator.pop(context);
       if (conect) {
         showDialog(
           context: context,
@@ -795,33 +785,8 @@ class VehiculoBloc extends ChangeNotifier {
               marNombre: res.vehiculo!.marNombre,
               marActivo: true,
             );
+            cargarCaracteristicasVehiculo(idVehiculo);
             notifyListeners();
-          } else {
-            _modeloSelect =
-                Modelo(modId: -1, marId: -1, marNombre: "", modNombre: "");
-            _marcaSelect = Marca(
-                marId: -1,
-                eprId: -1,
-                marCodigo: "",
-                marNombre: "",
-                marActivo: true);
-
-            idVehiculo = -1;
-            idModelo = -1;
-            idMarca = -1;
-            _modelo = '';
-
-            _ctrlModelo.text = '';
-            notifyListeners();
-            Fluttertoast.showToast(
-              msg: "No se ha encontrado el vehículo",
-              toastLength: Toast.LENGTH_SHORT,
-              gravity: ToastGravity.CENTER,
-              timeInSecForIosWeb: 1,
-              backgroundColor: Colors.red.shade300,
-              textColor: Colors.white,
-              fontSize: 16.0,
-            );
           }
         } else {
           showDialog(
@@ -863,15 +828,6 @@ class VehiculoBloc extends ChangeNotifier {
               );
             });
       }
-    } else {
-      Fluttertoast.showToast(
-          msg: "Debe ingresar la placa",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.red,
-          textColor: Colors.white,
-          fontSize: 16.0);
     }
   }
 }

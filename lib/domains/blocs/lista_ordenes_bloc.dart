@@ -117,7 +117,6 @@ class ListaOrdenBloc extends ChangeNotifier {
       if (res.ok) {
         for (ImagenModel img in imgRes.imagenes!) {
           String path = await ImagenService.downloadImage(img.imagen);
-          print(path);
           if (img.tipo == 1) {
             XFile imag = XFile(path);
             fotosRecibo.add(FotoModel(imagen: imag, nombre: img.imagen));

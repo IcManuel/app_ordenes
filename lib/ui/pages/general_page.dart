@@ -9,6 +9,7 @@ class GeneralPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ordenbloc = Provider.of<OrdenBloc>(context);
+    final size = MediaQuery.of(context).size;
     final ayudaBloc = Provider.of<AyudaBloc>(context);
     return ListView(
       padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -52,16 +53,23 @@ class GeneralPage extends StatelessWidget {
         Row(
           children: [
             Expanded(
-              child: TextField(
-                onChanged: (valor) {
-                  ordenbloc.cambioIdentificacion(context, valor);
+              child: Focus(
+                onFocusChange: (v) {
+                  if (!v) {
+                    ordenbloc.buscarCliente(context, size);
+                  }
                 },
-                enabled: !ordenbloc.modificar,
-                controller: ordenbloc.ctrlIdentificacion,
-                decoration: const InputDecoration(
-                  labelText: 'Identificación',
-                  hintText: 'Identificación',
-                  border: OutlineInputBorder(),
+                child: TextField(
+                  onChanged: (valor) {
+                    ordenbloc.cambioIdentificacion(context, valor);
+                  },
+                  enabled: !ordenbloc.modificar,
+                  controller: ordenbloc.ctrlIdentificacion,
+                  decoration: const InputDecoration(
+                    labelText: 'Identificación',
+                    hintText: 'Identificación',
+                    border: OutlineInputBorder(),
+                  ),
                 ),
               ),
             ),

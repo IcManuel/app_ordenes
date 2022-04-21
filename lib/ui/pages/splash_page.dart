@@ -35,7 +35,7 @@ class _SplashPageState extends State<SplashPage> {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return Scaffold(
-      backgroundColor: Colors.blue,
+      backgroundColor: Colors.grey.shade100,
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [

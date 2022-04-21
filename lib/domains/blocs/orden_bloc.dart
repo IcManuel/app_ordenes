@@ -273,17 +273,7 @@ class OrdenBloc extends ChangeNotifier {
   void buscarCliente(BuildContext context, Size size) async {
     Preferencias pref = Preferencias();
     if (_identificacion.trim().isNotEmpty) {
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (_) {
-          return const DialogoCargando(
-            texto: 'Revisando conexión',
-          );
-        },
-      );
       final conect = await verificarConexion();
-      Navigator.pop(context);
       if (conect) {
         showDialog(
           context: context,
@@ -294,7 +284,6 @@ class OrdenBloc extends ChangeNotifier {
             );
           },
         );
-
         ClienteResponse res = await ClienteService.buscarCliente(ClienteRequest(
             identificacion: _identificacion, empresa: pref.empresa));
         Navigator.pop(context);
@@ -314,47 +303,15 @@ class OrdenBloc extends ChangeNotifier {
             _ctrlTelefono.text = res.cliente!.cliCelular!;
             _ctrlCorreo.text = res.cliente!.cliCorreo!;
             _ctrlIdentificacion.text = _identificacion;
-            showDialog(
-              context: context,
-              barrierDismissible: false,
-              builder: (_) {
-                return const DialogoCargando(
-                  texto: 'Buscando vehiculos...',
-                );
-              },
-            );
             VehiculoResponse resVeh =
                 await VehiculoService.obtenerVehiculosPorCliente(
                     res.cliente!.cliId);
-            Navigator.pop(context);
             if (resVeh.ok) {
               final vehiculoBloc =
                   Provider.of<VehiculoBloc>(context, listen: false);
               vehiculoBloc.vehiculosCliente = resVeh.vehiculos ?? [];
             }
             notifyListeners();
-          } else {
-            _idCliente = -1;
-            _nombres = '';
-            _apellidos = '';
-            _direccion = '';
-            _telefono = '';
-            _correo = '';
-
-            _ctrlNombres.text = '';
-            _ctrlApellidos.text = '';
-            _ctrlDireccion.text = '';
-            _ctrlTelefono.text = '';
-            _ctrlCorreo.text = '';
-            notifyListeners();
-            Fluttertoast.showToast(
-                msg: "No se ha encontrado el cliente",
-                toastLength: Toast.LENGTH_SHORT,
-                gravity: ToastGravity.CENTER,
-                timeInSecForIosWeb: 1,
-                backgroundColor: Colors.red.shade300,
-                textColor: Colors.white,
-                fontSize: 16.0);
           }
         } else {
           showDialog(
@@ -376,35 +333,7 @@ class OrdenBloc extends ChangeNotifier {
                 );
               });
         }
-      } else {
-        showDialog(
-            context: context,
-            builder: (_) {
-              return DialogoGeneral(
-                size: size,
-                lottie: 'assets/lotties/alerta_lottie.json',
-                mostrarBoton1: true,
-                mostrarBoton2: false,
-                titulo: 'ALERTA',
-                texto: 'No hay conexión a internet',
-                accion1: () {
-                  Navigator.pop(context);
-                },
-                textoBtn1: 'Ok',
-                textoBtn2: 'Cancelar',
-                accion2: () {},
-              );
-            });
       }
-    } else {
-      Fluttertoast.showToast(
-          msg: "Debe ingresar la identificación",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.red,
-          textColor: Colors.white,
-          fontSize: 16.0);
     }
   }
 
