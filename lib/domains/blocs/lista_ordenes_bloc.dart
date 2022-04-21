@@ -32,6 +32,10 @@ class ListaOrdenBloc extends ChangeNotifier {
   DateTime _fechaF = DateTime.now();
   int _estado = 4;
 
+  List<Orden> _listaH = [];
+  bool _cargandoH = false;
+  String _placaH = '';
+
   int get estado => _estado;
 
   set estado(int value) {
@@ -42,6 +46,10 @@ class ListaOrdenBloc extends ChangeNotifier {
   List<Orden> get lista => _lista;
   bool get cargando => _cargando;
   String get placa => _placa;
+  List<Orden> get listaH => _listaH;
+  bool get cargandoH => _cargandoH;
+  String get placaH => _placaH;
+
   String get cliente => _cliente;
   DateTime get fechaI => _fechaI;
   DateTime get fechaF => _fechaF;
@@ -58,6 +66,21 @@ class ListaOrdenBloc extends ChangeNotifier {
 
   set placa(value) {
     _placa = value;
+    notifyListeners();
+  }
+
+  set cargandoH(bool c) {
+    _cargandoH = c;
+    notifyListeners();
+  }
+
+  set listaH(List<Orden> o) {
+    _listaH = o;
+    notifyListeners();
+  }
+
+  set placaH(value) {
+    _placaH = value;
     notifyListeners();
   }
 
@@ -186,7 +209,8 @@ class ListaOrdenBloc extends ChangeNotifier {
       );
       Navigator.pop(context);
       final blocProforma = Provider.of<OrdenBloc>(context, listen: false);
-      if (blocProforma.pdfArchivo != 'no hay') {
+      if (blocProforma.pdfArchivo != '' &&
+          blocProforma.pdfArchivo != 'no hay') {
         await OpenFile.open(blocProforma.pdfArchivo);
       } else {
         Fluttertoast.showToast(
@@ -319,6 +343,37 @@ class ListaOrdenBloc extends ChangeNotifier {
               );
             });
       }
+    }
+  }
+
+  void buscarHistorial(BuildContext context, Size size, String p) async {
+    _placaH = p;
+    _listaH = [];
+    _cargandoH = true;
+    final conect = await verificarConexion();
+    if (conect) {
+      var fechaI = DateTime.now().subtract(const Duration(
+        days: 365 * 5,
+      ));
+      OrdenResponse res = await OrdenService.obtenerOrdenes(FiltroOrdenRequest(
+        empresa: Preferencias().empresa,
+        fechai: DateFormat('dd-MM-yyyy').format(fechaI),
+        fechaf: DateFormat('dd-MM-yyyy').format(DateTime.now()),
+        placa: _placaH,
+        cliente: '',
+        estado: 2,
+      ));
+      if (res.ok) {
+        _cargandoH = false;
+        _listaH = res.ordenes!;
+        notifyListeners();
+      } else {
+        _cargandoH = false;
+        notifyListeners();
+      }
+    } else {
+      _cargandoH = false;
+      notifyListeners();
     }
   }
 }

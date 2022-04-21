@@ -1,4 +1,5 @@
 import 'package:app_ordenes/domains/blocs/ayudas_bloc.dart';
+import 'package:app_ordenes/domains/blocs/lista_ordenes_bloc.dart';
 import 'package:app_ordenes/domains/blocs/orden_bloc.dart';
 import 'package:app_ordenes/domains/blocs/vehiculo_bloc.dart';
 import 'package:app_ordenes/models/caracteristica_model.dart';
@@ -14,6 +15,7 @@ class VehiculoPage extends StatelessWidget {
     final size = MediaQuery.of(context).size;
     final vehiculobloc = Provider.of<VehiculoBloc>(context);
     final ordenbloc = Provider.of<OrdenBloc>(context, listen: false);
+    final listaBloc = Provider.of<ListaOrdenBloc>(context, listen: false);
     final ayudaBloc = Provider.of<AyudaBloc>(context);
     return Column(
       children: [
@@ -63,31 +65,55 @@ class VehiculoPage extends StatelessWidget {
               Row(
                 children: [
                   Expanded(
-                    child: TextField(
-                      onChanged: (valor) {
-                        vehiculobloc.cambioPlaca(valor);
+                    child: Focus(
+                      onFocusChange: (v) {
+                        if (!v) {
+                          vehiculobloc.buscarVehiculo(context, size);
+                        }
                       },
-                      enabled: !ordenbloc.modificar,
-                      controller: vehiculobloc.ctrlPlaca,
-                      textCapitalization: TextCapitalization.characters,
-                      decoration: InputDecoration(
-                        labelText: vehiculobloc.identificador,
-                        hintText: vehiculobloc.identificador,
-                        border: const OutlineInputBorder(),
+                      child: TextField(
+                        onChanged: (valor) {
+                          vehiculobloc.cambioPlaca(valor);
+                        },
+                        enabled: !ordenbloc.modificar,
+                        controller: vehiculobloc.ctrlPlaca,
+                        textCapitalization: TextCapitalization.characters,
+                        decoration: InputDecoration(
+                          labelText: vehiculobloc.identificador,
+                          hintText: vehiculobloc.identificador,
+                          border: const OutlineInputBorder(),
+                        ),
                       ),
                     ),
                   ),
-                  IconButton(
-                    icon: const Icon(
-                      Icons.search,
-                      size: 30,
-                    ),
-                    onPressed: () {
-                      if (ordenbloc.modificar == false) {
-                        ayudaBloc.abrirAyudaVehiculo(
-                            context, vehiculobloc.placa);
-                      }
-                    },
+                  Row(
+                    children: [
+                      IconButton(
+                        icon: const Icon(
+                          Icons.search,
+                          size: 30,
+                        ),
+                        onPressed: () {
+                          if (ordenbloc.modificar == false) {
+                            ayudaBloc.abrirAyudaVehiculo(
+                                context, vehiculobloc.placa);
+                          }
+                        },
+                      ),
+                      vehiculobloc.idVehiculo != -1
+                          ? IconButton(
+                              onPressed: () {
+                                listaBloc.buscarHistorial(
+                                    context, size, vehiculobloc.placa);
+                                Navigator.pushNamed(context, 'ayuda_historial');
+                              },
+                              icon: Icon(
+                                Icons.history,
+                                color: colorPrincipal,
+                              ),
+                            )
+                          : Container(),
+                    ],
                   ),
                 ],
               ),

@@ -7,6 +7,7 @@ import 'package:app_ordenes/ui/pages/perfil_page.dart';
 import 'package:app_ordenes/ui/pages/splash_page.dart';
 import 'package:app_ordenes/ui/widgets/ayuda_busqueda_vehiculo.dart';
 import 'package:app_ordenes/ui/widgets/ayuda_cliente.dart';
+import 'package:app_ordenes/ui/widgets/ayuda_historial_vehiculo.dart';
 import 'package:app_ordenes/ui/widgets/ayuda_lista.dart';
 import 'package:app_ordenes/ui/widgets/ayuda_marca.dart';
 import 'package:app_ordenes/ui/widgets/ayuda_marca_producto.dart';
@@ -37,6 +38,7 @@ Map<String, WidgetBuilder> rutas() {
     "fotos_ingreso": (_) => const FotosIngreso(),
     "fotos_entrega": (_) => const FotosEntrega(),
     "pdf_viewer": (_) => const PdfImpresion(),
+    "ayuda_historial": (_) => const AyudaHistorialVehiculo(),
     "ayuda_lista": (_) => const AyudaLista(),
     "ayuda_busqueda_vehiculo": (_) => const AyudaBusquedaVehiculo(),
     "lista_ordenes": (_) => const ListaOrdenesPage(),
