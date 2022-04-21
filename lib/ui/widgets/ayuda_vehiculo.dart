@@ -1,5 +1,7 @@
+import 'package:app_ordenes/domains/blocs/lista_ordenes_bloc.dart';
 import 'package:app_ordenes/domains/blocs/vehiculo_bloc.dart';
 import 'package:app_ordenes/models/vehiculo_model.dart';
+import 'package:app_ordenes/ui/utils/colores.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -9,6 +11,8 @@ class AyudaVehiculo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final vehiculobloc = Provider.of<VehiculoBloc>(context);
+    final size = MediaQuery.of(context).size;
+    final listaBloc = Provider.of<ListaOrdenBloc>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text(vehiculobloc.palabraClave + ' ingresados'),
@@ -63,6 +67,20 @@ class AyudaVehiculo extends StatelessWidget {
                   Vehiculo mod = vehiculobloc.vehiculosClienteFiltrados[index];
                   return ListTile(
                     title: Text(mod.vehPlaca),
+                    leading: IconButton(
+                      onPressed: () {
+                        listaBloc.buscarHistorial(
+                          context,
+                          size,
+                          mod.vehPlaca,
+                        );
+                        Navigator.pushNamed(context, 'ayuda_historial');
+                      },
+                      icon: Icon(
+                        Icons.history,
+                        color: colorPrincipal,
+                      ),
+                    ),
                     subtitle: Text(
                       mod.marNombre + " " + mod.modNombre,
                     ),
