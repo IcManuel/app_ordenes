@@ -46,7 +46,7 @@ class _SplashPageState extends State<SplashPage> {
                 width: size.width * .6,
                 height: size.width * .6,
                 child: Image.asset(
-                  'assets/images/logo2.png',
+                  'assets/images/MILA.png',
                   fit: BoxFit.cover,
                 ),
               ),
@@ -67,7 +67,7 @@ class _SplashPageState extends State<SplashPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                'APP ÓRDENES',
+                'MILA',
                 style: TextStyle(
                     fontWeight: FontWeight.bold, fontSize: size.height * .05),
               ),

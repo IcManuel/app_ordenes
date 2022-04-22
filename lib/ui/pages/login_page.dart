@@ -15,14 +15,14 @@ class LoginPage extends StatelessWidget {
         reverse: true,
         scrollDirection: Axis.vertical,
         child: Container(
-          color: colorPrincipal,
+          color: Colors.grey.shade100,
           height: size.height,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Image.asset(
-                "assets/images/logo2.png",
+                "assets/images/MILA.png",
                 height: size.height * .3,
               ),
               Container(

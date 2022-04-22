@@ -286,15 +286,17 @@ class ListaOrdenBloc extends ChangeNotifier {
         _cargando = false;
         _lista = res.ordenes!;
         if (_lista.isEmpty) {
-          Fluttertoast.showToast(
-            msg: "No existen datos...",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.green.shade300,
-            textColor: Colors.white,
-            fontSize: 16.0,
-          );
+          if (interno == false) {
+            Fluttertoast.showToast(
+              msg: "No existen datos...",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.CENTER,
+              timeInSecForIosWeb: 1,
+              backgroundColor: Colors.green.shade300,
+              textColor: Colors.white,
+              fontSize: 16.0,
+            );
+          }
         }
         notifyListeners();
       } else {

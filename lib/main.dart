@@ -55,7 +55,7 @@ class MyApp extends StatelessWidget {
         ),
       ],
       child: MaterialApp(
-        title: 'App ordenes',
+        title: 'MILA',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           primarySwatch: colorPrincipal,
