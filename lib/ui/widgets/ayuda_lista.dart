@@ -1,4 +1,6 @@
+import 'package:app_ordenes/domains/blocs/nuevo_bloc.dart';
 import 'package:app_ordenes/domains/blocs/vehiculo_bloc.dart';
+import 'package:app_ordenes/domains/utils/preferencias.dart';
 import 'package:app_ordenes/models/lista_caracteristica_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -13,6 +15,18 @@ class AyudaLista extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Buscar '),
+        actions: [
+          Preferencias().usuario!.pymes == true
+              ? IconButton(
+                  onPressed: () {
+                    vehiculobloc.abrirCrearLista(context, size);
+                  },
+                  icon: const Icon(
+                    Icons.add_circle_rounded,
+                  ),
+                )
+              : Container(),
+        ],
       ),
       body: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),

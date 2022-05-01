@@ -15,6 +15,7 @@ class Modelo {
     required this.marNombre,
     required this.modNombre,
     this.codigo,
+    this.eprId,
   });
 
   int modId;
@@ -22,6 +23,7 @@ class Modelo {
   String marNombre;
   String modNombre;
   String? codigo;
+  int? eprId;
 
   factory Modelo.fromJson(Map<String, dynamic> json) => Modelo(
         modId: json["mod_id"],
@@ -39,7 +41,8 @@ class Modelo {
   Map<String, dynamic> toJsonWs() => {
         "marca": marId,
         "nombre": modNombre,
-        "codigo": codigo,
+        "codigo": modNombre,
         "activo": true,
+        "empresa": eprId,
       };
 }

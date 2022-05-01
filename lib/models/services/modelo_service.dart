@@ -6,6 +6,7 @@ import 'package:app_ordenes/models/marca_producto_model.dart';
 import 'package:app_ordenes/models/modelo_model.dart';
 import 'package:app_ordenes/models/producto_model.dart';
 import 'package:app_ordenes/models/requests/modelo_request.dart';
+import 'package:app_ordenes/models/requests/tipo_producto_request.dart';
 import 'package:app_ordenes/models/responses/marca_response.dart';
 import 'package:app_ordenes/models/responses/modelo_response.dart';
 import 'package:app_ordenes/models/tipo_producto_model.dart';
@@ -89,12 +90,16 @@ class ModeloService {
     }
   }
 
-  static Future<MarcaResponse> buscarTipoProductos(empresa) async {
+  static Future<MarcaResponse> buscarTipoProductos(
+      TipoProductoRequest cli) async {
     try {
       var respuesta = await http
-          .get(
+          .post(
               Uri.parse(
-                "${url}tipo_producto/$empresa",
+                "${url}tipo_producto/buscar",
+              ),
+              body: json.encode(
+                cli.toJson(),
               ),
               headers: cabecera())
           .timeout(
@@ -102,6 +107,7 @@ class ModeloService {
               seconds: 20,
             ),
           );
+
       if (respuesta.statusCode == 200) {
         var jsonData = json.decode(respuesta.body);
         MarcaResponse res = MarcaResponse.fromJson(jsonData);

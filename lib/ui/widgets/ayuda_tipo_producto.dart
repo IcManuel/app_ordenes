@@ -37,10 +37,11 @@ class AyudaTipoProducto extends StatelessWidget {
             Container(
               decoration: BoxDecoration(
                 borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(5.0),
-                    topRight: Radius.circular(5.0),
-                    bottomLeft: Radius.circular(5.0),
-                    bottomRight: Radius.circular(5.0)),
+                  topLeft: Radius.circular(5.0),
+                  topRight: Radius.circular(5.0),
+                  bottomLeft: Radius.circular(5.0),
+                  bottomRight: Radius.circular(5.0),
+                ),
                 border: Border.all(),
               ),
               child: Row(
@@ -72,7 +73,12 @@ class AyudaTipoProducto extends StatelessWidget {
                   ),
                   IconButton(
                     onPressed: () {
-                      detallesbloc.abrirAyudaTipo(context, size, false);
+                      detallesbloc.abrirAyudaTipo(
+                        context,
+                        size,
+                        false,
+                        detallesbloc.idSelect!,
+                      );
                     },
                     icon: const Icon(Icons.close),
                   )
@@ -81,7 +87,7 @@ class AyudaTipoProducto extends StatelessWidget {
             ),
             Expanded(
               child: detallesbloc.cargandoTipos == false
-                  ? ListView.builder(
+                  ? ListView.separated(
                       itemCount: detallesbloc.tiposFiltrados.length,
                       itemBuilder: (BuildContext context, int index) {
                         TipoProducto mod = detallesbloc.tiposFiltrados[index];
@@ -91,10 +97,12 @@ class AyudaTipoProducto extends StatelessWidget {
                           onTap: () {
                             detallesbloc.ctrlTipoProducto.text = mod.tprNombre;
                             detallesbloc.tipoSelect = mod;
-                            //vehiculobloc.abrirAuydaModelo(context, size, false);
                             Navigator.pop(context);
                           },
                         );
+                      },
+                      separatorBuilder: (context, index) {
+                        return Divider();
                       },
                     )
                   : Row(

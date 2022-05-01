@@ -17,6 +17,7 @@ import 'package:app_ordenes/models/services/vehiculo_service.dart';
 import 'package:app_ordenes/models/vehiculo_model.dart';
 import 'package:app_ordenes/ui/widgets/dialogo_cargando_widget.dart';
 import 'package:app_ordenes/ui/widgets/dialogo_general_widget.dart';
+import 'package:app_ordenes/ui/widgets/dlg_nueva_lista.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
@@ -32,6 +33,7 @@ class VehiculoBloc extends ChangeNotifier {
   int indexLista = 0;
   String? _filtroModelo = "";
   String? _filtroMarca = "";
+  String _nombre = "";
 
   List<Modelo> _modelos = [];
   List<Modelo> _modelosFiltrados = [];
@@ -59,7 +61,9 @@ class VehiculoBloc extends ChangeNotifier {
   TextEditingController _ctrlFiltroLista = TextEditingController();
   TextEditingController _ctrlMarcaSelect = TextEditingController();
   TextEditingController _ctrlModelo = TextEditingController();
+  TextEditingController ctrlNombre = TextEditingController();
 
+  String get nombre => _nombre;
   String get placa => _placa;
   List<ListaCaracteristica> get listadoC => _listadoC;
   List<ListaCaracteristica> get listadoCFiltrados => _listadoCFiltrados;
@@ -80,6 +84,134 @@ class VehiculoBloc extends ChangeNotifier {
   Modelo get modeloSelect => _modeloSelect;
   Marca get marcaSelect => _marcaSelect;
   String get modelo => _modelo;
+  set nombre(String n) {
+    _nombre = n;
+    notifyListeners();
+  }
+
+  void abrirCrearLista(BuildContext context, Size size) {
+    _nombre = '';
+    ctrlNombre.text = '';
+    notifyListeners();
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (_) {
+          return const DialogoNuevaLista();
+        });
+  }
+
+  void crearLista(BuildContext context, Size size) async {
+    Preferencias pref = Preferencias();
+    if (_nombre.isNotEmpty) {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (_) {
+          return const DialogoCargando(
+            texto: 'Revisando conexión',
+          );
+        },
+      );
+      final conect = await verificarConexion();
+      Navigator.pop(context);
+      if (conect) {
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (_) {
+            return const DialogoCargando(
+              texto: 'Enviado lista......',
+            );
+          },
+        );
+        MarcaResponse res =
+            await CaracteristicaService.insertarLista(ListaCaracteristica(
+          calId: -1,
+          calNombre: _nombre,
+          carId: lista[indexLista].carId,
+          eprId: pref.empresa,
+        ));
+        Navigator.pop(context);
+
+        if (res.ok == true) {
+          ListaCaracteristica mar =
+              ListaCaracteristica(calId: res.uid!, calNombre: _nombre);
+
+          listadoC.add(mar);
+          _ctrlFiltroLista.text = '';
+          cargarLista();
+          Navigator.pop(context);
+          Fluttertoast.showToast(
+            msg: "Lista guardada correctamente",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.CENTER,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.green.shade300,
+            textColor: Colors.white,
+            fontSize: 16.0,
+          );
+        } else {
+          showDialog(
+              context: context,
+              builder: (_) {
+                return DialogoGeneral(
+                  size: size,
+                  lottie: 'assets/lotties/error_lottie.json',
+                  mostrarBoton1: true,
+                  mostrarBoton2: false,
+                  titulo: 'ALERTA',
+                  texto: res.msg,
+                  accion1: () {
+                    Navigator.pop(context);
+                  },
+                  textoBtn1: 'Ok',
+                  textoBtn2: 'Cancelar',
+                  accion2: () {},
+                );
+              });
+        }
+      } else {
+        showDialog(
+            context: context,
+            builder: (_) {
+              return DialogoGeneral(
+                size: size,
+                lottie: 'assets/lotties/alerta_lottie.json',
+                mostrarBoton1: true,
+                mostrarBoton2: false,
+                titulo: 'ALERTA',
+                texto: 'No hay conexión a internet',
+                accion1: () {
+                  Navigator.pop(context);
+                },
+                textoBtn1: 'Ok',
+                textoBtn2: 'Cancelar',
+                accion2: () {},
+              );
+            });
+      }
+    } else {
+      showDialog(
+          context: context,
+          builder: (_) {
+            return DialogoGeneral(
+              size: size,
+              lottie: 'assets/lotties/error_lottie.json',
+              mostrarBoton1: true,
+              mostrarBoton2: false,
+              titulo: 'ALERTA',
+              texto: 'Debe ingresar el nombre',
+              accion1: () {
+                Navigator.pop(context);
+              },
+              textoBtn1: 'Ok',
+              textoBtn2: 'Cancelar',
+              accion2: () {},
+            );
+          });
+    }
+  }
 
   void abrirAyudaLista(int idx, BuildContext context, Size size) async {
     indexLista = idx;

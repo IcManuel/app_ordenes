@@ -77,13 +77,24 @@ class NuevoBloc extends ChangeNotifier {
   }
 
   TextEditingController get ctrlNombreModelo {
-    _ctrlNombreModelo.text = _nombreModelo;
-    _ctrlNombreModelo.selection = TextSelection.fromPosition(
-        TextPosition(offset: _ctrlNombreModelo.text.length));
     return _ctrlNombreModelo;
   }
 
   void abrirCrearMarca(BuildContext context, Size size) {
+    _codigo = '';
+    _nombre = '';
+    ctrlCodigo.text = '';
+    ctrlNombre.text = '';
+    notifyListeners();
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (_) {
+          return const DialogoNuevaMarca();
+        });
+  }
+
+  void abrirCrearLista(BuildContext context, Size size) {
     _codigo = '';
     _nombre = '';
     ctrlCodigo.text = '';
@@ -127,8 +138,13 @@ class NuevoBloc extends ChangeNotifier {
 
   void abrirCrearModelo(BuildContext context, Size size) {
     final vehiculoBloc = Provider.of<VehiculoBloc>(context, listen: false);
-
-    if (vehiculoBloc.marcaSelect.marId != -1) {
+    bool pasa = true;
+    if (Preferencias().usuario!.pymes == false) {
+      if (vehiculoBloc.marcaSelect.marId == -1) {
+        pasa = false;
+      }
+    }
+    if (pasa) {
       _codigoModelo = '';
       _nombreModelo = '';
       ctrlCodigoModelo.text = '';
@@ -190,9 +206,11 @@ class NuevoBloc extends ChangeNotifier {
           MarcaResponse res = await ModeloService.insertarTipo(TipoProducto(
             tprId: -1,
             eprId: pref.empresa,
+            tprNivel: -1,
             tprCodigo: _codigo,
             tprNombre: _nombre,
             activo: true,
+            hijos: 0,
           ));
           Navigator.pop(context);
 
@@ -205,6 +223,8 @@ class NuevoBloc extends ChangeNotifier {
                 eprId: pref.empresa,
                 tprCodigo: _codigo,
                 tprNombre: _nombre,
+                tprNivel: 1,
+                hijos: 0,
                 activo: true);
 
             vehiculoBloc.tipos = [...vehiculoBloc.tipos, mar];
@@ -585,93 +605,73 @@ class NuevoBloc extends ChangeNotifier {
 
   void crearModelo(BuildContext context, Size size) async {
     final vehiculoBloc = Provider.of<VehiculoBloc>(context, listen: false);
-    if (_codigoModelo.isNotEmpty) {
-      if (_nombreModelo.isNotEmpty) {
+    if (_nombreModelo.isNotEmpty) {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (_) {
+          return const DialogoCargando(
+            texto: 'Revisando conexión',
+          );
+        },
+      );
+      final conect = await verificarConexion();
+      Navigator.pop(context);
+      if (conect) {
         showDialog(
           context: context,
           barrierDismissible: false,
           builder: (_) {
             return const DialogoCargando(
-              texto: 'Revisando conexión',
+              texto: 'Enviado modelo......',
             );
           },
         );
-        final conect = await verificarConexion();
+        MarcaResponse res = await ModeloService.insertarModelo(Modelo(
+          modId: -1,
+          marId: vehiculoBloc.marcaSelect.marId,
+          marNombre: "",
+          modNombre: _nombreModelo,
+          codigo: _codigoModelo,
+          eprId: Preferencias().empresa,
+        ));
         Navigator.pop(context);
-        if (conect) {
-          showDialog(
-            context: context,
-            barrierDismissible: false,
-            builder: (_) {
-              return const DialogoCargando(
-                texto: 'Enviado modelo......',
-              );
-            },
-          );
-          MarcaResponse res = await ModeloService.insertarModelo(Modelo(
-            modId: -1,
+        if (res.ok == true) {
+          final vehiculoBloc =
+              Provider.of<VehiculoBloc>(context, listen: false);
+
+          Modelo mar = Modelo(
+            modId: res.uid!,
             marId: vehiculoBloc.marcaSelect.marId,
-            marNombre: "",
+            marNombre: vehiculoBloc.marcaSelect.marNombre,
             modNombre: _nombreModelo,
             codigo: _codigoModelo,
-          ));
+          );
+          vehiculoBloc.modelos = [...vehiculoBloc.modelos, mar];
+          vehiculoBloc.ctrlFiltroModelo.text = '';
+          vehiculoBloc.cargarModelos();
+
           Navigator.pop(context);
-          if (res.ok == true) {
-            final vehiculoBloc =
-                Provider.of<VehiculoBloc>(context, listen: false);
-
-            Modelo mar = Modelo(
-              modId: res.uid!,
-              marId: vehiculoBloc.marcaSelect.marId,
-              marNombre: vehiculoBloc.marcaSelect.marNombre,
-              modNombre: _nombreModelo,
-              codigo: _codigoModelo,
-            );
-            vehiculoBloc.modelos = [...vehiculoBloc.modelos, mar];
-            vehiculoBloc.ctrlFiltroModelo.text = '';
-            vehiculoBloc.cargarModelos();
-
-            Navigator.pop(context);
-            Fluttertoast.showToast(
-              msg: "Modelo guardada correctamente",
-              toastLength: Toast.LENGTH_SHORT,
-              gravity: ToastGravity.CENTER,
-              timeInSecForIosWeb: 1,
-              backgroundColor: Colors.green.shade300,
-              textColor: Colors.white,
-              fontSize: 16.0,
-            );
-          } else {
-            showDialog(
-                context: context,
-                builder: (_) {
-                  return DialogoGeneral(
-                    size: size,
-                    lottie: 'assets/lotties/error_lottie.json',
-                    mostrarBoton1: true,
-                    mostrarBoton2: false,
-                    titulo: 'ALERTA',
-                    texto: res.msg,
-                    accion1: () {
-                      Navigator.pop(context);
-                    },
-                    textoBtn1: 'Ok',
-                    textoBtn2: 'Cancelar',
-                    accion2: () {},
-                  );
-                });
-          }
+          Fluttertoast.showToast(
+            msg: "Modelo guardada correctamente",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.CENTER,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.green.shade300,
+            textColor: Colors.white,
+            fontSize: 16.0,
+          );
         } else {
           showDialog(
               context: context,
               builder: (_) {
                 return DialogoGeneral(
                   size: size,
-                  lottie: 'assets/lotties/alerta_lottie.json',
+                  lottie: 'assets/lotties/error_lottie.json',
                   mostrarBoton1: true,
                   mostrarBoton2: false,
                   titulo: 'ALERTA',
-                  texto: 'No hay conexión a internet',
+                  texto: res.msg,
                   accion1: () {
                     Navigator.pop(context);
                   },
@@ -687,11 +687,11 @@ class NuevoBloc extends ChangeNotifier {
             builder: (_) {
               return DialogoGeneral(
                 size: size,
-                lottie: 'assets/lotties/error_lottie.json',
+                lottie: 'assets/lotties/alerta_lottie.json',
                 mostrarBoton1: true,
                 mostrarBoton2: false,
                 titulo: 'ALERTA',
-                texto: 'Debe ingresar el nombre',
+                texto: 'No hay conexión a internet',
                 accion1: () {
                   Navigator.pop(context);
                 },
@@ -711,7 +711,7 @@ class NuevoBloc extends ChangeNotifier {
               mostrarBoton1: true,
               mostrarBoton2: false,
               titulo: 'ALERTA',
-              texto: 'Debe ingresar el código',
+              texto: 'Debe ingresar el nombre',
               accion1: () {
                 Navigator.pop(context);
               },

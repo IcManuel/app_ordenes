@@ -22,6 +22,7 @@ class Producto {
     required this.mprCodigo,
     required this.mprNombre,
     this.eprId,
+    this.stock,
   });
 
   int proId;
@@ -36,6 +37,7 @@ class Producto {
   String mprCodigo;
   String mprNombre;
   int? eprId;
+  double? stock;
 
   factory Producto.fromJson(Map<String, dynamic> json) => Producto(
         proId: json["pro_id"],
@@ -49,6 +51,7 @@ class Producto {
         mprId: json["mpr_id"],
         mprCodigo: json["mpr_codigo"],
         mprNombre: json["mpr_nombre"],
+        stock: json["pro_stock"].toDouble(),
       );
 
   Map<String, dynamic> toJson() => {
@@ -63,6 +66,7 @@ class Producto {
         "mpr_id": mprId,
         "mpr_codigo": mprCodigo,
         "mpr_nombre": mprNombre,
+        "pro_stock": stock,
       };
 
   Map<String, dynamic> toJsonWs() => {
@@ -74,5 +78,6 @@ class Producto {
         "marca": mprId,
         "empresa": eprId,
         "activo": true,
+        "stock": stock,
       };
 }

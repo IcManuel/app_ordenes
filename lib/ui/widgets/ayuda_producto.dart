@@ -20,14 +20,16 @@ class AyudaProducto extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Buscar Producto'),
         actions: [
-          IconButton(
-            onPressed: () {
-              detallesBloc.abrirCrearProducto(context);
-            },
-            icon: const Icon(
-              Icons.add_circle_rounded,
-            ),
-          )
+          pref.usuario!.pymes == false
+              ? IconButton(
+                  onPressed: () {
+                    detallesBloc.abrirCrearProducto(context);
+                  },
+                  icon: const Icon(
+                    Icons.add_circle_rounded,
+                  ),
+                )
+              : Container(),
         ],
       ),
       body: Padding(
@@ -38,19 +40,21 @@ class AyudaProducto extends StatelessWidget {
               height: 20,
             ),
             TextField(
-              // controller: ordenbloc.ctrlTelefono,
+              controller: detallesBloc.ctroFiltro,
               textCapitalization: TextCapitalization.characters,
               onChanged: (valor) {
-                detallesBloc.filtro = valor;
-                if (!detallesBloc.escribiendo) {
-                  detallesBloc.escribiendo = true;
-                  Future.delayed(const Duration(seconds: 3))
-                      .whenComplete(() async {
-                    detallesBloc.escribiendo = false;
-                    if (!detallesBloc.consultando) {
-                      detallesBloc.cargarLista(pref, arguments['tipo']);
-                    }
-                  });
+                if (valor != detallesBloc.filtro) {
+                  detallesBloc.filtro = valor;
+                  if (!detallesBloc.escribiendo) {
+                    detallesBloc.escribiendo = true;
+                    Future.delayed(const Duration(seconds: 3))
+                        .whenComplete(() async {
+                      detallesBloc.escribiendo = false;
+                      if (!detallesBloc.consultando) {
+                        detallesBloc.cargarLista(pref, arguments['tipo']);
+                      }
+                    });
+                  }
                 }
               },
               decoration: InputDecoration(
@@ -102,13 +106,52 @@ class AyudaProducto extends StatelessWidget {
                                           children: [
                                             SizedBox(
                                               width: size.width * .22,
-                                              child: Text(
-                                                '\$ ${pro.proPrecio}',
-                                                textAlign: TextAlign.right,
-                                                style: TextStyle(
-                                                  color: Colors.grey.shade800,
-                                                  fontSize: 15,
-                                                ),
+                                              child: Column(
+                                                children: [
+                                                  Text(
+                                                    '\$ ${pro.proPrecio}',
+                                                    textAlign: TextAlign.right,
+                                                    style: TextStyle(
+                                                      color:
+                                                          Colors.grey.shade800,
+                                                      fontSize: 15,
+                                                    ),
+                                                  ),
+                                                  pref.usuario!.pymes! == true
+                                                      ? pro.proInventario
+                                                          ? Row(
+                                                              children: [
+                                                                Text(
+                                                                  'Stock: ',
+                                                                  style:
+                                                                      TextStyle(
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold,
+                                                                  ),
+                                                                ),
+                                                                SizedBox(
+                                                                  height: 20,
+                                                                ),
+                                                                Text(
+                                                                  '${pro.stock}',
+                                                                  textAlign:
+                                                                      TextAlign
+                                                                          .right,
+                                                                  style:
+                                                                      TextStyle(
+                                                                    color: Colors
+                                                                        .grey
+                                                                        .shade900,
+                                                                    fontSize:
+                                                                        15,
+                                                                  ),
+                                                                ),
+                                                              ],
+                                                            )
+                                                          : Container()
+                                                      : Container(),
+                                                ],
                                               ),
                                             ),
                                             const SizedBox(
@@ -147,7 +190,7 @@ class AyudaProducto extends StatelessWidget {
                                                   ),
                                                 ],
                                               ),
-                                            )
+                                            ),
                                           ],
                                         ),
                                       ),

@@ -1,4 +1,5 @@
 import 'package:app_ordenes/domains/blocs/detalles_bloc.dart';
+import 'package:app_ordenes/domains/utils/preferencias.dart';
 import 'package:app_ordenes/ui/widgets/boton_principal.dart';
 import 'package:app_ordenes/ui/widgets/boton_secundario.dart';
 import 'package:flutter/material.dart';
@@ -61,10 +62,21 @@ class DetalleFormulario extends StatelessWidget {
         TextField(
           controller: detallesBloc.ctrlCantidad,
           keyboardType: TextInputType.number,
-          decoration: const InputDecoration(
+          style: TextStyle(
+              color: detallesBloc.hayStock ? Colors.grey : Colors.red),
+          decoration: InputDecoration(
             hintText: 'Cantidad',
             labelText: 'Cantidad',
-            border: OutlineInputBorder(),
+            labelStyle: TextStyle(
+                color: detallesBloc.hayStock ? Colors.grey : Colors.red),
+            enabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                  color: detallesBloc.hayStock ? Colors.grey : Colors.red),
+            ),
+            focusedBorder: new OutlineInputBorder(
+              borderSide: BorderSide(
+                  color: detallesBloc.hayStock ? Colors.grey : Colors.red),
+            ),
           ),
           onChanged: (e) {
             double.tryParse(e) != null
@@ -73,6 +85,27 @@ class DetalleFormulario extends StatelessWidget {
             detallesBloc.calcularTotal();
           },
         ),
+        Preferencias().usuario!.pymes == true
+            ? detallesBloc.inventario == true
+                ? SizedBox(
+                    height: 10,
+                  )
+                : Container()
+            : Container(),
+        Preferencias().usuario!.pymes == true
+            ? detallesBloc.inventario == true
+                ? TextField(
+                    controller: detallesBloc.ctrlStock,
+                    keyboardType: TextInputType.number,
+                    readOnly: true,
+                    decoration: const InputDecoration(
+                      hintText: 'Stock',
+                      labelText: 'Stock',
+                      border: OutlineInputBorder(),
+                    ),
+                  )
+                : Container()
+            : Container(),
         const SizedBox(
           height: 10,
         ),

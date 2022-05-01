@@ -1,16 +1,17 @@
 import 'package:app_ordenes/domains/blocs/nuevo_bloc.dart';
+import 'package:app_ordenes/domains/blocs/vehiculo_bloc.dart';
 import 'package:app_ordenes/ui/utils/colores.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class DialogoNuevoModelo extends StatelessWidget {
-  const DialogoNuevoModelo({
+class DialogoNuevaLista extends StatelessWidget {
+  const DialogoNuevaLista({
     Key? key,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final nuevoBloc = Provider.of<NuevoBloc>(context);
+    final vehiculoBloc = Provider.of<VehiculoBloc>(context);
     final size = MediaQuery.of(context).size;
     return Dialog(
       shape: RoundedRectangleBorder(
@@ -40,7 +41,8 @@ class DialogoNuevoModelo extends StatelessWidget {
         child: Scaffold(
           appBar: AppBar(
             automaticallyImplyLeading: false,
-            title: const Text('Crear Modelo'),
+            title: Text('Crear ' +
+                vehiculoBloc.lista[vehiculoBloc.indexLista].carNombre),
             actions: [
               IconButton(
                 onPressed: () {
@@ -57,10 +59,10 @@ class DialogoNuevoModelo extends StatelessWidget {
                 height: 10,
               ),
               TextField(
-                controller: nuevoBloc.ctrlNombreModelo,
+                controller: vehiculoBloc.ctrlNombre,
                 textCapitalization: TextCapitalization.characters,
                 onChanged: (valor) {
-                  nuevoBloc.nombreModelo = valor.toUpperCase();
+                  vehiculoBloc.nombre = valor.toUpperCase();
                 },
                 decoration: const InputDecoration(
                   hintText: 'Nombre',
@@ -79,7 +81,7 @@ class DialogoNuevoModelo extends StatelessWidget {
                   children: [
                     ElevatedButton(
                       onPressed: () {
-                        nuevoBloc.crearModelo(context, size);
+                        vehiculoBloc.crearLista(context, size);
                       },
                       style: ElevatedButton.styleFrom(
                           elevation: 10,

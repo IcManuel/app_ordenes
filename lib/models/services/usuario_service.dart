@@ -70,10 +70,9 @@ class UsuarioService {
               seconds: 20,
             ),
           );
-      // ignore: avoid_print
-      print(respuesta.statusCode);
       if (respuesta.statusCode == 200 || respuesta.statusCode == 400) {
         var jsonData = json.decode(respuesta.body);
+        print(jsonData);
         UsuarioReponse res = UsuarioReponse.fromJson(jsonData);
         res.statusCode = respuesta.statusCode;
         return res;

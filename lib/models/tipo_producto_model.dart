@@ -15,21 +15,28 @@ class TipoProducto {
     required this.tprCodigo,
     required this.tprNombre,
     required this.eprId,
-    required this.activo,
+    this.activo,
+    required this.hijos,
+    required this.tprNivel,
   });
 
   int tprId;
   String tprCodigo;
   String tprNombre;
   int eprId;
-  bool activo;
+  bool? activo;
+  int hijos;
+  int tprNivel;
 
   factory TipoProducto.fromJson(Map<String, dynamic> json) => TipoProducto(
-      tprId: json["tpr_id"],
-      tprCodigo: json["tpr_codigo"],
-      tprNombre: json["tpr_nombre"],
-      eprId: json["epr_id"],
-      activo: json["tpr_activo"]);
+        tprId: json["tpr_id"],
+        tprCodigo: json["tpr_codigo"],
+        tprNombre: json["tpr_nombre"],
+        eprId: json["epr_id"],
+        activo: json["tpr_activo"],
+        tprNivel: json["tpr_nivel"],
+        hijos: json["hijos"].toInt(),
+      );
 
   Map<String, dynamic> toJson() => {
         "tpr_id": tprId,

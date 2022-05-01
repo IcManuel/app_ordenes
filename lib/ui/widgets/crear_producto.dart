@@ -1,6 +1,4 @@
 import 'package:app_ordenes/domains/blocs/detalles_bloc.dart';
-import 'package:app_ordenes/domains/blocs/nuevo_bloc.dart';
-import 'package:app_ordenes/domains/utils/preferencias.dart';
 import 'package:app_ordenes/ui/widgets/boton_principal.dart';
 import 'package:app_ordenes/ui/widgets/input_check.dart';
 import 'package:flutter/material.dart';
@@ -12,8 +10,6 @@ class CrearProductoPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    final nuevoBloc = Provider.of<NuevoBloc>(context);
-    Preferencias pref = Preferencias();
     final detallesBloc = Provider.of<DetallesBloc>(context);
     return Scaffold(
       appBar: AppBar(
@@ -69,7 +65,7 @@ class CrearProductoPage extends StatelessWidget {
                 ),
               ),
               onTap: () {
-                detallesBloc.abrirAyudaTipo(context, size, true);
+                detallesBloc.abrirAyudaTipo(context, size, true, null);
               },
             ),
             const SizedBox(

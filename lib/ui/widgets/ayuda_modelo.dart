@@ -15,11 +15,12 @@ class AyudaModelo extends StatelessWidget {
     final size = MediaQuery.of(context).size;
     final nuevoBloc = Provider.of<NuevoBloc>(context);
     Preferencias pref = Preferencias();
+    print(pref.usuario!.pymes);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Buscar modelo'),
         actions: [
-          pref.usuario!.usuRol == 2
+          pref.usuario!.usuRol == 2 || pref.usuario!.pymes == true
               ? IconButton(
                   onPressed: () {
                     nuevoBloc.abrirCrearModelo(context, size);
@@ -38,41 +39,43 @@ class AyudaModelo extends StatelessWidget {
             const SizedBox(
               height: 10,
             ),
-            Row(
-              children: [
-                Expanded(
-                  child: InkWell(
-                    child: TextFormField(
-                      controller: vehiculobloc.ctrlMarcaSelect,
-                      readOnly: true,
-                      enabled: false,
-                      textCapitalization: TextCapitalization.characters,
-                      decoration: const InputDecoration(
-                        hintText: 'Marca',
-                        labelText: 'Marca',
-                        border: OutlineInputBorder(),
+            pref.usuario!.pymes == false
+                ? Row(
+                    children: [
+                      Expanded(
+                        child: InkWell(
+                          child: TextFormField(
+                            controller: vehiculobloc.ctrlMarcaSelect,
+                            readOnly: true,
+                            enabled: false,
+                            textCapitalization: TextCapitalization.characters,
+                            decoration: const InputDecoration(
+                              hintText: 'Marca',
+                              labelText: 'Marca',
+                              border: OutlineInputBorder(),
+                            ),
+                          ),
+                          onTap: () {
+                            vehiculobloc.abrirAyudaMarca(context, size, true);
+                          },
+                        ),
                       ),
-                    ),
-                    onTap: () {
-                      vehiculobloc.abrirAyudaMarca(context, size, true);
-                    },
-                  ),
-                ),
-                IconButton(
-                  onPressed: () {
-                    vehiculobloc.marcaSelect = Marca(
-                        marId: -1,
-                        eprId: -1,
-                        marCodigo: "",
-                        marNombre: "",
-                        marActivo: false);
-                    vehiculobloc.ctrlMarcaSelect.text = '';
-                    vehiculobloc.abrirAuydaModelo(context, size, false);
-                  },
-                  icon: const Icon(Icons.close_sharp),
-                ),
-              ],
-            ),
+                      IconButton(
+                        onPressed: () {
+                          vehiculobloc.marcaSelect = Marca(
+                              marId: -1,
+                              eprId: -1,
+                              marCodigo: "",
+                              marNombre: "",
+                              marActivo: false);
+                          vehiculobloc.ctrlMarcaSelect.text = '';
+                          vehiculobloc.abrirAuydaModelo(context, size, false);
+                        },
+                        icon: const Icon(Icons.close_sharp),
+                      ),
+                    ],
+                  )
+                : Container(),
             const SizedBox(
               height: 10,
             ),

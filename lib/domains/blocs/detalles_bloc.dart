@@ -8,6 +8,7 @@ import 'package:app_ordenes/models/dorden_model.dart';
 import 'package:app_ordenes/models/marca_producto_model.dart';
 import 'package:app_ordenes/models/producto_model.dart';
 import 'package:app_ordenes/models/requests/producto_request.dart';
+import 'package:app_ordenes/models/requests/tipo_producto_request.dart';
 import 'package:app_ordenes/models/responses/marca_response.dart';
 import 'package:app_ordenes/models/services/modelo_service.dart';
 import 'package:app_ordenes/models/services/producto_service.dart';
@@ -16,7 +17,6 @@ import 'package:app_ordenes/ui/widgets/dialogo_cargando_widget.dart';
 import 'package:app_ordenes/ui/widgets/dialogo_general_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:provider/provider.dart';
 
 class DetallesBloc extends ChangeNotifier {
   bool _escribiendo = false;
@@ -26,6 +26,10 @@ class DetallesBloc extends ChangeNotifier {
   bool _inventario = false;
   bool _cargandoMarcas = false;
   double _totalFinal = 0.00;
+  String _nombreTipo = "";
+  double stock = 0.00;
+  bool _hayStock = true;
+  int tipoFiltro = 1;
 
   String _nombre = '';
   String _codigo = '';
@@ -33,9 +37,16 @@ class DetallesBloc extends ChangeNotifier {
   String _filtroTipo = '';
   bool modificar = false;
   int index = -1;
-
+  int? idSelect = null;
   TipoProducto? _tipoSelect = TipoProducto(
-      tprId: -1, tprCodigo: '', tprNombre: '', eprId: -1, activo: false);
+    tprId: -1,
+    tprCodigo: '',
+    tprNivel: -1,
+    tprNombre: '',
+    eprId: -1,
+    activo: false,
+    hijos: 0,
+  );
   MarcaProducto? _marcaSelect = MarcaProducto(
       mprId: -1, mprCodigo: '', mprNombre: '', eprId: -1, activo: false);
 
@@ -65,7 +76,10 @@ class DetallesBloc extends ChangeNotifier {
   List<MarcaProducto> _marcas = [];
   List<MarcaProducto> _marcasFiltrados = [];
 
+  String get nombreTipo => _nombreTipo;
+
   String get codigo => _codigo;
+  bool get hayStock => _hayStock;
   List<TipoProducto> get tipos => _tipos;
   List<TipoProducto> get tiposFiltrados => _tiposFiltrados;
   List<MarcaProducto> get marcas => _marcas;
@@ -89,13 +103,16 @@ class DetallesBloc extends ChangeNotifier {
   String get filtroMarca => _filtroMarca;
   List<Dorden> get detalles => _detalles;
   bool get escribiendo => _escribiendo;
+
   bool get consultando => _consultando;
 
   final TextEditingController _ctrlCantidad = TextEditingController();
   final TextEditingController _ctrlTotalFinal = TextEditingController();
   final TextEditingController _ctrlPrecio = TextEditingController();
   final TextEditingController _ctrlTotal = TextEditingController();
+  final TextEditingController _ctrlStock = TextEditingController();
 
+  final TextEditingController _ctrlFiltro = TextEditingController();
   final TextEditingController _ctrlTipoProducto = TextEditingController();
   final TextEditingController _ctrlFiltroTipoProducto = TextEditingController();
   final TextEditingController _ctrlMarcaProducto = TextEditingController();
@@ -109,6 +126,8 @@ class DetallesBloc extends ChangeNotifier {
   TextEditingController get ctrlFiltroTipoProducto => _ctrlFiltroTipoProducto;
   TextEditingController get ctrlMarcaProducto => _ctrlMarcaProducto;
   TextEditingController get ctrlFiltroMarcaProducto => _ctrlMarcaProducto;
+  TextEditingController get ctrlStock => _ctrlStock;
+  TextEditingController get ctroFiltro => _ctrlFiltro;
 
   TextEditingController get ctrlTotalFinal {
     _ctrlTotalFinal.text = _totalFinal.toStringAsFixed(2);
@@ -117,15 +136,22 @@ class DetallesBloc extends ChangeNotifier {
     return _ctrlTotalFinal;
   }
 
+  void set hayStock(bool h) {
+    _hayStock = h;
+    notifyListeners();
+  }
+
   void seleccionarProducto(Producto pro, BuildContext context) {
     _producto = pro;
     _cantidad = 1;
     _total = pro.proPrecio!;
     _precio = pro.proPrecio!;
+    _inventario = pro.proInventario;
     _ctrlPrecio.text = pro.proPrecio!.toStringAsFixed(2);
     _ctrlCantidad.text = '1';
+    _ctrlStock.text = pro.stock!.toStringAsFixed(2);
     _ctrlTotal.text = pro.proPrecio!.toStringAsFixed(2);
-    notifyListeners();
+    this.calcularTotal();
     Navigator.pop(context);
   }
 
@@ -140,8 +166,20 @@ class DetallesBloc extends ChangeNotifier {
   }
 
   void calcularTotal() {
-    _total = _cantidad * _precio;
-    _ctrlTotal.text = _total.toStringAsFixed(2);
+    _hayStock = true;
+    bool pasa = true;
+    if (Preferencias().usuario!.validarStock!) {
+      if (_inventario) {
+        if (_cantidad > double.parse(ctrlStock.text)) {
+          pasa = false;
+          _hayStock = false;
+        }
+      }
+    }
+    if (pasa) {
+      _total = _cantidad * _precio;
+      _ctrlTotal.text = _total.toStringAsFixed(2);
+    }
     notifyListeners();
   }
 
@@ -246,34 +284,46 @@ class DetallesBloc extends ChangeNotifier {
     if (_producto.proId != -1) {
       if (_cantidad > 0) {
         if (_precio > 0) {
-          if (modificar) {
-            _detalles.removeAt(index);
-          }
+          if (_hayStock) {
+            if (modificar) {
+              _detalles.removeAt(index);
+            }
 
-          _detalles.add(
-            Dorden(
-              producto: _producto.proId,
-              cantidad: _cantidad,
-              precio: _precio,
-              descuento: 0.00,
-              vdescuento: 0.00,
-              total: _total,
-              observacion: '',
-              productoFinal: _producto,
-            ),
-          );
-          _mostrarFormulario = false;
-          calcularTotalFinal();
-          Fluttertoast.showToast(
-            msg: "Detalle agregado correctamente",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.green.shade300,
-            textColor: Colors.white,
-            fontSize: 16.0,
-          );
-          notifyListeners();
+            _detalles.add(
+              Dorden(
+                producto: _producto.proId,
+                cantidad: _cantidad,
+                precio: _precio,
+                descuento: 0.00,
+                vdescuento: 0.00,
+                total: _total,
+                observacion: '',
+                productoFinal: _producto,
+              ),
+            );
+            _mostrarFormulario = false;
+            calcularTotalFinal();
+            Fluttertoast.showToast(
+              msg: "Detalle agregado correctamente",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.CENTER,
+              timeInSecForIosWeb: 1,
+              backgroundColor: Colors.green.shade300,
+              textColor: Colors.white,
+              fontSize: 16.0,
+            );
+            notifyListeners();
+          } else {
+            Fluttertoast.showToast(
+              msg: "Insuficiente stock",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.CENTER,
+              timeInSecForIosWeb: 1,
+              backgroundColor: Colors.red,
+              textColor: Colors.white,
+              fontSize: 16.0,
+            );
+          }
         } else {
           Fluttertoast.showToast(
             msg: "El precio debe ser mayor que cero",
@@ -310,9 +360,15 @@ class DetallesBloc extends ChangeNotifier {
   }
 
   void abrirAyudaProducto(BuildContext context, int tipo) {
-    _escribiendo = false;
-    _productos = [];
-    _filtro = '';
+    if (tipoFiltro != tipo) {
+      _escribiendo = false;
+      _productos = [];
+      _filtro = '';
+      tipoFiltro = tipo;
+      _ctrlFiltro.text = '';
+    } else {
+      _ctrlFiltro.text = _filtro;
+    }
     Navigator.pushNamed(context, 'ayuda_producto', arguments: {
       'tipo': tipo,
     });
@@ -378,7 +434,14 @@ class DetallesBloc extends ChangeNotifier {
     _ctrlMarcaProducto.text = '';
     _ctrlTipoProducto.text = '';
     _tipoSelect = TipoProducto(
-        tprId: -1, tprCodigo: '', tprNombre: '', eprId: -1, activo: false);
+      tprId: -1,
+      tprCodigo: '',
+      tprNivel: -1,
+      tprNombre: '',
+      eprId: -1,
+      activo: false,
+      hijos: 0,
+    );
     _marcaSelect = MarcaProducto(
         mprId: -1, mprCodigo: '', mprNombre: '', eprId: -1, activo: false);
     notifyListeners();
@@ -625,7 +688,8 @@ class DetallesBloc extends ChangeNotifier {
   }
 
   void abrirAyudaTipo(
-      BuildContext context, Size size, bool cargarPagina) async {
+      BuildContext context, Size size, bool cargarPagina, int? id) async {
+    idSelect = id;
     Preferencias pref = Preferencias();
     showDialog(
       context: context,
@@ -646,7 +710,11 @@ class DetallesBloc extends ChangeNotifier {
         _filtroTipo = '';
         _ctrlFiltroTipoProducto.text = '';
       }
-      MarcaResponse res = await ModeloService.buscarTipoProductos(pref.empresa);
+      MarcaResponse res =
+          await ModeloService.buscarTipoProductos(TipoProductoRequest(
+        empresa: pref.empresa,
+        reporta: null,
+      ));
       if (res.ok == true) {
         _tipos = res.tipoProductos!;
         _tiposFiltrados = res.tipoProductos!;
