@@ -132,6 +132,7 @@ class ListaOrdenBloc extends ChangeNotifier {
       DetalleResponse res = await OrdenService.obtenerDetalles(orden.corId);
       if (res.ok) {
         detallesBloc.detalles = res.detalles!;
+        print(detallesBloc.detalles.length);
         detallesBloc.calcularTotalFinal();
       }
       DetalleResponse imgRes = await OrdenService.obtenerImagenes(orden.corId);

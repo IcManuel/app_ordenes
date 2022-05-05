@@ -112,6 +112,7 @@ class OrdenService {
           );
       if (respuesta.statusCode == 200 || respuesta.statusCode == 400) {
         var jsonData = json.decode(respuesta.body);
+        print(jsonData);
         DetalleResponse res = DetalleResponse.fromJson(jsonData);
         return res;
       } else if (respuesta.statusCode == 502) {

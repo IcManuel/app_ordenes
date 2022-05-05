@@ -1,6 +1,8 @@
 import 'dart:convert';
 
+import 'package:app_ordenes/domains/utils/preferencias.dart';
 import 'package:app_ordenes/domains/utils/url_util.dart';
+import 'package:app_ordenes/models/requests/vehiculo_car_request.dart';
 import 'package:app_ordenes/models/responses/obs_visual_response.dart';
 import 'package:http/http.dart' as http;
 
@@ -49,10 +51,15 @@ class ObsVisualService {
 
   static Future<ObsVisualResponse> buscarVisualesOrden(id) async {
     try {
+      VehiculoCarRequest marca =
+          VehiculoCarRequest(empresa: Preferencias().empresa, id: id);
       var respuesta = await http
-          .get(
+          .post(
               Uri.parse(
-                "${url}observacion/seleccionarorden/$id",
+                "${url}observacion/seleccionarorden",
+              ),
+              body: json.encode(
+                marca.toJson(),
               ),
               headers: cabecera())
           .timeout(

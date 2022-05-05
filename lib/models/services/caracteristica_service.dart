@@ -1,7 +1,9 @@
 import 'dart:convert';
 
+import 'package:app_ordenes/domains/utils/preferencias.dart';
 import 'package:app_ordenes/domains/utils/url_util.dart';
 import 'package:app_ordenes/models/lista_caracteristica_model.dart';
+import 'package:app_ordenes/models/requests/vehiculo_car_request.dart';
 import 'package:app_ordenes/models/responses/caracteristica_response.dart';
 import 'package:app_ordenes/models/responses/marca_response.dart';
 import 'package:http/http.dart' as http;
@@ -122,10 +124,15 @@ class CaracteristicaService {
   static Future<CaracteristicaResponse> buscarCaracteristicasVehiculo(
       vehiculo) async {
     try {
+      VehiculoCarRequest marca =
+          VehiculoCarRequest(empresa: Preferencias().empresa, id: vehiculo);
       var respuesta = await http
-          .get(
+          .post(
               Uri.parse(
-                "${url}caracteristica/vehiculo/$vehiculo",
+                "${url}caracteristica/vehiculo",
+              ),
+              body: json.encode(
+                marca.toJson(),
               ),
               headers: cabecera())
           .timeout(
@@ -157,10 +164,15 @@ class CaracteristicaService {
   static Future<CaracteristicaResponse> buscarCaracteristicasDetalleVehiculo(
       vehiculo) async {
     try {
+      VehiculoCarRequest marca =
+          VehiculoCarRequest(empresa: Preferencias().empresa, id: vehiculo);
       var respuesta = await http
-          .get(
+          .post(
               Uri.parse(
-                "${url}caracteristica/detalle/$vehiculo",
+                "${url}caracteristica/detalle",
+              ),
+              body: json.encode(
+                marca.toJson(),
               ),
               headers: cabecera())
           .timeout(

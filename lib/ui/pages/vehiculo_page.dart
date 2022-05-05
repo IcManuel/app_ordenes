@@ -65,24 +65,17 @@ class VehiculoPage extends StatelessWidget {
               Row(
                 children: [
                   Expanded(
-                    child: Focus(
-                      onFocusChange: (v) {
-                        if (!v) {
-                          vehiculobloc.buscarVehiculo(context, size);
-                        }
+                    child: TextField(
+                      onChanged: (valor) {
+                        vehiculobloc.cambioPlaca(valor);
                       },
-                      child: TextField(
-                        onChanged: (valor) {
-                          vehiculobloc.cambioPlaca(valor);
-                        },
-                        enabled: !ordenbloc.modificar,
-                        controller: vehiculobloc.ctrlPlaca,
-                        textCapitalization: TextCapitalization.characters,
-                        decoration: InputDecoration(
-                          labelText: vehiculobloc.identificador,
-                          hintText: vehiculobloc.identificador,
-                          border: const OutlineInputBorder(),
-                        ),
+                      enabled: !ordenbloc.modificar,
+                      controller: vehiculobloc.ctrlPlaca,
+                      textCapitalization: TextCapitalization.characters,
+                      decoration: InputDecoration(
+                        labelText: vehiculobloc.identificador,
+                        hintText: vehiculobloc.identificador,
+                        border: const OutlineInputBorder(),
                       ),
                     ),
                   ),

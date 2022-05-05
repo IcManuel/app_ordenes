@@ -63,7 +63,7 @@ class DetalleFormulario extends StatelessWidget {
           controller: detallesBloc.ctrlCantidad,
           keyboardType: TextInputType.number,
           style: TextStyle(
-              color: detallesBloc.hayStock ? Colors.grey : Colors.red),
+              color: detallesBloc.hayStock ? Colors.black : Colors.red),
           decoration: InputDecoration(
             hintText: 'Cantidad',
             labelText: 'Cantidad',
