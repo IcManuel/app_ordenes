@@ -4,6 +4,7 @@ import 'package:app_ordenes/domains/blocs/orden_bloc.dart';
 import 'package:app_ordenes/domains/blocs/perfil_bloc.dart';
 import 'package:app_ordenes/domains/blocs/vehiculo_bloc.dart';
 import 'package:app_ordenes/domains/blocs/visual_bloc.dart';
+import 'package:app_ordenes/domains/utils/preferencias.dart';
 import 'package:app_ordenes/ui/widgets/menu_item.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -20,6 +21,7 @@ class InicioPage extends StatelessWidget {
     final ordenBloc = Provider.of<OrdenBloc>(context);
     final detallesBloc = Provider.of<DetallesBloc>(context);
     final listaOrdenBloc = Provider.of<ListaOrdenBloc>(context);
+    Preferencias pref = Preferencias();
     return Scaffold(
       appBar: AppBar(
         title: Row(
@@ -56,6 +58,12 @@ class InicioPage extends StatelessWidget {
                 ordenBloc.idOrden = -1;
                 vehiculoBloc.cargarCaracteristicas(perfilBloc.usuFinal.eprId);
                 visualBloc.cargarVisuales(perfilBloc.usuFinal.eprId);
+                print(pref.usuario!.vehPorDefecto);
+                if (pref.usuario!.vehPorDefecto != null &&
+                    pref.usuario!.vehPorDefecto!.trim().length > 0) {
+                  vehiculoBloc.placa = pref.usuario!.vehPorDefecto ?? '';
+                  vehiculoBloc.buscarVehiculo(context, size);
+                }
               },
               title: 'Nueva Orden',
               subtitle: 'Cree una nueva orden',

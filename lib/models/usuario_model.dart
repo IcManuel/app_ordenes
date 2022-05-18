@@ -24,6 +24,7 @@ class Usuario {
     required this.identificador,
     required this.pymes,
     required this.validarStock,
+    this.vehPorDefecto,
   });
 
   int usuId;
@@ -40,22 +41,25 @@ class Usuario {
   String identificador;
   bool? pymes;
   bool? validarStock;
+  String? vehPorDefecto;
 
   factory Usuario.fromJson(Map<String, dynamic> json) => Usuario(
-      usuId: json["usu_id"],
-      eprId: json["epr_id"],
-      eprActivo: json["epr_activo"],
-      usuAlias: json["usu_alias"],
-      usuContrasena: json["usu_contrasena"],
-      usuRol: json["usu_rol"],
-      usuActivo: json["usu_activo"],
-      usuCorreo: json["usu_correo"],
-      usuNombres: json["usu_nombres"],
-      usuApellidos: json["usu_apellidos"],
-      palabraClave: json["epr_palabra_clave"],
-      identificador: json["epr_identificador"],
-      pymes: json["epr_pymes"],
-      validarStock: json["epr_validar_stock"]);
+        usuId: json["usu_id"],
+        eprId: json["epr_id"],
+        eprActivo: json["epr_activo"],
+        usuAlias: json["usu_alias"],
+        usuContrasena: json["usu_contrasena"],
+        usuRol: json["usu_rol"],
+        usuActivo: json["usu_activo"],
+        usuCorreo: json["usu_correo"],
+        usuNombres: json["usu_nombres"],
+        usuApellidos: json["usu_apellidos"],
+        palabraClave: json["epr_palabra_clave"],
+        identificador: json["epr_identificador"],
+        pymes: json["epr_pymes"],
+        validarStock: json["epr_validar_stock"],
+        vehPorDefecto: json["veh_id_pordefecto"],
+      );
 
   Map<String, dynamic> toJson() => {
         "usu_id": usuId,
@@ -72,6 +76,7 @@ class Usuario {
         "epr_identificador": identificador,
         "epr_pymes": pymes,
         "epr_validar_stock": validarStock,
+        "veh_id_pordefecto": vehPorDefecto,
       };
   Map<String, dynamic> toJsonWs() => {
         "id": usuId,

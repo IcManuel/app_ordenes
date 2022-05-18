@@ -1,7 +1,7 @@
 import 'package:connectivity/connectivity.dart';
 
 //const String url = "https://ordenes.icreativa.com.ec/api/";
-const String url = "https://little-places-joke-200-55-228-16.loca.lt/api/";
+const String url = "https://late-pots-work-191-100-27-218.loca.lt/api/";
 
 const String direccionImagen = url + 'foto/';
 verificarConexion() async {
