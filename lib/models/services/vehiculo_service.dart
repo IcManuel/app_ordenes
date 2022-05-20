@@ -29,7 +29,7 @@ class VehiculoService {
               headers: cabecera())
           .timeout(
             const Duration(
-              seconds: 100,
+              seconds: 30,
             ),
           );
       if (respuesta.statusCode == 200) {
@@ -61,7 +61,7 @@ class VehiculoService {
               headers: cabecera())
           .timeout(
             const Duration(
-              seconds: 20,
+              seconds: 10,
             ),
           );
       if (respuesta.statusCode == 200) {

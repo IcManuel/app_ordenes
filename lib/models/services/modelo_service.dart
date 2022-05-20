@@ -34,7 +34,7 @@ class ModeloService {
               headers: cabecera())
           .timeout(
             const Duration(
-              seconds: 20,
+              seconds: 10,
             ),
           );
       if (respuesta.statusCode == 200) {
@@ -67,7 +67,7 @@ class ModeloService {
               headers: cabecera())
           .timeout(
             const Duration(
-              seconds: 20,
+              seconds: 10,
             ),
           );
       if (respuesta.statusCode == 200) {
@@ -104,7 +104,7 @@ class ModeloService {
               headers: cabecera())
           .timeout(
             const Duration(
-              seconds: 20,
+              seconds: 10,
             ),
           );
 
@@ -138,7 +138,7 @@ class ModeloService {
               headers: cabecera())
           .timeout(
             const Duration(
-              seconds: 20,
+              seconds: 10,
             ),
           );
       if (respuesta.statusCode == 200) {
@@ -174,7 +174,7 @@ class ModeloService {
               headers: cabecera())
           .timeout(
             const Duration(
-              seconds: 20,
+              seconds: 10,
             ),
           );
       if (respuesta.statusCode == 200 || respuesta.statusCode == 400) {
@@ -210,7 +210,7 @@ class ModeloService {
               headers: cabecera())
           .timeout(
             const Duration(
-              seconds: 20,
+              seconds: 10,
             ),
           );
       if (respuesta.statusCode == 200 || respuesta.statusCode == 400) {
@@ -247,7 +247,7 @@ class ModeloService {
               headers: cabecera())
           .timeout(
             const Duration(
-              seconds: 20,
+              seconds: 10,
             ),
           );
       if (respuesta.statusCode == 200 || respuesta.statusCode == 400) {
@@ -284,7 +284,7 @@ class ModeloService {
               headers: cabecera())
           .timeout(
             const Duration(
-              seconds: 20,
+              seconds: 10,
             ),
           );
       print(respuesta.statusCode);
@@ -322,7 +322,7 @@ class ModeloService {
               headers: cabecera())
           .timeout(
             const Duration(
-              seconds: 20,
+              seconds: 10,
             ),
           );
       if (respuesta.statusCode == 200 || respuesta.statusCode == 400) {

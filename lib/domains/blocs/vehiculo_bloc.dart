@@ -374,7 +374,7 @@ class VehiculoBloc extends ChangeNotifier {
     notifyListeners();
   }
 
-  void cargarCaracteristicas(int empresa) async {
+  Future<void> cargarCaracteristicas(int empresa) async {
     _cargando = true;
     final conect = await verificarConexion();
     if (conect) {
@@ -408,7 +408,7 @@ class VehiculoBloc extends ChangeNotifier {
     }
   }
 
-  void cargarCaracteristicasVehiculo(int veh) async {
+  Future<void> cargarCaracteristicasVehiculo(int veh) async {
     _cargando = true;
     final conect = await verificarConexion();
     if (conect) {
@@ -831,7 +831,7 @@ class VehiculoBloc extends ChangeNotifier {
     }
   }
 
-  void seleccionarVehiculo(BuildContext context, Vehiculo vehiculo) {
+  void seleccionarVehiculo(BuildContext context, Vehiculo vehiculo) async {
     Preferencias pref = Preferencias();
     idModelo = vehiculo.modId;
     idMarca = -1;
@@ -879,24 +879,29 @@ class VehiculoBloc extends ChangeNotifier {
     notifyListeners();
   }
 
-  void buscarVehiculo(BuildContext context, Size size) async {
+  Future<void> buscarVehiculo(
+      BuildContext context, Size size, bool mostrar) async {
     Preferencias pref = Preferencias();
     if (_placa.trim().isNotEmpty) {
       final conect = await verificarConexion();
       if (conect) {
-        showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (_) {
-            return const DialogoCargando(
-              texto: 'Buscando información...',
-            );
-          },
-        );
+        if (mostrar) {
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (_) {
+              return const DialogoCargando(
+                texto: 'Buscando información...',
+              );
+            },
+          );
+        }
 
         VehiculoResponse res = await VehiculoService.buscarVehiculo(
             VehiculoRequest(placa: _placa, empresa: pref.empresa));
-        Navigator.pop(context);
+        if (mostrar) {
+          Navigator.pop(context);
+        }
 
         if (res.ok == true) {
           if (res.encontrado == true) {
@@ -921,24 +926,26 @@ class VehiculoBloc extends ChangeNotifier {
             notifyListeners();
           }
         } else {
-          showDialog(
-              context: context,
-              builder: (_) {
-                return DialogoGeneral(
-                  size: size,
-                  lottie: 'assets/lotties/error_lottie.json',
-                  mostrarBoton1: true,
-                  mostrarBoton2: false,
-                  titulo: 'ALERTA',
-                  texto: res.msg,
-                  accion1: () {
-                    Navigator.pop(context);
-                  },
-                  textoBtn1: 'Ok',
-                  textoBtn2: 'Cancelar',
-                  accion2: () {},
-                );
-              });
+          if (mostrar) {
+            showDialog(
+                context: context,
+                builder: (_) {
+                  return DialogoGeneral(
+                    size: size,
+                    lottie: 'assets/lotties/error_lottie.json',
+                    mostrarBoton1: true,
+                    mostrarBoton2: false,
+                    titulo: 'ALERTA',
+                    texto: res.msg,
+                    accion1: () {
+                      Navigator.pop(context);
+                    },
+                    textoBtn1: 'Ok',
+                    textoBtn2: 'Cancelar',
+                    accion2: () {},
+                  );
+                });
+          }
         }
       } else {
         showDialog(

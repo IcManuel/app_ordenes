@@ -40,6 +40,7 @@ class OrdenBloc extends ChangeNotifier {
   String msj = '';
   int _tipo = 1;
   int? _numeroOrden;
+  bool _habilitarGrabar = false;
   String _nombres = '';
   String _apellidos = '';
   String _direccion = '';
@@ -73,6 +74,7 @@ class OrdenBloc extends ChangeNotifier {
   String get observaciones => _observaciones;
   String get observacionesUsu => _observacionesUsu;
   bool get modificar => _modificar;
+  bool get habilitarGrabar => _habilitarGrabar;
 
   String get correo => _correo;
   int get tipo => _tipo;
@@ -81,6 +83,11 @@ class OrdenBloc extends ChangeNotifier {
   List<Cliente> get clientesFiltrados => _clientesFiltrados;
   set numeroOrden(int n) {
     _numeroOrden = n;
+    notifyListeners();
+  }
+
+  set habilitarGrabar(bool h) {
+    _habilitarGrabar = h;
     notifyListeners();
   }
 
@@ -557,18 +564,35 @@ class OrdenBloc extends ChangeNotifier {
 
   void limpiarPantalla() {}
   void guardarProforma(BuildContext context, Size size) async {
-    final vehiculoBloc = Provider.of<VehiculoBloc>(context, listen: false);
-    final detallesBloc = Provider.of<DetallesBloc>(context, listen: false);
-    final visualBloc = Provider.of<VisualBloc>(context, listen: false);
-    if (validarDatos(context, vehiculoBloc, detallesBloc)) {
-      guardarFinal(context, vehiculoBloc, detallesBloc, visualBloc, size);
+    if (_habilitarGrabar) {
+      final vehiculoBloc = Provider.of<VehiculoBloc>(context, listen: false);
+      final detallesBloc = Provider.of<DetallesBloc>(context, listen: false);
+      final visualBloc = Provider.of<VisualBloc>(context, listen: false);
+      Preferencias pref = Preferencias();
+      if (pref.usuario!.vehPorDefecto != null &&
+          pref.usuario!.vehPorDefecto!.trim().length > 0) {
+        vehiculoBloc.placa = pref.usuario!.vehPorDefecto ?? '';
+        await vehiculoBloc.buscarVehiculo(context, size, true);
+      }
+      if (validarDatos(context, vehiculoBloc, detallesBloc)) {
+        guardarFinal(context, vehiculoBloc, detallesBloc, visualBloc, size);
+      } else {
+        Fluttertoast.showToast(
+            msg: msj,
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.BOTTOM,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.red,
+            textColor: Colors.white,
+            fontSize: 16.0);
+      }
     } else {
       Fluttertoast.showToast(
-          msg: msj,
+          msg: "Espera un momento",
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.BOTTOM,
           timeInSecForIosWeb: 1,
-          backgroundColor: Colors.red,
+          backgroundColor: Colors.blue,
           textColor: Colors.white,
           fontSize: 16.0);
     }

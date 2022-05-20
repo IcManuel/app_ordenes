@@ -27,7 +27,7 @@ class CaracteristicaService {
               headers: cabecera())
           .timeout(
             const Duration(
-              seconds: 20,
+              seconds: 10,
             ),
           );
       if (respuesta.statusCode == 200) {
@@ -61,7 +61,7 @@ class CaracteristicaService {
               headers: cabecera())
           .timeout(
             const Duration(
-              seconds: 20,
+              seconds: 10,
             ),
           );
       if (respuesta.statusCode == 200) {
@@ -98,7 +98,7 @@ class CaracteristicaService {
               headers: cabecera())
           .timeout(
             const Duration(
-              seconds: 20,
+              seconds: 10,
             ),
           );
       if (respuesta.statusCode == 200 || respuesta.statusCode == 400) {
@@ -137,7 +137,7 @@ class CaracteristicaService {
               headers: cabecera())
           .timeout(
             const Duration(
-              seconds: 20,
+              seconds: 10,
             ),
           );
       if (respuesta.statusCode == 200) {
@@ -177,7 +177,7 @@ class CaracteristicaService {
               headers: cabecera())
           .timeout(
             const Duration(
-              seconds: 20,
+              seconds: 10,
             ),
           );
       if (respuesta.statusCode == 200) {

@@ -105,6 +105,7 @@ class ListaOrdenBloc extends ChangeNotifier {
     final vehiculoBloc = Provider.of<VehiculoBloc>(context, listen: false);
     final visualBloc = Provider.of<VisualBloc>(context, listen: false);
     final fotosBloc = Provider.of<FotosBloc>(context, listen: false);
+    ordenBloc.habilitarGrabar = false;
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -155,6 +156,7 @@ class ListaOrdenBloc extends ChangeNotifier {
       }
       Navigator.pop(context);
       Navigator.pushNamed(context, 'orden');
+      ordenBloc.habilitarGrabar = true;
     } else {
       showDialog(
           context: context,

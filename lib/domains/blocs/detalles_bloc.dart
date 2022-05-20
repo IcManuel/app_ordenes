@@ -185,7 +185,8 @@ class DetallesBloc extends ChangeNotifier {
 
   void calcularPrecio() {
     _precio = _total / _cantidad;
-    _ctrlPrecio.text = _precio.toStringAsFixed(2);
+    _ctrlPrecio.text = _precio.toStringAsFixed(4);
+    _precio = double.parse(_ctrlPrecio.text);
     notifyListeners();
   }
 
@@ -369,6 +370,7 @@ class DetallesBloc extends ChangeNotifier {
     } else {
       _ctrlFiltro.text = _filtro;
     }
+    cargarLista(Preferencias(), tipo);
     Navigator.pushNamed(context, 'ayuda_producto', arguments: {
       'tipo': tipo,
     });
@@ -396,6 +398,7 @@ class DetallesBloc extends ChangeNotifier {
       proId: -1,
       proCodigo: '',
       proNombre: '',
+      stock: 0,
       proInventario: false,
       tprId: -1,
       tprCodigo: '',
@@ -410,6 +413,7 @@ class DetallesBloc extends ChangeNotifier {
     _mostrarFormulario = true;
     _ctrlCantidad.text = '0';
     _ctrlTotal.text = '0';
+    _ctrlStock.text = '0';
     _ctrlPrecio.text = '0';
     notifyListeners();
   }
@@ -424,7 +428,7 @@ class DetallesBloc extends ChangeNotifier {
     _mostrarFormulario = true;
     _ctrlCantidad.text = _cantidad.toStringAsFixed(2);
     _ctrlTotal.text = _total.toStringAsFixed(2);
-    _ctrlPrecio.text = _precio.toStringAsFixed(2);
+    _ctrlPrecio.text = _precio.toStringAsFixed(4);
     notifyListeners();
   }
 

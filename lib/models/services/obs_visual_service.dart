@@ -25,7 +25,7 @@ class ObsVisualService {
               headers: cabecera())
           .timeout(
             const Duration(
-              seconds: 20,
+              seconds: 10,
             ),
           );
       if (respuesta.statusCode == 200) {
@@ -64,7 +64,7 @@ class ObsVisualService {
               headers: cabecera())
           .timeout(
             const Duration(
-              seconds: 20,
+              seconds: 10,
             ),
           );
       if (respuesta.statusCode == 200) {

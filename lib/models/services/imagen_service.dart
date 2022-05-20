@@ -28,7 +28,7 @@ class ImagenService {
         )
         .timeout(
           const Duration(
-            seconds: 5,
+            seconds: 15,
           ),
         );
     io.Directory documentsDirectory = await getApplicationDocumentsDirectory();

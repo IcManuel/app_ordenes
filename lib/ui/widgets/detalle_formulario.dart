@@ -3,6 +3,7 @@ import 'package:app_ordenes/domains/utils/preferencias.dart';
 import 'package:app_ordenes/ui/widgets/boton_principal.dart';
 import 'package:app_ordenes/ui/widgets/boton_secundario.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 class DetalleFormulario extends StatelessWidget {
@@ -60,8 +61,14 @@ class DetalleFormulario extends StatelessWidget {
           height: 10,
         ),
         TextField(
+          onTap: () => detallesBloc.ctrlCantidad.selection = TextSelection(
+              baseOffset: 0,
+              extentOffset: detallesBloc.ctrlCantidad.value.text.length),
           controller: detallesBloc.ctrlCantidad,
           keyboardType: TextInputType.number,
+          inputFormatters: [
+            FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
+          ],
           style: TextStyle(
               color: detallesBloc.hayStock ? Colors.black : Colors.red),
           decoration: InputDecoration(
@@ -110,8 +117,14 @@ class DetalleFormulario extends StatelessWidget {
           height: 10,
         ),
         TextField(
+          onTap: () => detallesBloc.ctrlPrecio.selection = TextSelection(
+              baseOffset: 0,
+              extentOffset: detallesBloc.ctrlPrecio.value.text.length),
           controller: detallesBloc.ctrlPrecio,
           keyboardType: TextInputType.number,
+          inputFormatters: [
+            FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,4}')),
+          ],
           decoration: const InputDecoration(
             hintText: 'Precio',
             labelText: 'Precio',
@@ -128,8 +141,15 @@ class DetalleFormulario extends StatelessWidget {
           height: 10,
         ),
         TextField(
+          onTap: () => detallesBloc.ctrlTotal.selection = TextSelection(
+            baseOffset: 0,
+            extentOffset: detallesBloc.ctrlTotal.value.text.length,
+          ),
           controller: detallesBloc.ctrlTotal,
           keyboardType: TextInputType.number,
+          inputFormatters: [
+            FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
+          ],
           decoration: const InputDecoration(
             hintText: 'Total',
             labelText: 'Total',

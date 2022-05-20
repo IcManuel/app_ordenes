@@ -20,7 +20,7 @@ class VisualBloc extends ChangeNotifier {
     notifyListeners();
   }
 
-  void cargarVisuales(int empresa) async {
+  Future<void> cargarVisuales(int empresa) async {
     _cargando = true;
     final conect = await verificarConexion();
     if (conect) {

@@ -30,7 +30,7 @@ class UsuarioService {
               headers: cabecera())
           .timeout(
             const Duration(
-              seconds: 20,
+              seconds: 5,
             ),
           );
       if (respuesta.statusCode == 200) {
@@ -54,7 +54,6 @@ class UsuarioService {
   }
 
   static Future<UsuarioReponse> loginUsuario(LoginRequest datos) async {
-    print(datos.toJson());
     try {
       var respuesta = await http
           .post(
@@ -67,12 +66,11 @@ class UsuarioService {
               headers: cabecera())
           .timeout(
             const Duration(
-              seconds: 20,
+              seconds: 5,
             ),
           );
       if (respuesta.statusCode == 200 || respuesta.statusCode == 400) {
         var jsonData = json.decode(respuesta.body);
-        print(jsonData);
         UsuarioReponse res = UsuarioReponse.fromJson(jsonData);
         res.statusCode = respuesta.statusCode;
         return res;
@@ -85,7 +83,6 @@ class UsuarioService {
         return UsuarioReponse(ok: false, msg: "Error al ejecutar ");
       }
     } catch (error) {
-      print(error);
       return UsuarioReponse(
         ok: false,
         usuario: null,

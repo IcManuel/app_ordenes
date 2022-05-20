@@ -6,11 +6,13 @@ class BotonPrincipal extends StatelessWidget {
   final String label;
   final Size size;
   final bool? calcTamano;
+  final bool habilitado;
   const BotonPrincipal({
     Key? key,
     required this.onPressed,
     required this.label,
     required this.size,
+    this.habilitado = true,
     this.calcTamano = true,
   }) : super(key: key);
 

@@ -33,7 +33,11 @@ class OrdenService {
             ),
             headers: cabecera(),
           )
-          .timeout(const Duration(milliseconds: 30000));
+          .timeout(
+            const Duration(
+              seconds: 15,
+            ),
+          );
 
       var jsonData = json.decode(response.body);
 
@@ -107,7 +111,7 @@ class OrdenService {
               headers: cabecera())
           .timeout(
             const Duration(
-              seconds: 30,
+              seconds: 10,
             ),
           );
       if (respuesta.statusCode == 200 || respuesta.statusCode == 400) {
@@ -177,7 +181,7 @@ class OrdenService {
               headers: cabecera())
           .timeout(
             const Duration(
-              seconds: 30,
+              seconds: 20,
             ),
           );
       if (respuesta.statusCode == 200 || respuesta.statusCode == 400) {

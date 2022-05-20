@@ -51,19 +51,21 @@ class InicioPage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             MenuItem(
-              onPressed: () {
+              onPressed: () async {
                 Navigator.pushNamed(context, 'orden');
+                ordenBloc.habilitarGrabar = false;
                 ordenBloc.modificar = false;
                 detallesBloc.indexTab = 0;
                 ordenBloc.idOrden = -1;
-                vehiculoBloc.cargarCaracteristicas(perfilBloc.usuFinal.eprId);
-                visualBloc.cargarVisuales(perfilBloc.usuFinal.eprId);
-                print(pref.usuario!.vehPorDefecto);
+                await vehiculoBloc
+                    .cargarCaracteristicas(perfilBloc.usuFinal.eprId);
+                await visualBloc.cargarVisuales(perfilBloc.usuFinal.eprId);
                 if (pref.usuario!.vehPorDefecto != null &&
                     pref.usuario!.vehPorDefecto!.trim().length > 0) {
                   vehiculoBloc.placa = pref.usuario!.vehPorDefecto ?? '';
-                  vehiculoBloc.buscarVehiculo(context, size);
+                  await vehiculoBloc.buscarVehiculo(context, size, false);
                 }
+                ordenBloc.habilitarGrabar = true;
               },
               title: 'Nueva Orden',
               subtitle: 'Cree una nueva orden',

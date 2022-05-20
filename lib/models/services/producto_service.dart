@@ -3,10 +3,7 @@ import 'dart:convert';
 import 'package:app_ordenes/domains/utils/url_util.dart';
 import 'package:app_ordenes/models/producto_model.dart';
 import 'package:app_ordenes/models/requests/producto_request.dart';
-import 'package:app_ordenes/models/requests/vehiculo_request.dart';
 import 'package:app_ordenes/models/responses/producto_response.dart';
-import 'package:app_ordenes/models/responses/vehiculo_response.dart';
-import 'package:app_ordenes/models/vehiculo_model.dart';
 import 'package:http/http.dart' as http;
 
 class ProductoService {
@@ -31,7 +28,7 @@ class ProductoService {
               headers: cabecera())
           .timeout(
             const Duration(
-              seconds: 20,
+              seconds: 30,
             ),
           );
       if (respuesta.statusCode == 200) {
