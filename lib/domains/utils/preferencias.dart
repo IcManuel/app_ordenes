@@ -26,6 +26,22 @@ class Preferencias {
     _prefs.setString('token', valor);
   }
 
+  String get impresora {
+    return _prefs.getString('impresora') ?? "";
+  }
+
+  set impresora(String valor) {
+    _prefs.setString('impresora', valor);
+  }
+
+  String get impresoraNOmbre {
+    return _prefs.getString('impresoraNombre') ?? "";
+  }
+
+  set impresoraNombre(String valor) {
+    _prefs.setString('impresoraNombre', valor);
+  }
+
   int get empresa {
     return _prefs.getInt('empresa') ?? -1;
   }

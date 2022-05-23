@@ -1,5 +1,3 @@
-// ignore_for_file: unnecessary_this
-
 import 'package:app_ordenes/domains/blocs/detalles_bloc.dart';
 import 'package:app_ordenes/domains/blocs/fotos_bloc.dart';
 import 'package:app_ordenes/domains/blocs/lista_ordenes_bloc.dart';
@@ -81,6 +79,7 @@ class OrdenBloc extends ChangeNotifier {
   int get idCliente => _idCliente;
   String get apellidos => _apellidos;
   List<Cliente> get clientesFiltrados => _clientesFiltrados;
+
   set numeroOrden(int n) {
     _numeroOrden = n;
     notifyListeners();
@@ -101,6 +100,44 @@ class OrdenBloc extends ChangeNotifier {
     notifyListeners();
   }
 
+  /**   void scannear(BuildContext context, bool navegar) async {
+    _scanResult = [];
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) {
+        return const DialogoCargando(
+          texto: 'Buscando dispositivos...',
+        );
+      },
+    );
+    bool estaPrendido = false;
+    BlueThermalPrinter bluetooth = BlueThermalPrinter.instance;
+    estaPrendido = await bluetooth.isOn ?? false;
+    if (estaPrendido) {
+      _scanResult = await bluetooth.getBondedDevices();
+      Navigator.pop(context);
+      if (navegar) Navigator.pushNamed(context, 'ayuda_impresora');
+      notifyListeners();
+    } else {
+      Navigator.pop(context);
+      Fluttertoast.showToast(
+          msg: 'Debe encender el bluetooth',
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0);
+    }
+  }
+
+  void seleccionarImpresora(int index, context) async {
+    BlueThermalPrinter bluetooth = BlueThermalPrinter.instance;
+    bluetooth.connect(_scanResult![index]);
+  }
+*/
   void setearDatosSelect(Orden orden) {
     _identificacion = orden.cliente.cliIdentificacion;
     _idCliente = orden.cliente.cliId;
@@ -562,7 +599,8 @@ class OrdenBloc extends ChangeNotifier {
     }
   }
 
-  void limpiarPantalla() {}
+  void imprimir() async {}
+
   void guardarProforma(BuildContext context, Size size) async {
     if (_habilitarGrabar) {
       final vehiculoBloc = Provider.of<VehiculoBloc>(context, listen: false);

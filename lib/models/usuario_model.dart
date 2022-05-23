@@ -25,6 +25,7 @@ class Usuario {
     required this.pymes,
     required this.validarStock,
     this.vehPorDefecto,
+    this.impresionTermica,
   });
 
   int usuId;
@@ -42,6 +43,7 @@ class Usuario {
   bool? pymes;
   bool? validarStock;
   String? vehPorDefecto;
+  bool? impresionTermica;
 
   factory Usuario.fromJson(Map<String, dynamic> json) => Usuario(
         usuId: json["usu_id"],
@@ -59,6 +61,7 @@ class Usuario {
         pymes: json["epr_pymes"],
         validarStock: json["epr_validar_stock"],
         vehPorDefecto: json["veh_id_pordefecto"],
+        impresionTermica: json["epr_impresion_termica"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -77,6 +80,7 @@ class Usuario {
         "epr_pymes": pymes,
         "epr_validar_stock": validarStock,
         "veh_id_pordefecto": vehPorDefecto,
+        "epr_impresion_termica": impresionTermica,
       };
   Map<String, dynamic> toJsonWs() => {
         "id": usuId,

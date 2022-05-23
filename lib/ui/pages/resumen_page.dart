@@ -1,6 +1,7 @@
 import 'package:app_ordenes/domains/blocs/detalles_bloc.dart';
 import 'package:app_ordenes/domains/blocs/fotos_bloc.dart';
 import 'package:app_ordenes/domains/blocs/orden_bloc.dart';
+import 'package:app_ordenes/domains/utils/preferencias.dart';
 import 'package:app_ordenes/ui/utils/colores.dart';
 import 'package:app_ordenes/ui/widgets/boton_principal.dart';
 import 'package:flutter/material.dart';

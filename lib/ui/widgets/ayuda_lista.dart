@@ -1,4 +1,3 @@
-import 'package:app_ordenes/domains/blocs/nuevo_bloc.dart';
 import 'package:app_ordenes/domains/blocs/vehiculo_bloc.dart';
 import 'package:app_ordenes/domains/utils/preferencias.dart';
 import 'package:app_ordenes/models/lista_caracteristica_model.dart';
