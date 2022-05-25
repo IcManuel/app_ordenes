@@ -29,14 +29,14 @@ class AyudaCliente extends StatelessWidget {
             ),
             TextField(
               controller: ayudaBloc.ctrlFiltro,
-              keyboardType: TextInputType.number,
               textCapitalization: TextCapitalization.characters,
               onChanged: (valor) {
                 ayudaBloc.filtro = valor;
                 if (!ayudaBloc.escribiendo) {
                   ayudaBloc.escribiendo = true;
-                  Future.delayed(const Duration(seconds: 3))
-                      .whenComplete(() async {
+                  Future.delayed(const Duration(
+                    seconds: 2,
+                  )).whenComplete(() async {
                     ayudaBloc.escribiendo = false;
                     if (!ayudaBloc.consultando) {
                       ayudaBloc.cargarLista(pref, arguments['tipo']);

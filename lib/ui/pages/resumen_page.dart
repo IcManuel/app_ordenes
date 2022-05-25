@@ -1,7 +1,6 @@
 import 'package:app_ordenes/domains/blocs/detalles_bloc.dart';
 import 'package:app_ordenes/domains/blocs/fotos_bloc.dart';
 import 'package:app_ordenes/domains/blocs/orden_bloc.dart';
-import 'package:app_ordenes/domains/utils/preferencias.dart';
 import 'package:app_ordenes/ui/utils/colores.dart';
 import 'package:app_ordenes/ui/widgets/boton_principal.dart';
 import 'package:flutter/material.dart';
@@ -19,35 +18,6 @@ class ResumenPage extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.symmetric(horizontal: 12),
       children: [
-        const SizedBox(
-          height: 10,
-        ),
-        TextField(
-          controller: ordenBloc.ctrlObsUsu,
-          textCapitalization: TextCapitalization.characters,
-          maxLines: 4,
-          onChanged: (valor) {
-            ordenBloc.observacionesUsu = valor.toUpperCase();
-          },
-          decoration: const InputDecoration(
-            hintText: 'Observaciones',
-            labelText: 'Observaciones',
-            border: OutlineInputBorder(),
-          ),
-        ),
-        const SizedBox(
-          height: 10,
-        ),
-        TextField(
-          controller: detallesBloc.ctrlTotalFinal,
-          keyboardType: TextInputType.number,
-          readOnly: true,
-          decoration: const InputDecoration(
-            hintText: 'Total',
-            labelText: 'Total',
-            border: OutlineInputBorder(),
-          ),
-        ),
         const SizedBox(
           height: 10,
         ),
@@ -106,6 +76,38 @@ class ResumenPage extends StatelessWidget {
               ),
             ),
           ],
+        ),
+        const SizedBox(
+          height: 10,
+        ),
+        TextField(
+          controller: ordenBloc.ctrlObsUsu,
+          textCapitalization: TextCapitalization.characters,
+          maxLines: 4,
+          onChanged: (valor) {
+            ordenBloc.observacionesUsu = valor.toUpperCase();
+          },
+          decoration: const InputDecoration(
+            hintText: 'Observaciones',
+            labelText: 'Observaciones',
+            border: OutlineInputBorder(),
+          ),
+        ),
+        const SizedBox(
+          height: 10,
+        ),
+        TextField(
+          controller: detallesBloc.ctrlTotalFinal,
+          keyboardType: TextInputType.number,
+          readOnly: true,
+          decoration: const InputDecoration(
+            hintText: 'Total',
+            labelText: 'Total',
+            border: OutlineInputBorder(),
+          ),
+        ),
+        const SizedBox(
+          height: 10,
         ),
         const SizedBox(
           height: 10,

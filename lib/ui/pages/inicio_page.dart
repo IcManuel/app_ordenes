@@ -5,6 +5,7 @@ import 'package:app_ordenes/domains/blocs/perfil_bloc.dart';
 import 'package:app_ordenes/domains/blocs/vehiculo_bloc.dart';
 import 'package:app_ordenes/domains/blocs/visual_bloc.dart';
 import 'package:app_ordenes/domains/utils/preferencias.dart';
+import 'package:app_ordenes/ui/utils/colores.dart';
 import 'package:app_ordenes/ui/widgets/menu_item.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -40,7 +41,7 @@ class InicioPage extends StatelessWidget {
             icon: const Icon(
               Icons.logout,
             ),
-          )
+          ),
         ],
       ),
       body: Container(
@@ -69,7 +70,7 @@ class InicioPage extends StatelessWidget {
               },
               title: 'Nueva Orden',
               subtitle: 'Cree una nueva orden',
-              icon: Icons.chevron_right,
+              icon: Icons.new_label,
             ),
             const SizedBox(
               height: 10,
@@ -81,7 +82,7 @@ class InicioPage extends StatelessWidget {
               },
               title: 'Listado de órdenes',
               subtitle: 'Ver/modificar órdenes creadas',
-              icon: Icons.chevron_right,
+              icon: Icons.list,
             ),
             const Expanded(
               child: SizedBox(
@@ -95,11 +96,34 @@ class InicioPage extends StatelessWidget {
               },
               title: 'Perfil',
               subtitle: 'Modificar datos de perfil',
-              icon: Icons.emoji_people_sharp,
+              icon: Icons.person,
               closeSession: true,
             ),
             const SizedBox(
               height: 30,
+            ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  pref.usuario!.usuAlias,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+                SizedBox(
+                  width: 20,
+                ),
+                Text(
+                  pref.versionApp,
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: colorPrincipal.shade500,
+                  ),
+                ),
+              ],
             ),
           ],
         ),

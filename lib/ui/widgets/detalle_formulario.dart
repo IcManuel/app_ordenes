@@ -18,6 +18,25 @@ class DetalleFormulario extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.symmetric(horizontal: 12),
       children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            BotonPrincipal(
+              label: 'Guardar',
+              onPressed: () {
+                detallesBloc.agregarDetalle(context);
+              },
+              size: size,
+            ),
+            BotonSecundario(
+              label: 'Cancelar',
+              size: size,
+              onPressed: () {
+                detallesBloc.mostrarFormulario = false;
+              },
+            ),
+          ],
+        ),
         const SizedBox(
           height: 20,
         ),
@@ -164,20 +183,6 @@ class DetalleFormulario extends StatelessWidget {
         ),
         const SizedBox(
           height: 10,
-        ),
-        BotonPrincipal(
-          label: 'Guardar',
-          onPressed: () {
-            detallesBloc.agregarDetalle(context);
-          },
-          size: size,
-        ),
-        BotonSecundario(
-          label: 'Cancelar',
-          size: size,
-          onPressed: () {
-            detallesBloc.mostrarFormulario = false;
-          },
         ),
       ],
     );

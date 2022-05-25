@@ -202,8 +202,10 @@ class DetalleLista extends StatelessWidget {
                     )
                   : const Center(
                       child: Text(
-                        'No existe ningún producto agregado',
-                        style: TextStyle(fontSize: 30),
+                        'No se han agregado detalles',
+                        style: TextStyle(
+                          fontSize: 25,
+                        ),
                         textAlign: TextAlign.center,
                       ),
                     ))

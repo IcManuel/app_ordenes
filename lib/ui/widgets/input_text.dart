@@ -28,11 +28,11 @@ class ItemInput extends StatelessWidget {
       child: Row(
         children: [
           SizedBox(
-            width: size.width * .2,
+            width: size.width * .25,
             child: Text(
               label,
               style: TextStyle(
-                fontSize: size.height * 0.025,
+                fontSize: size.height * 0.015,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -41,7 +41,7 @@ class ItemInput extends StatelessWidget {
             width: size.width * 0.02,
           ),
           SizedBox(
-            width: size.width * .7,
+            width: size.width * .6,
             child: SizedBox(
               height: size.height * .025,
               child: TextFormField(

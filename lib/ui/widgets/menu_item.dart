@@ -17,11 +17,18 @@ class MenuItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     return Container(
-      padding: const EdgeInsets.all(0),
       decoration: BoxDecoration(
+          shape: BoxShape.rectangle,
           color: closeSession ? Colors.grey : Theme.of(context).primaryColor,
-          borderRadius: BorderRadius.circular(10)),
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+                color: Colors.black, offset: Offset(0, 5), blurRadius: 10),
+          ]),
+      width: size.width * .8,
+      height: size.height * .1,
       child: ListTile(
         title: Text(
           title,

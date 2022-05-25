@@ -28,7 +28,7 @@ class InputCheck extends StatelessWidget {
             child: Text(
               label,
               style: TextStyle(
-                fontSize: size.height * 0.025,
+                fontSize: size.height * 0.015,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -39,7 +39,7 @@ class InputCheck extends StatelessWidget {
           SizedBox(
             width: size.width * .1,
             child: SizedBox(
-              height: size.height * .025,
+              height: size.height * .015,
               child: Checkbox(
                 value: value,
                 onChanged: onBool,

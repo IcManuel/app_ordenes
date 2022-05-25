@@ -2,6 +2,7 @@ import 'package:app_ordenes/domains/blocs/perfil_bloc.dart';
 import 'package:app_ordenes/domains/utils/preferencias.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({Key? key}) : super(key: key);
@@ -20,7 +21,8 @@ class _SplashPageState extends State<SplashPage> {
   }
 
   navegar() async {
-    pref.versionApp = "1.0.0";
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    pref.versionApp = packageInfo.version;
     if (pref.token.isNotEmpty) {
       final perfilBloc = Provider.of<PerfilBloc>(context, listen: false);
       perfilBloc.usuFinal = pref.usuario!;
