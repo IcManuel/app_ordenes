@@ -47,7 +47,7 @@ class AyudaProducto extends StatelessWidget {
                   detallesBloc.filtro = valor;
                   if (!detallesBloc.escribiendo) {
                     detallesBloc.escribiendo = true;
-                    Future.delayed(const Duration(seconds: 3))
+                    Future.delayed(const Duration(seconds: 2))
                         .whenComplete(() async {
                       detallesBloc.escribiendo = false;
                       if (!detallesBloc.consultando) {

@@ -30,7 +30,7 @@ class ListaOrdenBloc extends ChangeNotifier {
   String _cliente = '';
   DateTime _fechaI = DateTime.now();
   DateTime _fechaF = DateTime.now();
-  int _estado = 4;
+  int _estado = -1;
 
   List<Orden> _listaH = [];
   bool _cargandoH = false;

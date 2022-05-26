@@ -31,7 +31,7 @@ class AyudaBusquedaVehiculo extends StatelessWidget {
                 ayudaBloc.filtroV = valor;
                 if (!ayudaBloc.escribiendoV) {
                   ayudaBloc.escribiendoV = true;
-                  Future.delayed(const Duration(seconds: 3))
+                  Future.delayed(const Duration(seconds: 2))
                       .whenComplete(() async {
                     ayudaBloc.escribiendoV = false;
                     if (!ayudaBloc.escribiendoV) {

@@ -20,13 +20,13 @@ class MenuItem extends StatelessWidget {
     final size = MediaQuery.of(context).size;
     return Container(
       decoration: BoxDecoration(
-          shape: BoxShape.rectangle,
-          color: closeSession ? Colors.grey : Theme.of(context).primaryColor,
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-                color: Colors.black, offset: Offset(0, 5), blurRadius: 10),
-          ]),
+        shape: BoxShape.rectangle,
+        color: closeSession ? Colors.grey : Theme.of(context).primaryColor,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(color: Colors.black, offset: Offset(0, 5), blurRadius: 10),
+        ],
+      ),
       width: size.width * .8,
       height: size.height * .1,
       child: ListTile(

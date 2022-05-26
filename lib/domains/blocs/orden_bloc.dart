@@ -639,59 +639,64 @@ class OrdenBloc extends ChangeNotifier {
   bool validarDatos(BuildContext context, VehiculoBloc vehiculoBloc,
       DetallesBloc detallesBloc) {
     bool res = true;
-
-    if (_identificacion.trim().isNotEmpty) {
-      if (_nombres.trim().isNotEmpty) {
-        if (_telefono.trim().isNotEmpty) {
-          if (vehiculoBloc.placa.trim().isNotEmpty) {
-            if (vehiculoBloc.modeloSelect.modId != -1) {
-              bool pasa = true;
-              for (int i = 0; i < vehiculoBloc.lista.length; i++) {
-                if (vehiculoBloc.lista[i].carObligatorio == true) {
-                  if (vehiculoBloc.lista[i].carSeleccionadble == true) {
-                    if (vehiculoBloc.lista[i].idCal == null ||
-                        vehiculoBloc.lista[i].idCal == -1) {
-                      res = false;
-                      msj = 'Debe ingresar el ' +
-                          vehiculoBloc.lista[i].carNombre.toUpperCase();
-                    }
-                  } else {
-                    if (vehiculoBloc.lista[i].valor == null ||
-                        vehiculoBloc.lista[i].valor!.trim().isEmpty) {
-                      res = false;
-                      msj = 'Debe ingresar el ' +
-                          vehiculoBloc.lista[i].carNombre.toUpperCase();
+    final visualBloc = Provider.of<VisualBloc>(context, listen: false);
+    if (visualBloc.lista.length > 0) {
+      if (_identificacion.trim().isNotEmpty) {
+        if (_nombres.trim().isNotEmpty) {
+          if (_telefono.trim().isNotEmpty) {
+            if (vehiculoBloc.placa.trim().isNotEmpty) {
+              if (vehiculoBloc.modeloSelect.modId != -1) {
+                bool pasa = true;
+                for (int i = 0; i < vehiculoBloc.lista.length; i++) {
+                  if (vehiculoBloc.lista[i].carObligatorio == true) {
+                    if (vehiculoBloc.lista[i].carSeleccionadble == true) {
+                      if (vehiculoBloc.lista[i].idCal == null ||
+                          vehiculoBloc.lista[i].idCal == -1) {
+                        res = false;
+                        msj = 'Debe ingresar el ' +
+                            vehiculoBloc.lista[i].carNombre.toUpperCase();
+                      }
+                    } else {
+                      if (vehiculoBloc.lista[i].valor == null ||
+                          vehiculoBloc.lista[i].valor!.trim().isEmpty) {
+                        res = false;
+                        msj = 'Debe ingresar el ' +
+                            vehiculoBloc.lista[i].carNombre.toUpperCase();
+                      }
                     }
                   }
                 }
-              }
-              if (pasa) {
-                if (tipo == 1) {
-                  if (detallesBloc.detalles.isNotEmpty) {
-                  } else {
-                    msj = 'Debe ingresar detalles';
-                    res = false;
+                if (pasa) {
+                  if (tipo == 1) {
+                    if (detallesBloc.detalles.isNotEmpty) {
+                    } else {
+                      msj = 'Debe ingresar detalles';
+                      res = false;
+                    }
                   }
                 }
+              } else {
+                msj = 'No se ha seleccionado un modelo';
+                res = false;
               }
             } else {
-              msj = 'No se ha seleccionado un modelo';
+              msj = 'No se ha ingresado la placa del vehículo';
               res = false;
             }
           } else {
-            msj = 'No se ha ingresado la placa del vehículo';
+            msj = 'No se ha ingresado un teléfono';
             res = false;
           }
         } else {
-          msj = 'No se ha ingresado un teléfono';
+          msj = 'No se ha ingresado los nombres';
           res = false;
         }
       } else {
-        msj = 'No se ha ingresado los nombres';
+        msj = 'No se ha ingresado una identificación';
         res = false;
       }
     } else {
-      msj = 'No se ha ingresado una identificación';
+      msj = 'No se han cargado las opciones visuales, por favor, refrescar';
       res = false;
     }
     return res;

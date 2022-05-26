@@ -22,10 +22,12 @@ class VisualBloc extends ChangeNotifier {
 
   Future<void> cargarVisuales(int empresa) async {
     _cargando = true;
+    notifyListeners();
     final conect = await verificarConexion();
     if (conect) {
       ObsVisualResponse res = await ObsVisualService.buscarVisuales(empresa);
       if (res.ok == true) {
+        _cargando = false;
         _lista = res.observaciones!;
         notifyListeners();
       } else {

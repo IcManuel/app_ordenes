@@ -25,23 +25,39 @@ class ResumenPage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Expanded(
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, 'fotos_ingreso');
-                },
-                style: ElevatedButton.styleFrom(
-                    elevation: 10,
-                    primary: colorPrincipal,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    )),
-                child: Padding(
-                  padding: EdgeInsets.all(size.height * 0.02),
-                  child: Text(
-                    'FOTOS INGRESO (' + fotosBloc.fotos.length.toString() + ')',
-                    style: TextStyle(
-                      fontSize: size.height * 0.02,
-                      color: Colors.white,
+              child: Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.rectangle,
+                  color: colorPrincipal,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black,
+                      offset: Offset(0, 3),
+                      blurRadius: 5,
+                    ),
+                  ],
+                ),
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, 'fotos_ingreso');
+                  },
+                  style: ElevatedButton.styleFrom(
+                      elevation: 10,
+                      primary: colorPrincipal,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      )),
+                  child: Padding(
+                    padding: EdgeInsets.all(size.height * 0.02),
+                    child: Text(
+                      'FOTOS INGRESO (' +
+                          fotosBloc.fotos.length.toString() +
+                          ')',
+                      style: TextStyle(
+                        fontSize: size.height * 0.02,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ),
@@ -51,25 +67,38 @@ class ResumenPage extends StatelessWidget {
               width: 10,
             ),
             Expanded(
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, 'fotos_entrega');
-                },
-                style: ElevatedButton.styleFrom(
-                    elevation: 10,
-                    primary: Colors.green,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    )),
-                child: Padding(
-                  padding: EdgeInsets.all(size.height * 0.02),
-                  child: Text(
-                    'FOTOS ENTREGA(' +
-                        fotosBloc.fotosEntrega.length.toString() +
-                        ')',
-                    style: TextStyle(
-                      fontSize: size.height * 0.02,
-                      color: Colors.white,
+              child: Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.rectangle,
+                  color: Colors.green,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                        color: Colors.black,
+                        offset: Offset(0, 3),
+                        blurRadius: 5),
+                  ],
+                ),
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, 'fotos_entrega');
+                  },
+                  style: ElevatedButton.styleFrom(
+                      elevation: 10,
+                      primary: Colors.green,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      )),
+                  child: Padding(
+                    padding: EdgeInsets.all(size.height * 0.02),
+                    child: Text(
+                      'FOTOS ENTREGA(' +
+                          fotosBloc.fotosEntrega.length.toString() +
+                          ')',
+                      style: TextStyle(
+                        fontSize: size.height * 0.02,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ),
