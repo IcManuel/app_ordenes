@@ -1,4 +1,6 @@
 import 'package:app_ordenes/domains/blocs/perfil_bloc.dart';
+import 'package:app_ordenes/domains/utils/preferencias.dart';
+import 'package:app_ordenes/ui/utils/colores.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -36,62 +38,73 @@ class LoginPage extends StatelessWidget {
                   ),
                   elevation: 5,
                   child: Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: size.width * 0.1,
-                        vertical: size.height * 0.02,
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          Text(
-                            'Inicio de sesión',
-                            style: TextStyle(
-                              fontSize: size.height * 0.030,
-                              fontWeight: FontWeight.bold,
+                    padding: EdgeInsets.symmetric(
+                      horizontal: size.width * 0.1,
+                      vertical: size.height * 0.02,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Text(
+                          'Inicio de sesión',
+                          style: TextStyle(
+                            fontSize: size.height * 0.030,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        TextField(
+                          decoration: const InputDecoration(
+                            hintText: 'Usuario/correo',
+                          ),
+                          onChanged: (e) {
+                            loginBloc.usuario = e;
+                          },
+                        ),
+                        TextField(
+                          obscureText: !loginBloc.mostrar,
+                          decoration: InputDecoration(
+                            hintText: 'Contraseña',
+                            suffixIcon: IconButton(
+                              onPressed: () {
+                                loginBloc.mostrar = !loginBloc.mostrar;
+                              },
+                              icon: Icon(
+                                !loginBloc.mostrar
+                                    ? Icons.visibility
+                                    : Icons.visibility_off,
+                              ),
                             ),
                           ),
-                          TextField(
-                            decoration: const InputDecoration(
-                              hintText: 'Usuario/correo',
-                            ),
-                            onChanged: (e) {
-                              loginBloc.usuario = e;
-                            },
-                          ),
-                          TextField(
-                            obscureText: true,
-                            decoration: const InputDecoration(
-                              hintText: 'Contraseña',
-                            ),
-                            onChanged: (e) {
-                              loginBloc.pss = e;
-                            },
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              TextButton(
-                                onPressed: () {
-                                  /*Navigator.push(
+                          onChanged: (e) {
+                            loginBloc.pss = e;
+                          },
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            TextButton(
+                              onPressed: () {
+                                /*Navigator.push(
                                     context,
                                     MaterialPageRoute(
                                       builder: (_) => RecupearrPssPage(),
                                     ),
                                   );*/
-                                },
-                                child: Text(
-                                  'Olvidaste tu contraseña?',
-                                  style: TextStyle(
-                                    fontSize: size.height * 0.020,
-                                    color: Colors.grey.shade700,
-                                  ),
+                              },
+                              child: Text(
+                                'Olvidaste tu contraseña?',
+                                style: TextStyle(
+                                  fontSize: size.height * 0.020,
+                                  color: Colors.grey.shade700,
                                 ),
-                              )
-                            ],
-                          )
-                        ],
-                      )),
+                              ),
+                            )
+                          ],
+                        )
+                      ],
+                    ),
+                  ),
                 ),
               ),
               Padding(
@@ -123,6 +136,42 @@ class LoginPage extends StatelessWidget {
                   ],
                 ),
               ),
+              Expanded(
+                child: SizedBox(
+                  height: 20,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Center(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.copyright,
+                            color: colorPrincipal,
+                            size: 14,
+                          ),
+                          Text(
+                            'VitelSoft',
+                            style: TextStyle(
+                              color: colorPrincipal,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Text(
+                        'Versión ' + Preferencias().versionApp,
+                        style: TextStyle(
+                          color: Colors.grey.shade600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              )
             ],
           ),
         ),

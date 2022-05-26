@@ -17,6 +17,7 @@ class PerfilBloc extends ChangeNotifier {
   String _txtRevisando = "";
   String _usuario = "";
   String _pss = "";
+  bool _mostrar = false;
 
   String _nombres = "";
   String _apellidos = "";
@@ -29,6 +30,7 @@ class PerfilBloc extends ChangeNotifier {
   Usuario? _usuClon;
 
   bool get revConexion => _revConexion;
+  bool get mostrar => _mostrar;
   Usuario get usuFinal => _usuFinal!;
   bool get hayConexion => _hayConexion;
   String get txtRevisando => _txtRevisando;
@@ -260,6 +262,11 @@ class PerfilBloc extends ChangeNotifier {
 
   set correo(String c) {
     _correo = c;
+    notifyListeners();
+  }
+
+  set mostrar(bool m) {
+    _mostrar = m;
     notifyListeners();
   }
 
