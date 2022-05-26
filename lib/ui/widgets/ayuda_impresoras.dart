@@ -5,15 +5,33 @@ class AyudaImpresora extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    //final ordenBloc = Provider.of<OrdenBloc>(context);
     return Scaffold(
-      appBar: AppBar(title: Text('Conectar impresora'), actions: [
-        IconButton(
-          onPressed: () {
-            //ordenBloc.scannear(context, false);
-          },
-          icon: Icon(Icons.refresh),
-        ),
-      ]),
+      appBar: AppBar(
+        title: Text('Conectar impresora'),
+        actions: [
+          IconButton(
+            onPressed: () {
+              //ordenBloc.emperzar();
+            },
+            icon: Icon(Icons.refresh),
+          ),
+        ],
+      ),
+      /**
+      body: ListView.builder(
+        itemCount: ordenBloc.devices.length,
+        itemBuilder: (BuildContext context, int index) {
+          return ListTile(
+            title: Text(ordenBloc.devices[index].name!),
+            subtitle: Text(ordenBloc.devices[index].address!),
+            onTap: () {
+              //ordenBloc.seleccionarImpresora(index, context);
+            },
+          );
+        },
+      ),
+       */
     );
   }
 }

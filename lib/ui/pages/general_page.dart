@@ -1,5 +1,7 @@
 import 'package:app_ordenes/domains/blocs/ayudas_bloc.dart';
 import 'package:app_ordenes/domains/blocs/orden_bloc.dart';
+import 'package:app_ordenes/domains/utils/preferencias.dart';
+import 'package:app_ordenes/ui/utils/colores.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -14,6 +16,60 @@ class GeneralPage extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.symmetric(horizontal: 12),
       children: [
+        SizedBox(
+          height: (Preferencias().usuario!.validarCedula ?? false) ? 15 : 1,
+        ),
+        (Preferencias().usuario!.validarCedula ?? false)
+            ? Container(
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: Colors.grey.shade500,
+                  ),
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                child: Padding(
+                  padding: EdgeInsets.only(
+                    left: 8,
+                    right: size.width * .3,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Tipo identificacion',
+                        style: TextStyle(color: Colors.grey.shade700),
+                      ),
+                      DropdownButton<String>(
+                        value: ordenbloc.tipoIdentificacion,
+                        icon: Icon(
+                          Icons.arrow_drop_down,
+                          color: colorPrincipal,
+                        ),
+                        elevation: 16,
+                        style: const TextStyle(color: Colors.black),
+                        underline: Container(
+                          height: 2,
+                          color: colorPrincipal,
+                        ),
+                        onChanged: (String? newValue) {
+                          ordenbloc.tipoIdentificacion = newValue!;
+                        },
+                        items: <String>[
+                          'CEDULA',
+                          'RUC',
+                          'PASAPORTE',
+                        ].map<DropdownMenuItem<String>>((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          );
+                        }).toList(),
+                      ),
+                    ],
+                  ),
+                ),
+              )
+            : Container(),
         const SizedBox(
           height: 15,
         ),

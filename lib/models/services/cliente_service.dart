@@ -32,6 +32,7 @@ class ClienteService {
               seconds: 100,
             ),
           );
+      print('CONSUMIO');
       if (respuesta.statusCode == 200) {
         var jsonData = json.decode(respuesta.body);
         ClienteResponse res = ClienteResponse.fromJson(jsonData);

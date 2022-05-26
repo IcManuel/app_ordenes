@@ -34,6 +34,7 @@ import 'package:provider/provider.dart';
 import 'package:path_provider/path_provider.dart';
 
 class OrdenBloc extends ChangeNotifier {
+  String _tipoIdentificacion = 'CEDULA';
   String _identificacion = '';
   String msj = '';
   int _tipo = 1;
@@ -64,6 +65,7 @@ class OrdenBloc extends ChangeNotifier {
   TextEditingController _ctrlObsUsu = TextEditingController();
 
   String get identificacion => _identificacion;
+  String get tipoIdentificacion => _tipoIdentificacion;
   String get nombres => _nombres;
   bool get cargandoClientes => _cargandoClientes;
   String get direccion => _direccion;
@@ -100,44 +102,6 @@ class OrdenBloc extends ChangeNotifier {
     notifyListeners();
   }
 
-  /**   void scannear(BuildContext context, bool navegar) async {
-    _scanResult = [];
-
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (_) {
-        return const DialogoCargando(
-          texto: 'Buscando dispositivos...',
-        );
-      },
-    );
-    bool estaPrendido = false;
-    BlueThermalPrinter bluetooth = BlueThermalPrinter.instance;
-    estaPrendido = await bluetooth.isOn ?? false;
-    if (estaPrendido) {
-      _scanResult = await bluetooth.getBondedDevices();
-      Navigator.pop(context);
-      if (navegar) Navigator.pushNamed(context, 'ayuda_impresora');
-      notifyListeners();
-    } else {
-      Navigator.pop(context);
-      Fluttertoast.showToast(
-          msg: 'Debe encender el bluetooth',
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.red,
-          textColor: Colors.white,
-          fontSize: 16.0);
-    }
-  }
-
-  void seleccionarImpresora(int index, context) async {
-    BlueThermalPrinter bluetooth = BlueThermalPrinter.instance;
-    bluetooth.connect(_scanResult![index]);
-  }
-*/
   void setearDatosSelect(Orden orden) {
     _identificacion = orden.cliente.cliIdentificacion;
     _idCliente = orden.cliente.cliId;
@@ -159,6 +123,18 @@ class OrdenBloc extends ChangeNotifier {
     _ctrlObs.text = _observaciones;
     _ctrlObsUsu.text = _observacionesUsu;
 
+    if (orden.cliente.cliTipoIdentificacion != null) {
+      if (orden.cliente.cliTipoIdentificacion == "1") {
+        _tipoIdentificacion = "CEDULA";
+      } else if (orden.cliente.cliTipoIdentificacion == "2") {
+        _tipoIdentificacion = "RUC";
+      } else {
+        _tipoIdentificacion = "PASAPORTE";
+      }
+    } else {
+      _tipoIdentificacion = "CEDULA";
+    }
+
     notifyListeners();
   }
 
@@ -175,6 +151,17 @@ class OrdenBloc extends ChangeNotifier {
     _ctrlIdentificacion.text = _identificacion;
     _ctrlDireccion.text = _direccion;
 
+    if (pro.cliTipoIdentificacion != null) {
+      if (pro.cliTipoIdentificacion == "1") {
+        _tipoIdentificacion = "CEDULA";
+      } else if (pro.cliTipoIdentificacion == "2") {
+        _tipoIdentificacion = "RUC";
+      } else {
+        _tipoIdentificacion = "PASAPORTE";
+      }
+    } else {
+      _tipoIdentificacion = "CEDULA";
+    }
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -287,6 +274,11 @@ class OrdenBloc extends ChangeNotifier {
     notifyListeners();
   }
 
+  set tipoIdentificacion(String i) {
+    _tipoIdentificacion = i;
+    notifyListeners();
+  }
+
   void limpiar() {
     _identificacion = '';
   }
@@ -347,6 +339,18 @@ class OrdenBloc extends ChangeNotifier {
             _ctrlTelefono.text = res.cliente!.cliCelular!;
             _ctrlCorreo.text = res.cliente!.cliCorreo!;
             _ctrlIdentificacion.text = _identificacion;
+
+            if (res.cliente!.cliTipoIdentificacion != null) {
+              if (res.cliente!.cliTipoIdentificacion == "1") {
+                _tipoIdentificacion = "CEDULA";
+              } else if (res.cliente!.cliTipoIdentificacion == "2") {
+                _tipoIdentificacion = "RUC";
+              } else {
+                _tipoIdentificacion = "PASAPORTE";
+              }
+            } else {
+              _tipoIdentificacion = "CEDULA";
+            }
             VehiculoResponse resVeh =
                 await VehiculoService.obtenerVehiculosPorCliente(
                     res.cliente!.cliId);
@@ -443,6 +447,11 @@ class OrdenBloc extends ChangeNotifier {
         cliDireccion: _direccion,
         cliNombres: _nombres,
         eprId: pref.empresa,
+        cliTipoIdentificacion: _tipoIdentificacion == "CEDULA"
+            ? "1"
+            : _tipoIdentificacion == "RUC"
+                ? "2"
+                : "3",
       );
       Vehiculo veh = Vehiculo(
         vehId: vehiculoBloc.idVehiculo,
@@ -642,53 +651,67 @@ class OrdenBloc extends ChangeNotifier {
     final visualBloc = Provider.of<VisualBloc>(context, listen: false);
     if (visualBloc.lista.length > 0) {
       if (_identificacion.trim().isNotEmpty) {
-        if (_nombres.trim().isNotEmpty) {
-          if (_telefono.trim().isNotEmpty) {
-            if (vehiculoBloc.placa.trim().isNotEmpty) {
-              if (vehiculoBloc.modeloSelect.modId != -1) {
-                bool pasa = true;
-                for (int i = 0; i < vehiculoBloc.lista.length; i++) {
-                  if (vehiculoBloc.lista[i].carObligatorio == true) {
-                    if (vehiculoBloc.lista[i].carSeleccionadble == true) {
-                      if (vehiculoBloc.lista[i].idCal == null ||
-                          vehiculoBloc.lista[i].idCal == -1) {
-                        res = false;
-                        msj = 'Debe ingresar el ' +
-                            vehiculoBloc.lista[i].carNombre.toUpperCase();
-                      }
-                    } else {
-                      if (vehiculoBloc.lista[i].valor == null ||
-                          vehiculoBloc.lista[i].valor!.trim().isEmpty) {
-                        res = false;
-                        msj = 'Debe ingresar el ' +
-                            vehiculoBloc.lista[i].carNombre.toUpperCase();
+        bool pasaI = true;
+        if ((Preferencias().usuario!.validarCedula ?? false) == true) {
+          if (_idCliente == -1) {
+            String tipo = (_tipoIdentificacion == "CEDULA"
+                ? "1"
+                : (_tipoIdentificacion == "RUC" ? "2" : "3"));
+            pasaI = validarCedula(tipo, _identificacion);
+          }
+        }
+        if (pasaI) {
+          if (_nombres.trim().isNotEmpty) {
+            if (_telefono.trim().isNotEmpty) {
+              if (vehiculoBloc.placa.trim().isNotEmpty) {
+                if (vehiculoBloc.modeloSelect.modId != -1) {
+                  bool pasa = true;
+                  for (int i = 0; i < vehiculoBloc.lista.length; i++) {
+                    if (vehiculoBloc.lista[i].carObligatorio == true) {
+                      if (vehiculoBloc.lista[i].carSeleccionadble == true) {
+                        if (vehiculoBloc.lista[i].idCal == null ||
+                            vehiculoBloc.lista[i].idCal == -1) {
+                          res = false;
+                          msj = 'Debe ingresar el ' +
+                              vehiculoBloc.lista[i].carNombre.toUpperCase();
+                        }
+                      } else {
+                        if (vehiculoBloc.lista[i].valor == null ||
+                            vehiculoBloc.lista[i].valor!.trim().isEmpty) {
+                          res = false;
+                          msj = 'Debe ingresar el ' +
+                              vehiculoBloc.lista[i].carNombre.toUpperCase();
+                        }
                       }
                     }
                   }
-                }
-                if (pasa) {
-                  if (tipo == 1) {
-                    if (detallesBloc.detalles.isNotEmpty) {
-                    } else {
-                      msj = 'Debe ingresar detalles';
-                      res = false;
+                  if (pasa) {
+                    if (tipo == 1) {
+                      if (detallesBloc.detalles.isNotEmpty) {
+                      } else {
+                        msj = 'Debe ingresar detalles';
+                        res = false;
+                      }
                     }
                   }
+                } else {
+                  msj = 'No se ha seleccionado un modelo';
+                  res = false;
                 }
               } else {
-                msj = 'No se ha seleccionado un modelo';
+                msj = 'No se ha ingresado la placa del vehículo';
                 res = false;
               }
             } else {
-              msj = 'No se ha ingresado la placa del vehículo';
+              msj = 'No se ha ingresado un teléfono';
               res = false;
             }
           } else {
-            msj = 'No se ha ingresado un teléfono';
+            msj = 'No se ha ingresado los nombres';
             res = false;
           }
         } else {
-          msj = 'No se ha ingresado los nombres';
+          msj = 'La identificacion ingresada es inválida';
           res = false;
         }
       } else {

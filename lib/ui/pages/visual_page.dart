@@ -53,7 +53,8 @@ class VisualPage extends StatelessWidget {
               : Expanded(
                   child: Container(
                     decoration: BoxDecoration(
-                        border: Border.all(color: colorPrincipal.shade500)),
+                      border: Border.all(color: colorPrincipal.shade500),
+                    ),
                     child: ListView.builder(
                       itemCount: visualBloc.lista.length,
                       itemBuilder: (BuildContext context, int index) {

@@ -26,6 +26,7 @@ class Usuario {
     required this.validarStock,
     this.vehPorDefecto,
     this.impresionTermica,
+    this.validarCedula = false,
   });
 
   int usuId;
@@ -44,6 +45,7 @@ class Usuario {
   bool? validarStock;
   String? vehPorDefecto;
   bool? impresionTermica;
+  bool? validarCedula;
 
   factory Usuario.fromJson(Map<String, dynamic> json) => Usuario(
         usuId: json["usu_id"],
@@ -59,9 +61,10 @@ class Usuario {
         palabraClave: json["epr_palabra_clave"],
         identificador: json["epr_identificador"],
         pymes: json["epr_pymes"],
-        validarStock: json["epr_validar_stock"],
-        vehPorDefecto: json["veh_id_pordefecto"],
-        impresionTermica: json["epr_impresion_termica"],
+        validarStock: json["epr_validar_stock"] ?? false,
+        vehPorDefecto: json["veh_id_pordefecto"] ?? '',
+        impresionTermica: json["epr_impresion_termica"] ?? false,
+        validarCedula: json["epr_validar_cedula"] ?? false,
       );
 
   Map<String, dynamic> toJson() => {
@@ -78,9 +81,10 @@ class Usuario {
         "epr_palabra_clave": palabraClave,
         "epr_identificador": identificador,
         "epr_pymes": pymes,
-        "epr_validar_stock": validarStock,
-        "veh_id_pordefecto": vehPorDefecto,
-        "epr_impresion_termica": impresionTermica,
+        "epr_validar_stock": validarStock ?? false,
+        "veh_id_pordefecto": vehPorDefecto ?? '',
+        "epr_impresion_termica": impresionTermica ?? false,
+        "epr_validar_cedula": validarCedula ?? false,
       };
   Map<String, dynamic> toJsonWs() => {
         "id": usuId,
