@@ -125,9 +125,21 @@ class ListaOrdenesPage extends StatelessWidget {
                                           },
                                           icon: Icon(
                                             Icons.search,
-                                            color: colorPrincipal,
+                                            color: Colors.green,
                                           ),
-                                        )
+                                        ),
+                                        mod.corEstado == 4
+                                            ? IconButton(
+                                                onPressed: () {
+                                                  listaBloc.eliminar(
+                                                      context, mod, size);
+                                                },
+                                                icon: Icon(
+                                                  Icons.delete,
+                                                  color: Colors.red,
+                                                ),
+                                              )
+                                            : Container(),
                                       ],
                                     ),
                                   ],

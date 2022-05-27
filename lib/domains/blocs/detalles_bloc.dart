@@ -179,6 +179,7 @@ class DetallesBloc extends ChangeNotifier {
     if (pasa) {
       _total = _cantidad * _precio;
       _ctrlTotal.text = _total.toStringAsFixed(2);
+      _total = double.parse(_ctrlTotal.text);
     }
     notifyListeners();
   }
@@ -281,42 +282,64 @@ class DetallesBloc extends ChangeNotifier {
     }
   }
 
+  bool verificarSiExisteDetalle() {
+    bool res = false;
+    for (Dorden d in _detalles) {
+      if (d.producto == _producto.proId) {
+        res = true;
+      }
+    }
+    return res;
+  }
+
   void agregarDetalle(BuildContext context) {
     if (_producto.proId != -1) {
-      if (_cantidad > 0) {
-        if (_precio > 0) {
-          if (_hayStock) {
-            if (modificar) {
-              _detalles.removeAt(index);
-            }
+      if (!verificarSiExisteDetalle() || modificar) {
+        if (_cantidad > 0) {
+          if (_precio > 0) {
+            if (_hayStock) {
+              if (modificar) {
+                _detalles.removeAt(index);
+              }
 
-            _detalles.add(
-              Dorden(
-                producto: _producto.proId,
-                cantidad: _cantidad,
-                precio: _precio,
-                descuento: 0.00,
-                vdescuento: 0.00,
-                total: _total,
-                observacion: '',
-                productoFinal: _producto,
-              ),
-            );
-            _mostrarFormulario = false;
-            calcularTotalFinal();
-            Fluttertoast.showToast(
-              msg: "Detalle agregado correctamente",
-              toastLength: Toast.LENGTH_SHORT,
-              gravity: ToastGravity.CENTER,
-              timeInSecForIosWeb: 1,
-              backgroundColor: Colors.green.shade300,
-              textColor: Colors.white,
-              fontSize: 16.0,
-            );
-            notifyListeners();
+              _detalles.add(
+                Dorden(
+                  producto: _producto.proId,
+                  cantidad: _cantidad,
+                  precio: _precio,
+                  descuento: 0.00,
+                  vdescuento: 0.00,
+                  total: _total,
+                  observacion: '',
+                  productoFinal: _producto,
+                ),
+              );
+              _mostrarFormulario = false;
+              calcularTotalFinal();
+              Fluttertoast.showToast(
+                msg: "Detalle agregado correctamente",
+                toastLength: Toast.LENGTH_SHORT,
+                gravity: ToastGravity.CENTER,
+                timeInSecForIosWeb: 1,
+                backgroundColor: Colors.green.shade300,
+                textColor: Colors.white,
+                fontSize: 16.0,
+              );
+              notifyListeners();
+            } else {
+              Fluttertoast.showToast(
+                msg: "Insuficiente stock",
+                toastLength: Toast.LENGTH_SHORT,
+                gravity: ToastGravity.CENTER,
+                timeInSecForIosWeb: 1,
+                backgroundColor: Colors.red,
+                textColor: Colors.white,
+                fontSize: 16.0,
+              );
+            }
           } else {
             Fluttertoast.showToast(
-              msg: "Insuficiente stock",
+              msg: "El precio debe ser mayor que cero",
               toastLength: Toast.LENGTH_SHORT,
               gravity: ToastGravity.CENTER,
               timeInSecForIosWeb: 1,
@@ -327,7 +350,7 @@ class DetallesBloc extends ChangeNotifier {
           }
         } else {
           Fluttertoast.showToast(
-            msg: "El precio debe ser mayor que cero",
+            msg: "Debe ingresar una cantidad mayor que cero",
             toastLength: Toast.LENGTH_SHORT,
             gravity: ToastGravity.CENTER,
             timeInSecForIosWeb: 1,
@@ -338,7 +361,7 @@ class DetallesBloc extends ChangeNotifier {
         }
       } else {
         Fluttertoast.showToast(
-          msg: "Debe ingresar una cantidad mayor que cero",
+          msg: "El producto seleccionado ya está agregado",
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.CENTER,
           timeInSecForIosWeb: 1,

@@ -179,6 +179,115 @@ class ListaOrdenBloc extends ChangeNotifier {
     }
   }
 
+  Future<bool> eliminarFinal(BuildContext context, Orden orden) async {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) {
+        return const DialogoCargando(
+          texto: 'Revisando conexión',
+        );
+      },
+    );
+    final conect = await verificarConexion();
+    Navigator.pop(context);
+    if (conect) {
+      showDialog(
+        context: context,
+        barrierDismissible: true,
+        builder: (_) {
+          return const DialogoCargando(
+            texto: 'Consultando orden......',
+          );
+        },
+      );
+      DetalleResponse det = await OrdenService.eliminarOrden(orden.corId);
+      Navigator.pop(context);
+      if (det.ok) {
+        return true;
+      } else {
+        Fluttertoast.showToast(
+          msg: det.msg!,
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.green.shade300,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+        return false;
+      }
+    } else {
+      Fluttertoast.showToast(
+        msg: 'No hay conexión a internet',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.green.shade300,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+      return false;
+    }
+  }
+
+  void eliminar(BuildContext context, Orden orden, Size size) async {
+    if (orden.corEstado == 4) {
+      showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('Confirmar'),
+              content: SingleChildScrollView(
+                child: Column(
+                  children: const [
+                    Text(
+                        '¿Está seguro que desea eliminar la orden, los datos se perderán?'),
+                  ],
+                ),
+              ),
+              actions: <Widget>[
+                TextButton(
+                  child: const Text('Aceptar'),
+                  onPressed: () async {
+                    bool res = await eliminarFinal(context, orden);
+                    if (res) {
+                      Fluttertoast.showToast(
+                        msg: 'Orden eliminada correctamente',
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.CENTER,
+                        timeInSecForIosWeb: 1,
+                        backgroundColor: Colors.green.shade300,
+                        textColor: Colors.white,
+                        fontSize: 16.0,
+                      );
+                      filtrar(context, size, true);
+                      Navigator.of(context).pop();
+                    }
+                  },
+                ),
+                TextButton(
+                  child: const Text('Cancelar'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          });
+    } else {
+      Fluttertoast.showToast(
+        msg: 'No se puede eliminar una orden guardad',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.red.shade300,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+    }
+  }
+
   void consultar(BuildContext context, Orden orden, Size size) async {
     showDialog(
       context: context,
@@ -275,13 +384,15 @@ class ListaOrdenBloc extends ChangeNotifier {
               },
             )
           : null;
+      Preferencias pref = Preferencias();
       OrdenResponse res = await OrdenService.obtenerOrdenes(FiltroOrdenRequest(
-        empresa: Preferencias().empresa,
+        empresa: pref.empresa,
         fechai: DateFormat('dd-MM-yyyy').format(_fechaI),
         fechaf: DateFormat('dd-MM-yyyy').format(_fechaF),
         placa: _placa,
         cliente: _cliente,
         estado: _estado,
+        usuario: pref.usuario!.usuId,
       ));
 
       if (interno == false) Navigator.pop(context);
@@ -359,13 +470,15 @@ class ListaOrdenBloc extends ChangeNotifier {
       var fechaI = DateTime.now().subtract(const Duration(
         days: 365 * 5,
       ));
+      Preferencias pref = Preferencias();
       OrdenResponse res = await OrdenService.obtenerOrdenes(FiltroOrdenRequest(
-        empresa: Preferencias().empresa,
+        empresa: pref.empresa,
         fechai: DateFormat('dd-MM-yyyy').format(fechaI),
         fechaf: DateFormat('dd-MM-yyyy').format(DateTime.now()),
         placa: _placaH,
         cliente: '',
         estado: 2,
+        usuario: pref.usuario!.usuId,
       ));
       if (res.ok) {
         _cargandoH = false;

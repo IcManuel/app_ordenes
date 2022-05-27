@@ -135,6 +135,40 @@ class OrdenService {
     }
   }
 
+  static Future<DetalleResponse> eliminarOrden(int id) async {
+    try {
+      var respuesta = await http
+          .get(
+              Uri.parse(
+                "${url}orden/eliminar/$id",
+              ),
+              headers: cabecera())
+          .timeout(
+            const Duration(
+              seconds: 10,
+            ),
+          );
+      if (respuesta.statusCode == 200 || respuesta.statusCode == 400) {
+        var jsonData = json.decode(respuesta.body);
+        print(jsonData);
+        DetalleResponse res = DetalleResponse.fromJson(jsonData);
+        return res;
+      } else if (respuesta.statusCode == 502) {
+        return DetalleResponse(
+            ok: false,
+            msg: "No se pudo lograr una comunicación con el servidor");
+      } else {
+        return DetalleResponse(ok: false, msg: "Error al obtener información");
+      }
+    } catch (error) {
+      print(error);
+      return DetalleResponse(
+        ok: false,
+        msg: "Error al comunicarse con el servidor",
+      );
+    }
+  }
+
   static Future<DetalleResponse> obtenerImagenes(int id) async {
     try {
       var respuesta = await http

@@ -18,6 +18,7 @@ class FiltroOrdenRequest {
     required this.placa,
     required this.cliente,
     required this.estado,
+    required this.usuario,
   });
 
   int empresa;
@@ -26,6 +27,7 @@ class FiltroOrdenRequest {
   String placa;
   String cliente;
   int estado;
+  int usuario;
 
   factory FiltroOrdenRequest.fromJson(Map<String, dynamic> json) =>
       FiltroOrdenRequest(
@@ -35,6 +37,7 @@ class FiltroOrdenRequest {
         placa: json["placa"],
         cliente: json["cliente"],
         estado: json["estado"],
+        usuario: json["usuario"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -44,5 +47,6 @@ class FiltroOrdenRequest {
         "placa": placa,
         "cliente": cliente,
         "estado": estado,
+        "usuario": usuario,
       };
 }
