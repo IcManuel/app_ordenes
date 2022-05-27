@@ -20,6 +20,9 @@ import 'package:fluttertoast/fluttertoast.dart';
 
 class DetallesBloc extends ChangeNotifier {
   bool _escribiendo = false;
+  bool _mostrarLista = false;
+  bool _habProducto = true;
+  bool _habCodigo = true;
   int _indexTab = 0;
   bool _consultando = false;
   bool _cargandoTipos = false;
@@ -79,7 +82,10 @@ class DetallesBloc extends ChangeNotifier {
   String get nombreTipo => _nombreTipo;
 
   String get codigo => _codigo;
+  bool get mostrarLista => _mostrarLista;
   bool get hayStock => _hayStock;
+  bool get habProducto => _habProducto;
+  bool get habCodigo => _habCodigo;
   List<TipoProducto> get tipos => _tipos;
   List<TipoProducto> get tiposFiltrados => _tiposFiltrados;
   List<MarcaProducto> get marcas => _marcas;
@@ -134,6 +140,11 @@ class DetallesBloc extends ChangeNotifier {
     _ctrlTotalFinal.selection = TextSelection.fromPosition(
         TextPosition(offset: _ctrlTotalFinal.text.length));
     return _ctrlTotalFinal;
+  }
+
+  void set mostrarLista(bool b) {
+    _mostrarLista = b;
+    notifyListeners();
   }
 
   void set hayStock(bool h) {
