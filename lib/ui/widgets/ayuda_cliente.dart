@@ -1,8 +1,8 @@
-import 'package:app_ordenes/domains/blocs/ayudas_bloc.dart';
 import 'package:app_ordenes/domains/blocs/orden_bloc.dart';
 import 'package:app_ordenes/domains/utils/preferencias.dart';
-import 'package:app_ordenes/models/cliente_model.dart';
+import 'package:app_ordenes/ui/utils/colores.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 class AyudaCliente extends StatelessWidget {
@@ -10,140 +10,157 @@ class AyudaCliente extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Preferencias pref = Preferencias();
-    final ayudaBloc = Provider.of<AyudaBloc>(context);
-    final ordenBloc = Provider.of<OrdenBloc>(context);
-    final arguments = (ModalRoute.of(context)?.settings.arguments ??
-        <String, dynamic>{}) as Map;
-
+    final ordenbloc = Provider.of<OrdenBloc>(context);
+    final size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Buscar Cliente'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-        child: Column(
-          children: [
-            const SizedBox(
-              height: 20,
-            ),
-            TextField(
-              controller: ayudaBloc.ctrlFiltro,
-              textCapitalization: TextCapitalization.characters,
-              onChanged: (valor) {
-                ayudaBloc.filtro = valor;
-                if (!ayudaBloc.escribiendo) {
-                  ayudaBloc.escribiendo = true;
-                  Future.delayed(const Duration(
-                    seconds: 2,
-                  )).whenComplete(() async {
-                    ayudaBloc.escribiendo = false;
-                    if (!ayudaBloc.consultando) {
-                      ayudaBloc.cargarLista(pref, arguments['tipo']);
-                    }
-                  });
-                }
-              },
-              decoration: InputDecoration(
-                hintText: 'Buscar por ' +
-                    (arguments['tipo'] == 1 ? ' identificación ' : 'nombre '),
-                labelText: 'Buscar por ' +
-                    (arguments['tipo'] == 1 ? ' identificación ' : 'nombre '),
-                border: const OutlineInputBorder(),
+        title: const Text('Crear Cliente'),
+        actions: [
+          ElevatedButton(
+            onPressed: () {
+              ordenbloc.guardarNuevo(context, size);
+            },
+            child: Text(
+              'Guardar',
+              style: TextStyle(
+                fontSize: 20,
               ),
             ),
-            ayudaBloc.escribiendo
-                ? const Padding(
-                    padding: EdgeInsets.all(20.0),
-                    child: CircularProgressIndicator(),
-                  )
-                : ayudaBloc.consultando
-                    ? const Padding(
-                        padding: EdgeInsets.all(20.0),
-                        child: CircularProgressIndicator(
-                          color: Colors.red,
+          ),
+        ],
+      ),
+      body: ListView(
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        children: [
+          SizedBox(
+            height: (Preferencias().usuario!.validarCedula ?? false) ? 15 : 1,
+          ),
+          (Preferencias().usuario!.validarCedula ?? false)
+              ? Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: Colors.grey.shade500,
+                    ),
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  child: Padding(
+                    padding: EdgeInsets.only(
+                      left: 8,
+                      right: size.width * .3,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Tipo identificacion',
+                          style: TextStyle(color: Colors.grey.shade700),
                         ),
-                      )
-                    : Expanded(
-                        child: ayudaBloc.clientes.isNotEmpty
-                            ? ListView.builder(
-                                itemCount: ayudaBloc.clientes.length,
-                                itemBuilder: (BuildContext context, int index) {
-                                  Cliente pro = ayudaBloc.clientes[index];
-                                  return InkWell(
-                                    onTap: () {
-                                      ordenBloc.seleccionar(context, pro);
-                                    },
-                                    child: Container(
-                                      decoration: const BoxDecoration(
-                                        border: Border(
-                                          bottom: BorderSide(
-                                              color:
-                                                  Color.fromRGBO(0, 83, 79, 1),
-                                              width: 0.2),
-                                        ),
-                                      ),
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 8.0),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              pro.cliIdentificacion,
-                                              style: TextStyle(
-                                                fontSize: arguments['tipo'] == 1
-                                                    ? 18
-                                                    : 14,
-                                                fontWeight:
-                                                    arguments['tipo'] == 1
-                                                        ? FontWeight.bold
-                                                        : FontWeight.normal,
-                                              ),
-                                            ),
-                                            Text(
-                                              pro.cliNombres!,
-                                              style: TextStyle(
-                                                fontSize: arguments['tipo'] == 1
-                                                    ? 14
-                                                    : 18,
-                                                fontWeight:
-                                                    arguments['tipo'] == 2
-                                                        ? FontWeight.bold
-                                                        : FontWeight.normal,
-                                              ),
-                                            ),
-                                            Text(
-                                              pro.cliCelular!,
-                                              style: TextStyle(
-                                                fontSize: 13,
-                                                color: Colors.grey.shade800,
-                                              ),
-                                            ),
-                                            Text(
-                                              pro.cliDireccion!,
-                                              style: TextStyle(
-                                                fontSize: 13,
-                                                color: Colors.grey.shade800,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                },
-                              )
-                            : const Text(
-                                'No se ha encontrado información... ',
-                                style: TextStyle(
-                                  color: Colors.grey,
-                                ),
-                              ),
-                      ),
-          ],
-        ),
+                        DropdownButton<String>(
+                          value: ordenbloc.tipoIdentificacion,
+                          icon: Icon(
+                            Icons.arrow_drop_down,
+                            color: colorPrincipal,
+                          ),
+                          elevation: 16,
+                          style: const TextStyle(color: Colors.black),
+                          underline: Container(
+                            height: 2,
+                            color: colorPrincipal,
+                          ),
+                          onChanged: (String? newValue) {
+                            ordenbloc.tipoIdentificacion = newValue!;
+                          },
+                          items: <String>[
+                            'CEDULA',
+                            'RUC',
+                            'PASAPORTE',
+                          ].map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          }).toList(),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              : Container(),
+          const SizedBox(
+            height: 15,
+          ),
+          TextField(
+            onChanged: (valor) {
+              ordenbloc.nuevo.cliIdentificacion = valor;
+            },
+            keyboardType: TextInputType.number,
+            inputFormatters: <TextInputFormatter>[
+              FilteringTextInputFormatter.digitsOnly
+            ],
+            decoration: const InputDecoration(
+              labelText: 'Identificación',
+              hintText: 'Identificación',
+              border: OutlineInputBorder(),
+            ),
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+          TextField(
+            onChanged: (valor) {
+              ordenbloc.nuevo.cliNombres = valor;
+            },
+            textCapitalization: TextCapitalization.characters,
+            decoration: const InputDecoration(
+              labelText: 'Nombres',
+              hintText: 'Nombres',
+              border: OutlineInputBorder(),
+            ),
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+          TextField(
+            textCapitalization: TextCapitalization.characters,
+            onChanged: (valor) {
+              ordenbloc.nuevo.cliCelular = valor;
+            },
+            decoration: const InputDecoration(
+              hintText: 'Telfs',
+              labelText: 'Telfs',
+              border: OutlineInputBorder(),
+            ),
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+          TextField(
+            keyboardType: TextInputType.emailAddress,
+            onChanged: (valor) {
+              ordenbloc.nuevo.cliCorreo = valor;
+            },
+            decoration: const InputDecoration(
+              hintText: 'Correo ',
+              labelText: 'Correo ',
+              border: OutlineInputBorder(),
+            ),
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+          TextField(
+            textCapitalization: TextCapitalization.characters,
+            maxLines: 2,
+            onChanged: (valor) {
+              ordenbloc.nuevo.cliDireccion = valor;
+            },
+            decoration: const InputDecoration(
+              hintText: 'Dirección',
+              labelText: 'Dirección',
+              border: OutlineInputBorder(),
+            ),
+          ),
+        ],
       ),
     );
   }

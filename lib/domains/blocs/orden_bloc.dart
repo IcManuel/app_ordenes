@@ -1,3 +1,4 @@
+import 'package:app_ordenes/domains/blocs/ayudas_bloc.dart';
 import 'package:app_ordenes/domains/blocs/detalles_bloc.dart';
 import 'package:app_ordenes/domains/blocs/fotos_bloc.dart';
 import 'package:app_ordenes/domains/blocs/lista_ordenes_bloc.dart';
@@ -36,6 +37,7 @@ import 'package:path_provider/path_provider.dart';
 class OrdenBloc extends ChangeNotifier {
   String _tipoIdentificacion = 'CEDULA';
   String _identificacion = '';
+  int tipoFiltro = 1;
   String msj = '';
   int _tipo = 1;
   int? _numeroOrden;
@@ -54,6 +56,18 @@ class OrdenBloc extends ChangeNotifier {
   String _pdfNombre = '';
   bool _modificar = false;
   int idOrden = -1;
+
+  Cliente nuevo = Cliente(
+    cliId: -1,
+    cliIdentificacion: "",
+    cliApellidos: "",
+    cliCelular: "",
+    cliCorreo: "",
+    cliDireccion: "",
+    cliNombres: "",
+    cliTipoIdentificacion: "1",
+    eprId: -1,
+  );
 
   TextEditingController _ctrlIdentificacion = TextEditingController();
   TextEditingController _ctrlNombres = TextEditingController();
@@ -82,6 +96,154 @@ class OrdenBloc extends ChangeNotifier {
   String get apellidos => _apellidos;
   List<Cliente> get clientesFiltrados => _clientesFiltrados;
 
+  void nuevoCliente(BuildContext context) {
+    _tipoIdentificacion = "CEDULA";
+    nuevo = Cliente(
+      cliId: -1,
+      cliIdentificacion: "",
+      cliApellidos: "",
+      cliCelular: "",
+      cliCorreo: "",
+      cliDireccion: "",
+      cliNombres: "",
+      cliTipoIdentificacion: "1",
+      eprId: -1,
+    );
+    notifyListeners();
+    Navigator.pushNamed(context, 'ayuda_cliente');
+  }
+
+  void guardarNuevo(BuildContext context, Size size) async {
+    String msg = "";
+    bool pasa = true;
+    if (nuevo.cliIdentificacion.trim().isNotEmpty) {
+      bool pasaI = true;
+      if ((Preferencias().usuario!.validarCedula ?? false) == true) {
+        String tipo = (_tipoIdentificacion == "CEDULA"
+            ? "1"
+            : (_tipoIdentificacion == "RUC" ? "2" : "3"));
+        pasaI = validarCedula(tipo, nuevo.cliIdentificacion);
+      }
+      if (pasaI) {
+        if ((nuevo.cliCelular ?? '').trim().isNotEmpty) {
+          if ((nuevo.cliCorreo ?? '').trim().isNotEmpty) {
+            if ((nuevo.cliDireccion ?? '').trim().isNotEmpty) {
+            } else {
+              pasa = false;
+              msg = 'Debe ingresar una dirección';
+            }
+          } else {
+            pasa = false;
+            msg = 'Debe ingresar un correo';
+          }
+        } else {
+          pasa = false;
+          msg = 'Debe ingresar un teléfono';
+        }
+      } else {
+        pasa = false;
+        msg = 'La identificación ingresada es inválida';
+      }
+    } else {
+      pasa = false;
+      msg = 'Debe ingresar la identificación';
+    }
+
+    if (pasa) {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (_) {
+          return const DialogoCargando(
+            texto: 'Revisando conexión',
+          );
+        },
+      );
+      final conect = await verificarConexion();
+      Navigator.pop(context);
+      if (conect) {
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (_) {
+            return const DialogoCargando(
+              texto: 'Guardando cliente......',
+            );
+          },
+        );
+        nuevo.eprId = Preferencias().empresa;
+        MarcaResponse res = await ClienteService.crearCliente(nuevo);
+        Navigator.pop(context);
+        if (res.ok == true) {
+          _idCliente = res.uid!;
+          _nombres = nuevo.cliNombres!;
+          _apellidos = nuevo.cliApellidos!;
+          _direccion = nuevo.cliDireccion!;
+          _telefono = nuevo.cliCelular!;
+          _correo = nuevo.cliCorreo!;
+          _identificacion = nuevo.cliIdentificacion;
+
+          _ctrlNombres.text = nuevo.cliNombres!;
+          _ctrlApellidos.text = nuevo.cliApellidos!;
+          _ctrlDireccion.text = nuevo.cliDireccion!;
+          _ctrlTelefono.text = nuevo.cliCelular!;
+          _ctrlCorreo.text = nuevo.cliCorreo!;
+          _ctrlIdentificacion.text = _identificacion;
+          Navigator.pop(context);
+          notifyListeners();
+        } else {
+          showDialog(
+              context: context,
+              builder: (_) {
+                return DialogoGeneral(
+                  size: size,
+                  lottie: 'assets/lotties/error_lottie.json',
+                  mostrarBoton1: true,
+                  mostrarBoton2: false,
+                  titulo: 'ALERTA',
+                  texto: res.msg,
+                  accion1: () {
+                    Navigator.pop(context);
+                  },
+                  textoBtn1: 'Ok',
+                  textoBtn2: 'Cancelar',
+                  accion2: () {},
+                );
+              });
+        }
+      } else {
+        showDialog(
+            context: context,
+            builder: (_) {
+              return DialogoGeneral(
+                size: size,
+                lottie: 'assets/lotties/alerta_lottie.json',
+                mostrarBoton1: true,
+                mostrarBoton2: false,
+                titulo: 'ALERTA',
+                texto: 'No hay conexión a internet',
+                accion1: () {
+                  Navigator.pop(context);
+                },
+                textoBtn1: 'Ok',
+                textoBtn2: 'Cancelar',
+                accion2: () {},
+              );
+            });
+      }
+    } else {
+      Fluttertoast.showToast(
+        msg: msg,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+    }
+  }
+
   set numeroOrden(int n) {
     _numeroOrden = n;
     notifyListeners();
@@ -100,6 +262,13 @@ class OrdenBloc extends ChangeNotifier {
   set tipo(int t) {
     _tipo = t;
     notifyListeners();
+  }
+
+  void inicializar() {
+    _habilitarGrabar = false;
+    _modificar = false;
+    idOrden = -1;
+    _habilitarGrabar = true;
   }
 
   void setearDatosSelect(Orden orden) {
@@ -139,9 +308,16 @@ class OrdenBloc extends ChangeNotifier {
   }
 
   void seleccionar(BuildContext context, Cliente pro) async {
+    final ayudaBloc = Provider.of<AyudaBloc>(context, listen: false);
     _idCliente = pro.cliId;
     _identificacion = pro.cliIdentificacion;
     _nombres = pro.cliNombres!;
+    if (tipoFiltro == 2) {
+      ayudaBloc.filtro = _nombres;
+    } else {
+      ayudaBloc.filtro = _identificacion;
+    }
+
     _telefono = pro.cliCelular!;
     _correo = pro.cliCorreo!;
     _direccion = pro.cliDireccion!;
@@ -174,11 +350,12 @@ class OrdenBloc extends ChangeNotifier {
     VehiculoResponse resVeh =
         await VehiculoService.obtenerVehiculosPorCliente(pro.cliId);
     Navigator.pop(context);
-    Navigator.pop(context);
     if (resVeh.ok) {
       final vehiculoBloc = Provider.of<VehiculoBloc>(context, listen: false);
       vehiculoBloc.vehiculosCliente = resVeh.vehiculos ?? [];
     }
+
+    ayudaBloc.inicializar();
     notifyListeners();
   }
 
@@ -283,7 +460,7 @@ class OrdenBloc extends ChangeNotifier {
     _identificacion = '';
   }
 
-  void cambioIdentificacion(BuildContext context, String e) {
+  void cambioIdentificacion(BuildContext context, String e, int tipo) {
     if (_identificacion != e) {
       _identificacion = e;
       if (_idCliente != -1) {
@@ -295,8 +472,12 @@ class OrdenBloc extends ChangeNotifier {
         _direccion = '';
         _telefono = '';
         _correo = '';
+        if (tipo == 2) {
+          _ctrlIdentificacion.text = '';
+        } else {
+          _ctrlNombres.text = '';
+        }
 
-        _ctrlNombres.text = '';
         _ctrlApellidos.text = '';
         _ctrlDireccion.text = '';
         _ctrlTelefono.text = '';
@@ -650,72 +831,48 @@ class OrdenBloc extends ChangeNotifier {
     bool res = true;
     final visualBloc = Provider.of<VisualBloc>(context, listen: false);
     if (visualBloc.lista.length > 0) {
-      if (_identificacion.trim().isNotEmpty) {
-        bool pasaI = true;
-        if ((Preferencias().usuario!.validarCedula ?? false) == true) {
-          if (_idCliente == -1) {
-            String tipo = (_tipoIdentificacion == "CEDULA"
-                ? "1"
-                : (_tipoIdentificacion == "RUC" ? "2" : "3"));
-            pasaI = validarCedula(tipo, _identificacion);
-          }
-        }
-        if (pasaI) {
-          if (_nombres.trim().isNotEmpty) {
-            if (_telefono.trim().isNotEmpty) {
-              if (vehiculoBloc.placa.trim().isNotEmpty) {
-                if (vehiculoBloc.modeloSelect.modId != -1) {
-                  bool pasa = true;
-                  for (int i = 0; i < vehiculoBloc.lista.length; i++) {
-                    if (vehiculoBloc.lista[i].carObligatorio == true) {
-                      if (vehiculoBloc.lista[i].carSeleccionadble == true) {
-                        if (vehiculoBloc.lista[i].idCal == null ||
-                            vehiculoBloc.lista[i].idCal == -1) {
-                          res = false;
-                          msj = 'Debe ingresar el ' +
-                              vehiculoBloc.lista[i].carNombre.toUpperCase();
-                        }
-                      } else {
-                        if (vehiculoBloc.lista[i].valor == null ||
-                            vehiculoBloc.lista[i].valor!.trim().isEmpty) {
-                          res = false;
-                          msj = 'Debe ingresar el ' +
-                              vehiculoBloc.lista[i].carNombre.toUpperCase();
-                        }
-                      }
-                    }
-                  }
-                  if (pasa) {
-                    if (tipo == 1) {
-                      if (detallesBloc.detalles.isNotEmpty) {
-                      } else {
-                        msj = 'Debe ingresar detalles';
-                        res = false;
-                      }
-                    }
+      if (idCliente != -1) {
+        if (vehiculoBloc.placa.trim().isNotEmpty) {
+          if (vehiculoBloc.modeloSelect.modId != -1) {
+            bool pasa = true;
+            for (int i = 0; i < vehiculoBloc.lista.length; i++) {
+              if (vehiculoBloc.lista[i].carObligatorio == true) {
+                if (vehiculoBloc.lista[i].carSeleccionadble == true) {
+                  if (vehiculoBloc.lista[i].idCal == null ||
+                      vehiculoBloc.lista[i].idCal == -1) {
+                    res = false;
+                    msj = 'Debe ingresar el ' +
+                        vehiculoBloc.lista[i].carNombre.toUpperCase();
                   }
                 } else {
-                  msj = 'No se ha seleccionado un modelo';
+                  if (vehiculoBloc.lista[i].valor == null ||
+                      vehiculoBloc.lista[i].valor!.trim().isEmpty) {
+                    res = false;
+                    msj = 'Debe ingresar el ' +
+                        vehiculoBloc.lista[i].carNombre.toUpperCase();
+                  }
+                }
+              }
+            }
+            if (pasa) {
+              if (tipo == 1) {
+                if (detallesBloc.detalles.isNotEmpty) {
+                } else {
+                  msj = 'Debe ingresar detalles';
                   res = false;
                 }
-              } else {
-                msj = 'No se ha ingresado la placa del vehículo';
-                res = false;
               }
-            } else {
-              msj = 'No se ha ingresado un teléfono';
-              res = false;
             }
           } else {
-            msj = 'No se ha ingresado los nombres';
+            msj = 'No se ha seleccionado un modelo';
             res = false;
           }
         } else {
-          msj = 'La identificacion ingresada es inválida';
+          msj = 'No se ha ingresado la placa del vehículo';
           res = false;
         }
       } else {
-        msj = 'No se ha ingresado una identificación';
+        msj = 'Debe seleccionar un cliente';
         res = false;
       }
     } else {

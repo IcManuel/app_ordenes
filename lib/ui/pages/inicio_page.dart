@@ -1,3 +1,4 @@
+import 'package:app_ordenes/domains/blocs/ayudas_bloc.dart';
 import 'package:app_ordenes/domains/blocs/detalles_bloc.dart';
 import 'package:app_ordenes/domains/blocs/lista_ordenes_bloc.dart';
 import 'package:app_ordenes/domains/blocs/orden_bloc.dart';
@@ -20,6 +21,7 @@ class InicioPage extends StatelessWidget {
     final visualBloc = Provider.of<VisualBloc>(context);
     final vehiculoBloc = Provider.of<VehiculoBloc>(context);
     final ordenBloc = Provider.of<OrdenBloc>(context);
+    final ayudaBloc = Provider.of<AyudaBloc>(context);
     final detallesBloc = Provider.of<DetallesBloc>(context);
     final listaOrdenBloc = Provider.of<ListaOrdenBloc>(context);
     Preferencias pref = Preferencias();
@@ -54,10 +56,9 @@ class InicioPage extends StatelessWidget {
             MenuItem(
               onPressed: () async {
                 Navigator.pushNamed(context, 'orden');
-                ordenBloc.habilitarGrabar = false;
-                ordenBloc.modificar = false;
+                ordenBloc.inicializar();
+                ayudaBloc.inicializar();
                 detallesBloc.indexTab = 0;
-                ordenBloc.idOrden = -1;
                 await vehiculoBloc
                     .cargarCaracteristicas(perfilBloc.usuFinal.eprId);
                 await visualBloc.cargarVisuales(perfilBloc.usuFinal.eprId);
@@ -66,7 +67,6 @@ class InicioPage extends StatelessWidget {
                   vehiculoBloc.placa = pref.usuario!.vehPorDefecto ?? '';
                   await vehiculoBloc.buscarVehiculo(context, size, false);
                 }
-                ordenBloc.habilitarGrabar = true;
               },
               title: 'Nueva Orden',
               subtitle: 'Cree una nueva orden',

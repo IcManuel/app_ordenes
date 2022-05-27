@@ -63,6 +63,7 @@ class VisualBloc extends ChangeNotifier {
       ObsVisualResponse res =
           await ObsVisualService.buscarVisualesOrden(or.corId);
       if (res.ok == true) {
+        _cargando = false;
         _lista = res.observaciones!;
         notifyListeners();
       } else {

@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:connectivity/connectivity.dart';
 
 //const String url = "https://ordenes.icreativa.com.ec/api/";
-const String url = "https://new-clubs-allow-191-100-27-218.loca.lt/api/";
+const String url = "https://shaky-cups-fail-200-55-228-16.loca.lt/api/";
 
 const String direccionImagen = url + 'foto/';
 
@@ -85,6 +85,10 @@ bool validarCedula(String tipo, String identificacion) {
     }
   } else if (tipo == "2") {
     if (identificacion.trim().length != 13) {
+      res = false;
+    }
+  } else if (tipo == "3") {
+    if (identificacion.trim().isEmpty) {
       res = false;
     }
   }

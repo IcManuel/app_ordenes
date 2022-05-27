@@ -9,10 +9,13 @@ import 'package:flutter/material.dart';
 
 class AyudaBloc extends ChangeNotifier {
   String _filtro = '';
+  bool _habNombre = false;
+  bool _habIdent = false;
   bool _escribiendo = false;
   bool _consultando = false;
   List<Cliente> _clientes = [];
   TextEditingController _ctrlFiltro = TextEditingController();
+  bool _mostrarLista = false;
 
   String _filtroV = '';
   bool _escribiendoV = false;
@@ -20,6 +23,9 @@ class AyudaBloc extends ChangeNotifier {
   List<Vehiculo> _vehiculos = [];
   TextEditingController _ctrlFiltroV = TextEditingController();
 
+  bool get habNombre => _habNombre;
+  bool get habIdent => _habIdent;
+  bool get mostrarLista => _mostrarLista;
   String get filtro => _filtro;
   bool get escribiendo => _escribiendo;
   bool get consultando => _consultando;
@@ -35,6 +41,31 @@ class AyudaBloc extends ChangeNotifier {
     _ctrlFiltro.selection = TextSelection.fromPosition(
         TextPosition(offset: _ctrlFiltro.text.length));
     return _ctrlFiltro;
+  }
+
+  void inicializar() {
+    _escribiendo = false;
+    _mostrarLista = false;
+    _habIdent = true;
+    _habNombre = true;
+    _consultando = false;
+    _clientes = [];
+    notifyListeners();
+  }
+
+  set habNombre(bool m) {
+    _habNombre = m;
+    notifyListeners();
+  }
+
+  set habIdent(bool m) {
+    _habIdent = m;
+    notifyListeners();
+  }
+
+  set mostrarLista(bool m) {
+    _mostrarLista = m;
+    notifyListeners();
   }
 
   set clientes(List<Cliente> c) {
@@ -92,7 +123,7 @@ class AyudaBloc extends ChangeNotifier {
     _ctrlFiltro.text = _filtro;
     if (_filtro.trim().isNotEmpty) {
       if (!_consultando) {
-        cargarLista(Preferencias(), tipo);
+        cargarLista(Preferencias(), tipo, context);
       }
     }
     Navigator.pushNamed(context, 'ayuda_cliente', arguments: {
@@ -114,7 +145,7 @@ class AyudaBloc extends ChangeNotifier {
     Navigator.pushNamed(context, 'ayuda_busqueda_vehiculo');
   }
 
-  void cargarLista(Preferencias pref, int tipo) async {
+  void cargarLista(Preferencias pref, int tipo, BuildContext context) async {
     _consultando = true;
     _clientes = await ClienteService.obtenerClientesLista(
       ProductoRequest(
@@ -122,8 +153,13 @@ class AyudaBloc extends ChangeNotifier {
         cadena: _filtro,
         tipoFiltro: tipo,
       ),
+      context,
     );
-
+    if (tipo == 2) {
+      _habIdent = true;
+    } else {
+      _habNombre = true;
+    }
     _consultando = false;
     notifyListeners();
   }
