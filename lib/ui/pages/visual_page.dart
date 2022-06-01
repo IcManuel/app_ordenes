@@ -1,3 +1,4 @@
+import 'package:app_ordenes/domains/blocs/vehiculo_bloc.dart';
 import 'package:app_ordenes/domains/blocs/visual_bloc.dart';
 import 'package:app_ordenes/domains/utils/preferencias.dart';
 import 'package:app_ordenes/models/obs_visual_model.dart';
@@ -12,6 +13,7 @@ class VisualPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final visualBloc = Provider.of<VisualBloc>(context);
+    final vehiculoBloc = Provider.of<VehiculoBloc>(context, listen: false);
 
     return Padding(
       padding: const EdgeInsets.all(12.0),
@@ -24,7 +26,8 @@ class VisualPage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                'OBSERVACIONES VISUALES DEL VEHÍCULO',
+                'OBSERVACIONES VISUALES DEL ' +
+                    vehiculoBloc.palabraClave.toUpperCase(),
                 style: TextStyle(
                   color: colorPrincipal,
                   fontWeight: FontWeight.bold,
@@ -32,7 +35,6 @@ class VisualPage extends StatelessWidget {
               ),
               IconButton(
                 onPressed: () async {
-                  print('Entra');
                   await visualBloc
                       .cargarVisuales(Preferencias().usuario!.eprId);
                 },

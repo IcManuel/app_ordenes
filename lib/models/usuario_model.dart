@@ -20,8 +20,8 @@ class Usuario {
     required this.usuCorreo,
     required this.usuNombres,
     required this.usuApellidos,
-    required this.palabraClave,
-    required this.identificador,
+    this.palabraClave,
+    this.identificador,
     required this.pymes,
     required this.validarStock,
     this.vehPorDefecto,
@@ -39,8 +39,8 @@ class Usuario {
   String usuCorreo;
   String usuNombres;
   String usuApellidos;
-  String palabraClave;
-  String identificador;
+  String? palabraClave;
+  String? identificador;
   bool? pymes;
   bool? validarStock;
   String? vehPorDefecto;
@@ -58,9 +58,9 @@ class Usuario {
         usuCorreo: json["usu_correo"],
         usuNombres: json["usu_nombres"],
         usuApellidos: json["usu_apellidos"],
-        palabraClave: json["epr_palabra_clave"],
-        identificador: json["epr_identificador"],
-        pymes: json["epr_pymes"],
+        palabraClave: json["epr_palabra_clave"] ?? '',
+        identificador: json["epr_identificador"] ?? '',
+        pymes: json["epr_pymes"] ?? false,
         validarStock: json["epr_validar_stock"] ?? false,
         vehPorDefecto: json["veh_id_pordefecto"] ?? '',
         impresionTermica: json["epr_impresion_termica"] ?? false,

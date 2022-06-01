@@ -152,6 +152,16 @@ class DetallesBloc extends ChangeNotifier {
     notifyListeners();
   }
 
+  void set habProducto(bool h) {
+    _habProducto = h;
+    notifyListeners();
+  }
+
+  void set habCodigo(bool h) {
+    _habCodigo = h;
+    notifyListeners();
+  }
+
   void seleccionarProducto(Producto pro, BuildContext context) {
     _producto = pro;
     _cantidad = 1;

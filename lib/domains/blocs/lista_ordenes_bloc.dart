@@ -12,8 +12,11 @@ import 'package:app_ordenes/models/requests/filtro_orden_request.dart';
 import 'package:app_ordenes/models/requests/pdf_request.dart';
 import 'package:app_ordenes/models/responses/detalle_response.dart';
 import 'package:app_ordenes/models/responses/orden_response.dart';
+import 'package:app_ordenes/models/responses/usuario_reponse.dart';
 import 'package:app_ordenes/models/services/imagen_service.dart';
 import 'package:app_ordenes/models/services/orden_service.dart';
+import 'package:app_ordenes/models/services/usuario_service.dart';
+import 'package:app_ordenes/models/usuario_model.dart';
 import 'package:app_ordenes/ui/widgets/dialogo_cargando_widget.dart';
 import 'package:app_ordenes/ui/widgets/dialogo_general_widget.dart';
 import 'package:flutter/material.dart';
@@ -31,11 +34,25 @@ class ListaOrdenBloc extends ChangeNotifier {
   DateTime _fechaI = DateTime.now();
   DateTime _fechaF = DateTime.now();
   int _estado = -1;
+  bool _cargandoUsuarios = false;
+  List<Usuario> _usuarios = [];
+  Usuario _usuSelect = Usuario(
+    usuId: -1,
+    eprId: -1,
+    usuAlias: 'TODOS',
+    usuContrasena: '',
+    usuRol: 1,
+    usuActivo: true,
+    usuCorreo: '',
+    usuNombres: 'TODOS',
+    usuApellidos: '',
+    pymes: false,
+    validarStock: false,
+  );
 
   List<Orden> _listaH = [];
   bool _cargandoH = false;
   String _placaH = '';
-
   int get estado => _estado;
 
   set estado(int value) {
@@ -43,8 +60,11 @@ class ListaOrdenBloc extends ChangeNotifier {
     notifyListeners();
   }
 
+  Usuario get usuSelect => _usuSelect;
   List<Orden> get lista => _lista;
+  List<Usuario> get usuarios => _usuarios;
   bool get cargando => _cargando;
+  bool get cargandoUsuarios => _cargandoUsuarios;
   String get placa => _placa;
   List<Orden> get listaH => _listaH;
   bool get cargandoH => _cargandoH;
@@ -59,8 +79,23 @@ class ListaOrdenBloc extends ChangeNotifier {
     notifyListeners();
   }
 
+  set usuSelect(Usuario c) {
+    _usuSelect = c;
+    notifyListeners();
+  }
+
+  set cargandoUsuarios(bool c) {
+    _cargandoUsuarios = c;
+    notifyListeners();
+  }
+
   set lista(List<Orden> o) {
     _lista = o;
+    notifyListeners();
+  }
+
+  set usuarios(List<Usuario> o) {
+    _usuarios = o;
     notifyListeners();
   }
 
@@ -96,6 +131,40 @@ class ListaOrdenBloc extends ChangeNotifier {
 
   set fechaF(value) {
     _fechaF = value;
+    notifyListeners();
+  }
+
+  void seleccionarUsuario(Usuario usu) {
+    _usuSelect = Usuario(
+      usuId: usu.usuId,
+      eprId: usu.eprId,
+      usuAlias: usu.usuAlias,
+      usuContrasena: usu.usuContrasena,
+      usuRol: usu.usuRol,
+      usuActivo: true,
+      usuCorreo: '',
+      usuNombres: usu.usuNombres,
+      usuApellidos: usu.usuApellidos,
+      pymes: false,
+      validarStock: false,
+    );
+    notifyListeners();
+  }
+
+  void limpiarUsuario() {
+    _usuSelect = Usuario(
+      usuId: -1,
+      eprId: -1,
+      usuAlias: 'TODOS',
+      usuContrasena: '',
+      usuRol: 1,
+      usuActivo: true,
+      usuCorreo: '',
+      usuNombres: 'TODOS',
+      usuApellidos: '',
+      pymes: false,
+      validarStock: false,
+    );
     notifyListeners();
   }
 
@@ -356,6 +425,34 @@ class ListaOrdenBloc extends ChangeNotifier {
     }
   }
 
+  void cargarUsuarios() async {
+    limpiarUsuario();
+    _cargandoUsuarios = true;
+    final conect = await verificarConexion();
+    if (conect) {
+      UsuarioReponse usu =
+          await UsuarioService.obtenerUsuarios(Preferencias().empresa);
+      print(usu.ok);
+      if (usu.ok) {
+        _cargandoUsuarios = false;
+        _usuarios = usu.usuarios!;
+        print('CARGO ' + _usuarios.length.toString());
+        notifyListeners();
+      } else {
+        _cargandoUsuarios = false;
+        Fluttertoast.showToast(
+          msg: usu.msg!,
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+      }
+    }
+  }
+
   void filtrar(BuildContext context, Size size, bool interno) async {
     _lista = [];
     _cargando = true;
@@ -392,7 +489,7 @@ class ListaOrdenBloc extends ChangeNotifier {
         placa: _placa,
         cliente: _cliente,
         estado: _estado,
-        usuario: pref.usuario!.usuId,
+        usuario: _usuSelect.usuId,
       ));
 
       if (interno == false) Navigator.pop(context);

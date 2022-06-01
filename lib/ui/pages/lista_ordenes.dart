@@ -1,4 +1,5 @@
 import 'package:app_ordenes/domains/blocs/lista_ordenes_bloc.dart';
+import 'package:app_ordenes/domains/utils/preferencias.dart';
 import 'package:app_ordenes/models/orden_model.dart';
 import 'package:app_ordenes/ui/utils/colores.dart';
 import 'package:app_ordenes/ui/widgets/cabecera_filtro.dart';
@@ -84,14 +85,36 @@ class ListaOrdenesPage extends StatelessWidget {
                                     const SizedBox(
                                       height: 5,
                                     ),
-                                    Expanded(
-                                      child: Text(
-                                        mod.vehiculo.vehPlaca +
-                                            " - " +
-                                            mod.vehiculo.marNombre +
-                                            " " +
-                                            mod.vehiculo.modNombre,
-                                      ),
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: Text(
+                                            mod.usuario,
+                                            style: TextStyle(
+                                                fontSize: 16,
+                                                color: Colors.grey.shade700,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                        ),
+                                        (Preferencias()
+                                                        .usuario!
+                                                        .vehPorDefecto ??
+                                                    '')
+                                                .isNotEmpty
+                                            ? Container()
+                                            : Expanded(
+                                                child: Text(
+                                                  mod.vehiculo.vehPlaca +
+                                                      " - " +
+                                                      mod.vehiculo.marNombre +
+                                                      " " +
+                                                      mod.vehiculo.modNombre,
+                                                ),
+                                              ),
+                                      ],
+                                    ),
+                                    const SizedBox(
+                                      height: 5,
                                     ),
                                     Expanded(
                                       child: Text(

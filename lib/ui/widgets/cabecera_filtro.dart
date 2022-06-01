@@ -1,6 +1,9 @@
 import 'package:app_ordenes/domains/blocs/lista_ordenes_bloc.dart';
+import 'package:app_ordenes/domains/blocs/vehiculo_bloc.dart';
+import 'package:app_ordenes/domains/utils/preferencias.dart';
 import 'package:app_ordenes/ui/widgets/boton_principal.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class CabeceraFiltro extends StatelessWidget {
   const CabeceraFiltro({
@@ -14,8 +17,9 @@ class CabeceraFiltro extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final vehiculoBloc = Provider.of<VehiculoBloc>(context, listen: false);
     return Container(
-      height: size.height * 0.42,
+      height: size.height * 0.45,
       width: double.infinity,
       child: ListView(
         padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -69,7 +73,6 @@ class CabeceraFiltro extends StatelessWidget {
                       ),
                     ),
                     onTap: () {
-                      print('entra');
                       showDatePicker(
                               context: context,
                               initialDate: listaBloc.fechaF,
@@ -150,19 +153,77 @@ class CabeceraFiltro extends StatelessWidget {
           ),
           Row(
             children: [
-              Expanded(
-                child: TextField(
-                  textCapitalization: TextCapitalization.characters,
-                  onChanged: (valor) {
-                    listaBloc.placa = valor.toUpperCase();
-                  },
-                  decoration: const InputDecoration(
-                    hintText: 'Placa',
-                    labelText: 'Placa',
-                    border: OutlineInputBorder(),
-                  ),
+              listaBloc.cargandoUsuarios
+                  ? CircularProgressIndicator()
+                  : Expanded(
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.pushNamed(context, "ayuda_usuario");
+                        },
+                        child: TextField(
+                          controller: new TextEditingController(
+                            text: listaBloc.usuSelect.usuNombres +
+                                " " +
+                                listaBloc.usuSelect.usuApellidos,
+                          ),
+                          textCapitalization: TextCapitalization.characters,
+                          onChanged: (valor) {
+                            listaBloc.cliente = valor.toUpperCase();
+                          },
+                          enabled: false,
+                          readOnly: true,
+                          decoration: InputDecoration(
+                            hintText: 'Agente',
+                            labelText: 'Agente',
+                            border: OutlineInputBorder(),
+                          ),
+                        ),
+                      ),
+                    ),
+              IconButton(
+                onPressed: () {
+                  listaBloc.cargarUsuarios();
+                },
+                icon: Icon(
+                  Icons.refresh,
                 ),
               ),
+              listaBloc.usuSelect.usuId != -1
+                  ? IconButton(
+                      onPressed: () {
+                        listaBloc.limpiarUsuario();
+                      },
+                      color: Colors.red,
+                      icon: Icon(
+                        Icons.delete,
+                      ),
+                    )
+                  : SizedBox(
+                      width: 1,
+                    ),
+            ],
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              (Preferencias().usuario!.vehPorDefecto ?? '').isNotEmpty
+                  ? Container()
+                  : Expanded(
+                      child: TextField(
+                        textCapitalization: TextCapitalization.characters,
+                        onChanged: (valor) {
+                          listaBloc.placa = valor.toUpperCase();
+                        },
+                        decoration: InputDecoration(
+                          hintText: vehiculoBloc.palabraClave.toLowerCase(),
+                          labelText: vehiculoBloc.palabraClave.toLowerCase(),
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                    ),
               const SizedBox(
                 width: 20,
               ),

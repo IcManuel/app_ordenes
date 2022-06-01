@@ -330,8 +330,8 @@ class PerfilBloc extends ChangeNotifier {
           pref.usuario = res.usuario!;
           final vehiculoBloc =
               Provider.of<VehiculoBloc>(context, listen: false);
-          vehiculoBloc.palabraClave = res.usuario!.palabraClave;
-          vehiculoBloc.identificador = res.usuario!.identificador;
+          vehiculoBloc.palabraClave = res.usuario!.palabraClave!;
+          vehiculoBloc.identificador = res.usuario!.identificador!;
           _usuFinal = res.usuario!;
           notifyListeners();
           Navigator.pushReplacementNamed(context, "inicio");
@@ -411,8 +411,8 @@ class PerfilBloc extends ChangeNotifier {
         _usuFinal = res.usuario!;
         final vehiculoBloc = Provider.of<VehiculoBloc>(context, listen: false);
         print(res.usuario!.palabraClave);
-        vehiculoBloc.palabraClave = res.usuario!.palabraClave;
-        vehiculoBloc.identificador = res.usuario!.identificador;
+        vehiculoBloc.palabraClave = res.usuario!.palabraClave!;
+        vehiculoBloc.identificador = res.usuario!.identificador!;
         notifyListeners();
         if (res.usuario!.usuActivo == true) {
           if (res.usuario!.eprActivo == true) {

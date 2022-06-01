@@ -24,6 +24,7 @@ class Orden {
     required this.corEstado,
     required this.cliente,
     required this.vehiculo,
+    required this.usuario,
   });
 
   int corId;
@@ -37,6 +38,7 @@ class Orden {
   int corEstado;
   Cliente cliente;
   Vehiculo vehiculo;
+  String usuario;
 
   factory Orden.fromJson(Map<String, dynamic> json) => Orden(
         corId: json["cor_id"],
@@ -49,7 +51,10 @@ class Orden {
         corTotal: json["cor_total"].toDouble(),
         corEstado: json["cor_estado"],
         cliente: Cliente.fromJson(json["cliente"]),
-        vehiculo: Vehiculo.fromJson(json["vehiculo"]),
+        vehiculo: Vehiculo.fromJson(
+          json["vehiculo"],
+        ),
+        usuario: json["usuario"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -63,5 +68,6 @@ class Orden {
         "cor_total": corTotal,
         "cliente": cliente.toJson(),
         "vehiculo": vehiculo.toJson(),
+        "usuario": usuario,
       };
 }

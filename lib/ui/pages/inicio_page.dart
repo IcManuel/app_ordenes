@@ -77,6 +77,7 @@ class InicioPage extends StatelessWidget {
             ),
             MenuItem(
               onPressed: () {
+                listaOrdenBloc.cargarUsuarios();
                 listaOrdenBloc.filtrar(context, size, true);
                 Navigator.pushNamed(context, 'lista_ordenes');
               },
