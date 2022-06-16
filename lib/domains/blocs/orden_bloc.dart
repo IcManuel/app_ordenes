@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:app_ordenes/domains/blocs/ayudas_bloc.dart';
 import 'package:app_ordenes/domains/blocs/detalles_bloc.dart';
 import 'package:app_ordenes/domains/blocs/fotos_bloc.dart';
@@ -31,8 +33,10 @@ import 'package:app_ordenes/models/services/cliente_service.dart';
 import 'package:app_ordenes/ui/widgets/dialogo_cargando_widget.dart';
 import 'package:app_ordenes/ui/widgets/dialogo_general_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:signature/signature.dart';
 
 class OrdenBloc extends ChangeNotifier {
   String _tipoIdentificacion = 'CEDULA';
@@ -56,6 +60,13 @@ class OrdenBloc extends ChangeNotifier {
   String _pdfNombre = '';
   bool _modificar = false;
   int idOrden = -1;
+  SignatureController _controller = SignatureController(
+    penStrokeWidth: 2,
+    penColor: Colors.black,
+    exportBackgroundColor: Colors.white,
+    exportPenColor: Colors.black,
+  );
+  FotoModel _firma = FotoModel(imagen: XFile(''), nombre: '');
 
   Cliente nuevo = Cliente(
     cliId: -1,
@@ -78,6 +89,7 @@ class OrdenBloc extends ChangeNotifier {
   TextEditingController _ctrlObs = TextEditingController();
   TextEditingController _ctrlObsUsu = TextEditingController();
 
+  SignatureController get controller => _controller;
   String get identificacion => _identificacion;
   String get tipoIdentificacion => _tipoIdentificacion;
   String get nombres => _nombres;
@@ -89,7 +101,7 @@ class OrdenBloc extends ChangeNotifier {
   String get observacionesUsu => _observacionesUsu;
   bool get modificar => _modificar;
   bool get habilitarGrabar => _habilitarGrabar;
-
+  FotoModel get firma => _firma;
   String get correo => _correo;
   int get tipo => _tipo;
   int get idCliente => _idCliente;
@@ -111,6 +123,43 @@ class OrdenBloc extends ChangeNotifier {
     );
     notifyListeners();
     Navigator.pushNamed(context, 'ayuda_cliente');
+  }
+
+  void limpiarFirma() {
+    _firma = FotoModel(imagen: XFile(''), nombre: '');
+    _controller.clear();
+    notifyListeners();
+  }
+
+  void volverImagen() {
+    if (_firma.imagen.path.isEmpty) {
+      _controller.clear();
+    }
+    notifyListeners();
+  }
+
+  void guardarFirma(BuildContext context) async {
+    DateTime d = DateTime.now();
+    if (_controller.isNotEmpty) {
+      final Uint8List? data = await _controller.toPngBytes();
+      if (data != null) {
+        final directory = await getApplicationDocumentsDirectory();
+        final pathOfImage = await File('${directory.path}/firma_' +
+                d.millisecondsSinceEpoch.toString() +
+                '.png')
+            .create();
+        final Uint8List bytes = data.buffer.asUint8List();
+        await pathOfImage.writeAsBytes(bytes);
+        _firma =
+            FotoModel(imagen: XFile(pathOfImage.path), nombre: 'firma.png');
+        notifyListeners();
+        Navigator.pop(context);
+      }
+    } else {
+      _firma = FotoModel(imagen: XFile(''), nombre: '');
+      notifyListeners();
+      Navigator.pop(context);
+    }
   }
 
   void guardarNuevo(BuildContext context, Size size) async {
@@ -272,6 +321,8 @@ class OrdenBloc extends ChangeNotifier {
   }
 
   void setearDatosSelect(Orden orden) {
+    _firma = FotoModel(imagen: XFile(''), nombre: '');
+    _controller.clear();
     _identificacion = orden.cliente.cliIdentificacion;
     _idCliente = orden.cliente.cliId;
     idOrden = orden.corId;
@@ -574,6 +625,8 @@ class OrdenBloc extends ChangeNotifier {
     _telefono = '';
     _correo = '';
     _direccion = '';
+    _firma = FotoModel(imagen: XFile(''), nombre: '');
+    _controller.clear();
     _observaciones = '';
     _observacionesUsu = '';
 
@@ -656,7 +709,6 @@ class OrdenBloc extends ChangeNotifier {
       for (int i = 0; i < vehiculoBloc.lista.length; i++) {
         if (vehiculoBloc.lista[i].valor != null &&
             vehiculoBloc.lista[i].valor!.trim().isNotEmpty) {
-          print('AÑADE ' + vehiculoBloc.lista[i].idCal.toString());
           carac.add(vehiculoBloc.lista[i]);
         }
       }
@@ -688,6 +740,13 @@ class OrdenBloc extends ChangeNotifier {
         imagenes.add(ImagenModel(tipo: 2, imagen: imgPath));
       }
 
+      if (_firma.imagen.path.isNotEmpty) {
+        String pathFnal = join(path, _firma.imagen.name);
+        final File imagenCache = File(_firma.imagen.path);
+        imagenCache.copy(pathFnal);
+        await ImagenService.uploadImage(_firma.imagen.path);
+      }
+
       CordenRequest cor = CordenRequest(
         eprId: pref.empresa,
         usuario: pref.usuario!.usuId,
@@ -698,6 +757,7 @@ class OrdenBloc extends ChangeNotifier {
         total: detallesBloc.totalFinal,
         estado: tipo == 1 ? 2 : 4,
         descuento: 0,
+        firma: (_firma.imagen.path.isNotEmpty ? _firma.imagen.name : null),
         clienteModel: cli,
         vehiculoModel: veh,
         caracteristicas: carac,

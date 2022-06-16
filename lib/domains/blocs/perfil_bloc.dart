@@ -1,6 +1,14 @@
+import 'dart:io';
+import 'dart:io' as io;
+import 'dart:typed_data';
+import 'package:app_ordenes/domains/utils/url_util.dart';
+
 import 'package:app_ordenes/domains/blocs/vehiculo_bloc.dart';
 import 'package:app_ordenes/domains/utils/preferencias.dart';
-import 'package:app_ordenes/domains/utils/url_util.dart';
+import 'package:app_ordenes/domains/utils/url_util.dart' as url;
+import 'package:app_ordenes/models/services/imagen_service.dart';
+import 'package:path/path.dart';
+import 'package:app_ordenes/models/foto_model.dart';
 import 'package:app_ordenes/models/requests/login_request.dart';
 import 'package:app_ordenes/models/responses/usuario_reponse.dart';
 import 'package:app_ordenes/models/services/usuario_service.dart';
@@ -9,6 +17,9 @@ import 'package:app_ordenes/ui/widgets/dialogo_cargando_widget.dart';
 import 'package:app_ordenes/ui/widgets/dialogo_general_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:signature/signature.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 
 class PerfilBloc extends ChangeNotifier {
   bool _revConexion = false;
@@ -25,10 +36,18 @@ class PerfilBloc extends ChangeNotifier {
   String _claveAntigua = "";
   String _claveNueva = "";
   String _confClave = "";
+  String _imgFirma = "";
+  SignatureController _controller = SignatureController(
+    penStrokeWidth: 2,
+    penColor: Colors.black,
+    exportBackgroundColor: Colors.white,
+    exportPenColor: Colors.black,
+  );
+  FotoModel _firma = FotoModel(imagen: XFile(''), nombre: '');
 
   Usuario? _usuFinal;
   Usuario? _usuClon;
-
+  String get imgFirma => _imgFirma;
   bool get revConexion => _revConexion;
   bool get mostrar => _mostrar;
   Usuario get usuFinal => _usuFinal!;
@@ -36,6 +55,8 @@ class PerfilBloc extends ChangeNotifier {
   String get txtRevisando => _txtRevisando;
   String get usuario => _usuario;
   String get pss => _pss;
+  SignatureController get controller => _controller;
+  FotoModel get firma => _firma;
 
   String get nombres => _nombres;
   String get apellidos => _apellidos;
@@ -44,6 +65,43 @@ class PerfilBloc extends ChangeNotifier {
   String get claveNueva => _claveNueva;
   String get confClave => _confClave;
   bool get cambioClave => _cambioClave!;
+
+  void limpiarFirma() {
+    _firma = FotoModel(imagen: XFile(''), nombre: '');
+    _controller.clear();
+    notifyListeners();
+  }
+
+  void volverImagen() {
+    if (_firma.imagen.path.isEmpty) {
+      _controller.clear();
+    }
+    notifyListeners();
+  }
+
+  void guardarFirma(BuildContext context) async {
+    DateTime d = DateTime.now();
+    if (_controller.isNotEmpty) {
+      final Uint8List? data = await _controller.toPngBytes();
+      if (data != null) {
+        final directory = await getApplicationDocumentsDirectory();
+        final pathOfImage = await File('${directory.path}/firmaUsuario_' +
+                d.millisecondsSinceEpoch.toString() +
+                '.png')
+            .create();
+        final Uint8List bytes = data.buffer.asUint8List();
+        await pathOfImage.writeAsBytes(bytes);
+        _firma =
+            FotoModel(imagen: XFile(pathOfImage.path), nombre: 'firma.png');
+        notifyListeners();
+        Navigator.pop(context);
+      }
+    } else {
+      _firma = FotoModel(imagen: XFile(''), nombre: '');
+      notifyListeners();
+      Navigator.pop(context);
+    }
+  }
 
   void guardarCambios(BuildContext context, Size size) async {
     bool pasa = true;
@@ -100,30 +158,48 @@ class PerfilBloc extends ChangeNotifier {
           barrierDismissible: false,
           builder: (_) {
             return const DialogoCargando(
-              texto: 'Iniciando sesión',
+              texto: 'Enviando información',
             );
           },
         );
+
+        if (_firma.imagen.path.isNotEmpty) {
+          io.Directory documentsDirectory =
+              await getApplicationDocumentsDirectory();
+          String path = join(documentsDirectory.path, "imagenes");
+          String pathFnal = join(path, _firma.imagen.name);
+          final File imagenCache = File(_firma.imagen.path);
+          imagenCache.copy(pathFnal);
+          await ImagenService.uploadImage(_firma.imagen.path);
+        }
         _usuClon = Usuario(
-            usuId: _usuFinal!.usuId,
-            identificador: _usuFinal!.identificador,
-            eprId: _usuFinal!.eprId,
-            pymes: false,
-            validarStock: false,
-            palabraClave: _usuFinal!.palabraClave,
-            eprActivo: _usuFinal!.eprActivo,
-            usuAlias: _usuFinal!.usuAlias,
-            usuContrasena:
-                _cambioClave! == true ? _claveNueva : _usuFinal!.usuContrasena,
-            usuRol: _usuFinal!.usuRol,
-            usuActivo: _usuFinal!.usuActivo,
-            usuCorreo: _correo,
-            usuNombres: _nombres,
-            usuApellidos: _apellidos);
+          usuId: _usuFinal!.usuId,
+          identificador: _usuFinal!.identificador,
+          eprId: _usuFinal!.eprId,
+          pymes: false,
+          validarStock: false,
+          palabraClave: _usuFinal!.palabraClave,
+          eprActivo: _usuFinal!.eprActivo,
+          usuAlias: _usuFinal!.usuAlias,
+          usuContrasena:
+              _cambioClave! == true ? _claveNueva : _usuFinal!.usuContrasena,
+          usuRol: _usuFinal!.usuRol,
+          usuActivo: _usuFinal!.usuActivo,
+          usuCorreo: _correo,
+          usuNombres: _nombres,
+          usuApellidos: _apellidos,
+          firma: _firma.imagen.path.isNotEmpty ? _firma.imagen.name : null,
+        );
+
         UsuarioReponse res = await UsuarioService.actualizarDatos(_usuClon!);
         // ignore: avoid_print
+
         Navigator.pop(context);
         if (res.ok == true) {
+          _imgFirma = "${url.url}/foto/" + _firma.imagen.name;
+          _firma = FotoModel(imagen: XFile(''), nombre: '');
+          print(_imgFirma);
+          _controller.clear();
           _usuFinal!.usuNombres = _nombres;
           _usuFinal!.usuApellidos = _apellidos;
           _usuFinal!.usuCorreo = _correo;
@@ -328,6 +404,10 @@ class PerfilBloc extends ChangeNotifier {
           pref.token = res.usuario!.usuAlias;
           pref.empresa = res.usuario!.eprId;
           pref.usuario = res.usuario!;
+          if ((res.usuario!.firma ?? '').isNotEmpty) {
+            List<String> f = (res.usuario!.firma ?? '').split("/");
+            _imgFirma = "${url.url}/foto/" + f[f.length - 1];
+          }
           final vehiculoBloc =
               Provider.of<VehiculoBloc>(context, listen: false);
           vehiculoBloc.palabraClave = res.usuario!.palabraClave!;

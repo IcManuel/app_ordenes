@@ -27,6 +27,7 @@ class Usuario {
     this.vehPorDefecto,
     this.impresionTermica,
     this.validarCedula = false,
+    this.firma,
   });
 
   int usuId;
@@ -46,6 +47,7 @@ class Usuario {
   String? vehPorDefecto;
   bool? impresionTermica;
   bool? validarCedula;
+  String? firma;
 
   factory Usuario.fromJson(Map<String, dynamic> json) => Usuario(
         usuId: json["usu_id"],
@@ -55,6 +57,7 @@ class Usuario {
         usuContrasena: json["usu_contrasena"],
         usuRol: json["usu_rol"],
         usuActivo: json["usu_activo"],
+        firma: json["usu_firma"] ?? '',
         usuCorreo: json["usu_correo"],
         usuNombres: json["usu_nombres"],
         usuApellidos: json["usu_apellidos"],
@@ -78,6 +81,7 @@ class Usuario {
         "usu_nombres": usuNombres,
         "usu_apellidos": usuApellidos,
         "epr_activo": eprActivo,
+        "usu_firma": firma,
         "epr_palabra_clave": palabraClave,
         "epr_identificador": identificador,
         "epr_pymes": pymes,
@@ -87,14 +91,15 @@ class Usuario {
         "epr_validar_cedula": validarCedula ?? false,
       };
   Map<String, dynamic> toJsonWs() => {
-        "id": usuId,
-        "empresa": eprId,
-        "alias": usuAlias,
-        "contrasena": usuContrasena,
-        "rol": usuRol,
+        "usu_id": usuId,
+        "epr_id": eprId,
+        "usu_alias": usuAlias,
+        "usu_contrasena": usuContrasena,
+        "usu_rol": usuRol,
         "activo": usuActivo,
-        "correo": usuCorreo,
-        "nombres": usuNombres,
-        "apellidos": usuApellidos,
+        "usu_correo": usuCorreo,
+        "usu_nombres": usuNombres,
+        "usu_apellidos": usuApellidos,
+        "firma": firma,
       };
 }

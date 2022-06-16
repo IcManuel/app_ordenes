@@ -47,6 +47,7 @@ class ItemInput extends StatelessWidget {
               child: TextFormField(
                 keyboardType: formato,
                 obscureText: textoOScuro,
+                textCapitalization: TextCapitalization.characters,
                 initialValue: inicialValue,
                 onChanged: (e) {
                   onText(e);

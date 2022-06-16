@@ -4,6 +4,8 @@
 
 import 'dart:convert';
 
+import 'package:app_ordenes/models/lista_caracteristica_model.dart';
+
 Caracteristica caracteristicaFromJson(String str) =>
     Caracteristica.fromJson(json.decode(str));
 
@@ -18,6 +20,7 @@ class Caracteristica {
     this.valor,
     required this.carSeleccionadble,
     this.idCal,
+    this.detalles,
   });
 
   int carId;
@@ -27,6 +30,7 @@ class Caracteristica {
   String? valor;
   bool carSeleccionadble;
   int? idCal;
+  List<ListaCaracteristica>? detalles;
 
   factory Caracteristica.fromJson(Map<String, dynamic> json) => Caracteristica(
         carId: json["car_id"],

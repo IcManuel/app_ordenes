@@ -1,6 +1,8 @@
+import 'package:app_ordenes/ui/pages/crear_empresa_page.dart';
 import 'package:app_ordenes/ui/pages/inicio_page.dart';
 import 'package:app_ordenes/ui/pages/lista_ordenes.dart';
 import 'package:app_ordenes/ui/pages/login_page.dart';
+import 'package:app_ordenes/ui/pages/nueva_caracteristica_page.dart';
 import 'package:app_ordenes/ui/pages/orden_page.dart';
 import 'package:app_ordenes/ui/pages/pdf_viewer.dart';
 import 'package:app_ordenes/ui/pages/perfil_page.dart';
@@ -18,6 +20,8 @@ import 'package:app_ordenes/ui/widgets/ayuda_tipo_producto.dart';
 import 'package:app_ordenes/ui/widgets/ayuda_usuario.dart';
 import 'package:app_ordenes/ui/widgets/ayuda_vehiculo.dart';
 import 'package:app_ordenes/ui/widgets/crear_producto.dart';
+import 'package:app_ordenes/ui/widgets/firma_page.dart';
+import 'package:app_ordenes/ui/widgets/firma_usuario_page.dart';
 import 'package:app_ordenes/ui/widgets/fotos_entrega.dart';
 import 'package:app_ordenes/ui/widgets/fotos_ingreso.dart';
 import 'package:flutter/material.dart';
@@ -46,5 +50,9 @@ Map<String, WidgetBuilder> rutas() {
     "ayuda_impresora": (_) => const AyudaImpresora(),
     "ayuda_busqueda_vehiculo": (_) => const AyudaBusquedaVehiculo(),
     "lista_ordenes": (_) => const ListaOrdenesPage(),
+    "nueva_caracteristica": (_) => const NuevaCaracteristicaPage(),
+    "crear_empresa": (_) => const CrearEmpresaPage(),
+    "firmar": (_) => const FirmaPage(),
+    "firmar_usuario": (_) => const FirmaUsuarioPage(),
   };
 }

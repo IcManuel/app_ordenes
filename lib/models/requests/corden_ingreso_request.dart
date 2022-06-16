@@ -33,6 +33,7 @@ class CordenRequest {
     this.visuales,
     this.imagenes,
     this.idOrden,
+    this.firma,
     this.caracteristicas,
   });
 
@@ -52,6 +53,7 @@ class CordenRequest {
   List<ImagenModel>? imagenes;
   List<Caracteristica>? caracteristicas;
   int? idOrden;
+  String? firma;
 
   factory CordenRequest.fromJson(Map<String, dynamic> json) => CordenRequest(
         eprId: json["epr_id"],
@@ -74,6 +76,7 @@ class CordenRequest {
         "idOrden": idOrden,
         "observacion": observacion,
         "total": total,
+        "firma": firma,
         "estado": estado,
         "descuento": descuento,
         "vehiculoModel": vehiculoModel!.toJsonWs(),
