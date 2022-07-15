@@ -18,11 +18,12 @@ class UsuarioService {
   }
 
   static Future<UsuarioReponse> actualizarDatos(Usuario usu) async {
+    print(usu.toJsonWs());
     try {
       var respuesta = await http
-          .put(
+          .post(
               Uri.parse(
-                "${url}usuario/",
+                "${url}usuario/modificar",
               ),
               body: json.encode(
                 usu.toJsonWs(),
@@ -33,6 +34,7 @@ class UsuarioService {
               seconds: 5,
             ),
           );
+      print(respuesta.body);
       if (respuesta.statusCode == 200) {
         var jsonData = json.decode(respuesta.body);
         UsuarioReponse res = UsuarioReponse.fromJson(jsonData);

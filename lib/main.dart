@@ -1,4 +1,5 @@
 import 'package:app_ordenes/domains/blocs/ayudas_bloc.dart';
+import 'package:app_ordenes/domains/blocs/crear_cuenta_bloc.dart';
 import 'package:app_ordenes/domains/blocs/detalles_bloc.dart';
 import 'package:app_ordenes/domains/blocs/fotos_bloc.dart';
 import 'package:app_ordenes/domains/blocs/lista_ordenes_bloc.dart';
@@ -34,6 +35,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (_) => VehiculoBloc(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => CrearCuentaBloc(),
         ),
         ChangeNotifierProvider(
           create: (_) => NuevoBloc(),

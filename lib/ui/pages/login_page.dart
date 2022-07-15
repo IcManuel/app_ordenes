@@ -1,3 +1,4 @@
+import 'package:app_ordenes/domains/blocs/crear_cuenta_bloc.dart';
 import 'package:app_ordenes/domains/blocs/perfil_bloc.dart';
 import 'package:app_ordenes/domains/utils/preferencias.dart';
 import 'package:app_ordenes/ui/utils/colores.dart';
@@ -11,6 +12,7 @@ class LoginPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final loginBloc = Provider.of<PerfilBloc>(context);
+    final crearCuentaBloc = Provider.of<CrearCuentaBloc>(context);
     return Scaffold(
       body: SingleChildScrollView(
         reverse: true,
@@ -100,6 +102,40 @@ class LoginPage extends StatelessWidget {
                                 ),
                               ),
                             )
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              '¿No tienes cuenta?',
+                              style: TextStyle(
+                                color: colorPrincipal,
+                              ),
+                            ),
+                            SizedBox(
+                              width: 10,
+                            ),
+                            ElevatedButton(
+                              onPressed: () {
+                                crearCuentaBloc.inicializar(context);
+                              },
+                              style: ElevatedButton.styleFrom(
+                                  elevation: 10,
+                                  primary: colorPrincipal,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  )),
+                              child: Padding(
+                                padding: EdgeInsets.all(size.height * 0.01),
+                                child: Text(
+                                  'REGÍSTRATE',
+                                  style: TextStyle(
+                                      fontSize: size.height * 0.015,
+                                      color: Colors.white),
+                                ),
+                              ),
+                            ),
                           ],
                         )
                       ],

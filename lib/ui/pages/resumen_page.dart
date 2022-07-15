@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:app_ordenes/domains/blocs/detalles_bloc.dart';
 import 'package:app_ordenes/domains/blocs/fotos_bloc.dart';
 import 'package:app_ordenes/domains/blocs/orden_bloc.dart';
@@ -50,14 +52,23 @@ class ResumenPage extends StatelessWidget {
                       )),
                   child: Padding(
                     padding: EdgeInsets.all(size.height * 0.02),
-                    child: Text(
-                      'FOTOS INGRESO (' +
-                          fotosBloc.fotos.length.toString() +
-                          ')',
-                      style: TextStyle(
-                        fontSize: size.height * 0.02,
-                        color: Colors.white,
-                      ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.photo_library,
+                          size: size.height * 0.02,
+                        ),
+                        SizedBox(
+                          width: 5,
+                        ),
+                        Text(
+                          'INGRESO (' + fotosBloc.fotos.length.toString() + ')',
+                          style: TextStyle(
+                            fontSize: size.height * 0.018,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -91,14 +102,25 @@ class ResumenPage extends StatelessWidget {
                       )),
                   child: Padding(
                     padding: EdgeInsets.all(size.height * 0.02),
-                    child: Text(
-                      'FOTOS ENTREGA(' +
-                          fotosBloc.fotosEntrega.length.toString() +
-                          ')',
-                      style: TextStyle(
-                        fontSize: size.height * 0.02,
-                        color: Colors.white,
-                      ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.photo_library,
+                          size: size.height * 0.02,
+                        ),
+                        SizedBox(
+                          width: 5,
+                        ),
+                        Text(
+                          'ENTREGA(' +
+                              fotosBloc.fotosEntrega.length.toString() +
+                              ')',
+                          style: TextStyle(
+                            fontSize: size.height * 0.018,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -112,7 +134,7 @@ class ResumenPage extends StatelessWidget {
         TextField(
           controller: ordenBloc.ctrlObsUsu,
           textCapitalization: TextCapitalization.characters,
-          maxLines: 4,
+          maxLines: 3,
           onChanged: (valor) {
             ordenBloc.observacionesUsu = valor.toUpperCase();
           },
@@ -173,11 +195,64 @@ class ResumenPage extends StatelessWidget {
         const SizedBox(
           height: 10,
         ),
+        ordenBloc.tipo == 1
+            ? Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: size.width * .1),
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.pushNamed(context, 'firmar');
+                      },
+                      style: ElevatedButton.styleFrom(
+                          elevation: 20,
+                          primary: ordenBloc.controller.isEmpty
+                              ? Colors.grey
+                              : Colors.green,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          )),
+                      child: Padding(
+                        padding: EdgeInsets.all(size.height * 0.02),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'FIRMAR',
+                              style: TextStyle(
+                                fontSize: size.height * 0.018,
+                                color: Colors.white,
+                              ),
+                            ),
+                            SizedBox(
+                              width: 5,
+                            ),
+                            Icon(
+                              Icons.edit,
+                              size: size.height * 0.02,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  ordenBloc.firma.imagen.path.isNotEmpty
+                      ? Image.file(
+                          File(ordenBloc.firma.imagen.path),
+                          fit: BoxFit.fill,
+                          width: 50,
+                          height: 50,
+                        )
+                      : Container()
+                ],
+              )
+            : Container(),
         BotonPrincipal(
           onPressed: () {
             ordenBloc.guardarProforma(context, size);
           },
-          label: 'GRABAR',
+          label: 'GUARDAR',
           size: size,
         ),
       ],
