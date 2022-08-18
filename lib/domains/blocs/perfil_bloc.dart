@@ -196,18 +196,20 @@ class PerfilBloc extends ChangeNotifier {
 
         Navigator.pop(context);
         if (res.ok == true) {
-          _imgFirma = "${url.url}/foto/" + _firma.imagen.name;
+          _imgFirma = "${url.url}foto/" + _firma.imagen.name;
           _firma = FotoModel(imagen: XFile(''), nombre: '');
-          print(_imgFirma);
           _controller.clear();
           _usuFinal!.usuNombres = _nombres;
           _usuFinal!.usuApellidos = _apellidos;
           _usuFinal!.usuCorreo = _correo;
+          _usuFinal!.firma = _imgFirma;
           if (_cambioClave == true) {
             _usuFinal!.usuContrasena = _claveNueva;
           }
           Preferencias pref = Preferencias();
           pref.usuario = _usuFinal!;
+          print('Va a guardar');
+          print(_usuFinal!.toJson().cast());
           encerarDatos();
 
           showDialog(
@@ -303,6 +305,11 @@ class PerfilBloc extends ChangeNotifier {
 
   set usuFinal(Usuario? usu) {
     _usuFinal = usu;
+    notifyListeners();
+  }
+
+  set imgFirma(String? usu) {
+    _imgFirma = usu!;
     notifyListeners();
   }
 
@@ -406,7 +413,7 @@ class PerfilBloc extends ChangeNotifier {
           pref.usuario = res.usuario!;
           if ((res.usuario!.firma ?? '').isNotEmpty) {
             List<String> f = (res.usuario!.firma ?? '').split("/");
-            _imgFirma = "${url.url}/foto/" + f[f.length - 1];
+            _imgFirma = "${url.url}foto/" + f[f.length - 1];
           }
           final vehiculoBloc =
               Provider.of<VehiculoBloc>(context, listen: false);

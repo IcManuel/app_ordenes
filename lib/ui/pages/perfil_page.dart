@@ -200,6 +200,12 @@ class PerfilPage extends StatelessWidget {
                                 fit: BoxFit.fill,
                                 width: size.width * .4,
                                 height: size.height * .25,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Container(
+                                    width: size.width * .4,
+                                    height: size.height * .25,
+                                  );
+                                },
                               )
                             : Container(
                                 width: size.width * .4,

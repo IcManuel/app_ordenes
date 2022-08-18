@@ -68,7 +68,6 @@ class Preferencias {
 
   set usuario(Usuario? usuario) {
     if (usuario != null) {
-      print(usuario.toJson());
       _prefs.setString('usuario', jsonEncode(usuario.toJson()));
     } else {
       _prefs.setString('usuario', jsonEncode(''));

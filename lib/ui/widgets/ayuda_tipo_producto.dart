@@ -13,7 +13,9 @@ class AyudaTipoProducto extends StatelessWidget {
     final detallesbloc = Provider.of<DetallesBloc>(context);
     final nuevoBloc = Provider.of<NuevoBloc>(context);
     final size = MediaQuery.of(context).size;
+
     Preferencias pref = Preferencias();
+    print(pref.usuario!.usuRol);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Buscar tipo de producto'),

@@ -3,6 +3,7 @@ import 'package:app_ordenes/domains/utils/preferencias.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:app_ordenes/domains/utils/url_util.dart' as url;
 
 class SplashPage extends StatefulWidget {
   const SplashPage({Key? key}) : super(key: key);
@@ -26,6 +27,12 @@ class _SplashPageState extends State<SplashPage> {
     if (pref.token.isNotEmpty) {
       final perfilBloc = Provider.of<PerfilBloc>(context, listen: false);
       perfilBloc.usuFinal = pref.usuario!;
+      if ((pref.usuario!.firma ?? '').isNotEmpty) {
+        List<String> f = (pref.usuario!.firma ?? '').split("/");
+        perfilBloc.imgFirma = "${url.url}foto/" + f[f.length - 1];
+      }
+
+      print(pref.usuario!.toJson());
       await perfilBloc.loginBack(
           context, pref.usuario!.usuAlias, pref.usuario!.usuContrasena);
     } else {
