@@ -1,6 +1,11 @@
-import 'package:app_ordenes/ui/widgets/foto_capturada.dart';
+import 'dart:io';
+
+import 'package:app_ordenes/domains/blocs/fotos_bloc.dart';
+import 'package:app_ordenes/domains/utils/imagen_selector.dart';
+import 'package:app_ordenes/ui/utils/colores.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class CapturarFotoWidg extends StatefulWidget {
   const CapturarFotoWidg({
@@ -18,12 +23,18 @@ class CapturarFotoWidg extends StatefulWidget {
 class _CapturarFotoWidgetState extends State {
   CameraController? controller;
   List? cameras;
+  List<XFile> photos = [];
   late int selectedCameraIdx;
   late String imagePath;
+  bool flash = false;
+  bool tomando = false;
 
   @override
   void initState() {
+    tomando = false;
+    flash = false;
     super.initState();
+    photos = [];
     availableCameras().then((availableCameras) {
       cameras = availableCameras;
 
@@ -62,6 +73,7 @@ class _CapturarFotoWidgetState extends State {
 
     try {
       await controller!.initialize();
+      controller!.setFlashMode(FlashMode.off);
     } on CameraException catch (e) {
       _showCameraException(e);
     }
@@ -73,29 +85,120 @@ class _CapturarFotoWidgetState extends State {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
         title: const Text(''),
+        actions: [
+          IconButton(
+            onPressed: () async {
+              await controller!
+                  .setFlashMode(flash ? FlashMode.off : FlashMode.torch);
+              flash = !flash;
+              setState(() {});
+            },
+            icon: Icon(
+              flash ? Icons.light_mode_rounded : Icons.light_mode_outlined,
+            ),
+          ),
+        ],
       ),
       body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            Expanded(
-              flex: 1,
+        child: Stack(
+          alignment: Alignment.bottomLeft,
+          children: [
+            SizedBox(
+              height: size.height,
               child: _cameraPreviewWidget(),
             ),
-            const SizedBox(height: 10.0),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                _cameraTogglesRowWidget(),
-                _captureControlRowWidget(context, 1),
-                const Spacer()
-              ],
+            _cameraTogglesRowWidget(context, 1),
+            _captureControlRowWidget(context, 1),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 70.0),
+              child: Container(
+                height: 75,
+                child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: photos.length,
+                    itemBuilder: (_, index) {
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 3.0),
+                        child: Stack(
+                          children: [
+                            Container(
+                              height: 70,
+                              width: 70,
+                              child: Image.file(
+                                File(photos[index].path),
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                            Positioned(
+                              top: -15,
+                              right: -15,
+                              child: IconButton(
+                                  onPressed: () {
+                                    photos.remove(photos[index]);
+                                    setState(() {});
+                                  },
+                                  icon: Icon(
+                                    Icons.close,
+                                    color: Colors.red,
+                                    size: 18,
+                                  )),
+                            )
+                          ],
+                        ),
+                      );
+                    }),
+              ),
             ),
-            const SizedBox(height: 20.0)
+            Positioned(
+              right: 5,
+              bottom: 130,
+              child: GestureDetector(
+                onTap: () {
+                  if (photos.isNotEmpty) {
+                    final bloc = Provider.of<FotosBloc>(context, listen: false);
+                    bloc.anadirFotos(photos, 1);
+                    Navigator.pop(context);
+                  }
+                },
+                child: Container(
+                  width: 50,
+                  height: 50,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(50),
+                    color: photos.isNotEmpty
+                        ? colorPrincipal
+                        : Colors.grey.shade400,
+                  ),
+                  child: Stack(
+                    children: [
+                      Positioned(
+                        left: 5,
+                        child: Icon(
+                          Icons.check,
+                          size: 40,
+                          color: Colors.white,
+                        ),
+                      ),
+                      Positioned(
+                        bottom: 10,
+                        right: 10,
+                        child: Text(
+                          photos.length.toString(),
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 10),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
       ),
@@ -126,92 +229,69 @@ class _CapturarFotoWidgetState extends State {
     context,
     int tipo,
   ) {
-    return Expanded(
+    return GestureDetector(
+      onTap: () {
+        _onCapturePressed(
+          context,
+          tipo,
+        );
+      },
       child: Align(
-        alignment: Alignment.center,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            FloatingActionButton(
-                child: const Icon(
-                  Icons.camera,
-                  color: Colors.white,
-                ),
-                backgroundColor: Theme.of(context).primaryColor,
-                onPressed: () {
-                  _onCapturePressed(
-                    context,
-                    tipo,
-                  );
-                })
-          ],
+        alignment: Alignment.bottomCenter,
+        child: Padding(
+          padding: const EdgeInsets.only(bottom: 8.0),
+          child: Container(
+            width: 55,
+            height: 55,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(50),
+              border: Border.all(
+                color: Colors.white,
+                width: 2,
+              ),
+            ),
+          ),
         ),
       ),
     );
   }
 
   /// Display a row of toggle to select the camera (or a message if no camera is available).
-  Widget _cameraTogglesRowWidget() {
-    if (cameras == null || cameras!.isEmpty) {
-      return const Spacer();
-    }
-
-    CameraDescription selectedCamera = cameras![selectedCameraIdx];
-    CameraLensDirection lensDirection = selectedCamera.lensDirection;
-
-    return Expanded(
-      child: Align(
-        alignment: Alignment.centerLeft,
-        child: TextButton.icon(
-          onPressed: _onSwitchCamera,
+  Widget _cameraTogglesRowWidget(BuildContext context, int tipo) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 8.0, bottom: 8),
+      child: Container(
+        width: 50,
+        height: 50,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(50),
+          color: colorPrincipal.withOpacity(.3),
+        ),
+        child: IconButton(
+          onPressed: () {
+            //Navigator.of(context).pop();
+            seleccionMultipleGallery(context, tipo, true);
+          },
           icon: Icon(
-            _getCameraLensIcon(lensDirection),
-          ),
-          label: Text(
-            lensDirection
-                .toString()
-                .substring(lensDirection.toString().indexOf('.') + 1),
+            Icons.image,
+            size: 26,
+            color: Colors.white,
           ),
         ),
       ),
     );
   }
 
-  IconData _getCameraLensIcon(CameraLensDirection direction) {
-    switch (direction) {
-      case CameraLensDirection.back:
-        return Icons.camera_rear;
-      case CameraLensDirection.front:
-        return Icons.camera_front;
-      case CameraLensDirection.external:
-        return Icons.camera;
-      default:
-        return Icons.device_unknown;
-    }
-  }
-
-  void _onSwitchCamera() {
-    selectedCameraIdx =
-        selectedCameraIdx < cameras!.length - 1 ? selectedCameraIdx + 1 : 0;
-    CameraDescription selectedCamera = cameras![selectedCameraIdx];
-    _initCameraController(selectedCamera, 1);
-  }
-
   void _onCapturePressed(context, int tipo) async {
     try {
-      XFile dato = await controller!.takePicture();
-      print('ya esta aqui ${dato.path}');
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => FotoCapturadaWidget(
-            imagePath: dato.path,
-            file: dato,
-            tipo: tipo,
-          ),
-        ),
-      );
+      if (!tomando) {
+        tomando = true;
+        XFile dato = await controller!.takePicture();
+        photos.insert(0, dato);
+        print(photos.length);
+        setState(() {});
+        tomando = false;
+      }
     } catch (e) {
       // If an error occurs, log the error to the console.
       print(e);

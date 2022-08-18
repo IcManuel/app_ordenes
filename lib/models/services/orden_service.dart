@@ -35,7 +35,7 @@ class OrdenService {
           )
           .timeout(
             const Duration(
-              seconds: 15,
+              seconds: 45,
             ),
           );
 

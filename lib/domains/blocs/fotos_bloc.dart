@@ -32,6 +32,7 @@ class FotosBloc extends ChangeNotifier {
   }
 
   void anadirFotos(List<XFile> pickedFileList, int tipo) {
+    print('Datos ' + pickedFileList.length.toString());
     List<FotoModel> fotos = [];
     var pos = 1;
     for (XFile f in pickedFileList) {

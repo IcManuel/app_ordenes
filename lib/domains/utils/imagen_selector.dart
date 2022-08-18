@@ -7,15 +7,20 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
-void seleccionMultipleGallery(context, int tipo) async {
+void seleccionMultipleGallery(context, int tipo, bool pop) async {
   final ImagePicker _picker = ImagePicker();
   try {
+    print('VAMOS?');
     final pickedFileList = await _picker.pickMultiImage(
       imageQuality: 25,
     );
     final bloc = Provider.of<FotosBloc>(context, listen: false);
     bloc.anadirFotos(pickedFileList!, tipo);
+    if (pop) {
+      Navigator.of(context).pop();
+    }
   } catch (e) {
+    print('Error???');
     print(e);
   }
 }
@@ -50,38 +55,46 @@ Widget previewImages(_imageFileList, _pickImageError) {
 }
 
 void showPicker(context, int tipo) {
-  showModalBottomSheet(
-    context: context,
-    builder: (BuildContext bc) {
-      return SafeArea(
-        child: Wrap(
-          children: <Widget>[
-            ListTile(
-                leading: const Icon(Icons.photo_library),
-                title: const Text('Libería'),
-                onTap: () {
-                  Navigator.of(context).pop();
-                  seleccionMultipleGallery(context, tipo);
-                }),
-            ListTile(
-              leading: const Icon(Icons.photo_camera),
-              title: const Text('Cámara'),
-              onTap: () {
-                //_imgFromCamera();
-                Navigator.of(context).pop();
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => tipo == 1
-                        ? const CapturarFotoWidg()
-                        : const CapturarEntregaFotoWidg(),
-                  ),
-                );
-              },
-            ),
-          ],
-        ),
-      );
-    },
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (_) => tipo == 1
+          ? const CapturarFotoWidg()
+          : const CapturarEntregaFotoWidg(),
+    ),
   );
+  // showModalBottomSheet(
+  //   context: context,
+  //   builder: (BuildContext bc) {
+  //     return SafeArea(
+  //       child: Wrap(
+  //         children: <Widget>[
+  //           ListTile(
+  //               leading: const Icon(Icons.photo_library),
+  //               title: const Text('Libería'),
+  //               onTap: () {
+  //                 Navigator.of(context).pop();
+  //                 seleccionMultipleGallery(context, tipo, false);
+  //               }),
+  //           ListTile(
+  //             leading: const Icon(Icons.photo_camera),
+  //             title: const Text('Cámara'),
+  //             onTap: () {
+  //               //_imgFromCamera();
+  //               Navigator.of(context).pop();
+  //               Navigator.push(
+  //                 context,
+  //                 MaterialPageRoute(
+  //                   builder: (_) => tipo == 1
+  //                       ? const CapturarFotoWidg()
+  //                       : const CapturarEntregaFotoWidg(),
+  //                 ),
+  //               );
+  //             },
+  //           ),
+  //         ],
+  //       ),
+  //     );
+  //   },
+  // );
 }

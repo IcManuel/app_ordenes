@@ -81,10 +81,12 @@ class FotosIngreso extends StatelessWidget {
                           padding: const EdgeInsets.all(3.0),
                           child: Column(
                             children: [
-                              Expanded(
+                              Container(
+                                width: size.width * .3,
+                                height: size.height * .165,
                                 child: Image.file(
                                   File(foto.imagen.path),
-                                  fit: BoxFit.fill,
+                                  fit: BoxFit.cover,
                                 ),
                               ),
                               Text(
@@ -94,8 +96,10 @@ class FotosIngreso extends StatelessWidget {
                           ),
                         ),
                         decoration: BoxDecoration(
-                            color: Colors.grey.shade100,
-                            border: Border.all(color: Colors.black),
+                            color: Colors.grey.shade50,
+                            border: Border.all(
+                              color: Colors.grey.shade300,
+                            ),
                             borderRadius: BorderRadius.circular(10)),
                       ),
                     );

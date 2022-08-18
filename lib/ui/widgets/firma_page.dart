@@ -58,11 +58,16 @@ class FirmaPage extends StatelessWidget {
                 ),
               ],
             ),
-            Signature(
-              controller: ordenBloc.controller,
-              backgroundColor: Colors.grey[300]!,
-              height: size.height * .8,
+            Expanded(child: SizedBox()),
+            Container(
+              height: size.height * .4,
+              child: Signature(
+                controller: ordenBloc.controller,
+                backgroundColor: Colors.grey[300]!,
+                height: 250,
+              ),
             ),
+            Expanded(child: SizedBox())
           ],
         ),
       ),
