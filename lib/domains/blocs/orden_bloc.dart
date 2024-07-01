@@ -851,7 +851,7 @@ class OrdenBloc extends ChangeNotifier {
 
   void imprimir() async {}
 
-  void guardarProforma(BuildContext context, Size size) async {
+  guardarProforma(BuildContext context, Size size) async {
     if (_habilitarGrabar) {
       final vehiculoBloc = Provider.of<VehiculoBloc>(context, listen: false);
       final detallesBloc = Provider.of<DetallesBloc>(context, listen: false);

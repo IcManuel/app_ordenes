@@ -9,7 +9,7 @@ class FirmaUsuarioPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ordenBloc = Provider.of<PerfilBloc>(context);
-    final size = MediaQuery.of(context).size;
+    // final size = MediaQuery.of(context).size;
     return WillPopScope(
       onWillPop: () async {
         return false;
